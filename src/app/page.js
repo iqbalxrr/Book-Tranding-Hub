@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Welcome from "./Components/Welcome";
 
 export default function Home() {
   return (
@@ -50,6 +51,7 @@ export default function Home() {
             Read our docs
           </a>
         </div>
+          <Welcome />
       </main>
       <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
         <a
@@ -73,6 +75,7 @@ export default function Home() {
           target="_blank"
           rel="noopener noreferrer"
         >
+        
           <Image
             aria-hidden
             src="/window.svg"
