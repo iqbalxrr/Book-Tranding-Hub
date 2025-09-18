@@ -18,11 +18,7 @@ import { useEffect, useState } from "react";
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [showNav, setShowNav] = useState(true);
-  const [lastScrollY, setLastScrollY] = useState(0);
-
-  // Scroll effect
   
-
   return (
     <header
       className={`w-full fixed top-0 left-0 z-50 transform transition-transform duration-500 ${
@@ -66,7 +62,7 @@ export default function Navbar() {
           <div className="flex justify-between items-center h-16">
             {/* Logo */}
             <Link href="/" className="text-2xl font-bold text-teal-500">
-              📚 Book Hub
+              📚 BookMate
             </Link>
 
             {/* Desktop Menu with Dropdown */}
@@ -87,16 +83,11 @@ export default function Navbar() {
                       { href: "/books/latest", label: "Latest" },
                     ],
                   },
-                  {
-                    name: "Trending",
-                    links: [
-                      { href: "/trending/today", label: "Today" },
-                      { href: "/trending/week", label: "This Week" },
-                    ],
-                  },
+                 
                   {
                     name: "About",
                     links: [
+                      { href: "/about", label: "About" },
                       { href: "/about/team", label: "Our Team" },
                       { href: "/about/mission", label: "Mission" },
                     ],
