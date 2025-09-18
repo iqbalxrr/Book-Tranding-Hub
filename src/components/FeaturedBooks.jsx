@@ -10,7 +10,7 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
 import { Autoplay, Pagination } from "swiper/modules";
 
-const Featured = () => {
+const FeaturedBooks = () => {
     return (
         <div className='my-20 px-7 md:px-14 lg:px-20 mx-auto space-y-12'>
             {/* heading */}
@@ -209,4 +209,4 @@ const Featured = () => {
     );
 };
 
-export default Featured;
+export default FeaturedBooks;
