@@ -37,14 +37,17 @@ const TopCategories = () => {
                     {/* Slide 1 */}
                     <SwiperSlide>
                         <div className="space-y-6 group relative">
-                            <div className="flex justify-center items-center bg-[#FFEFEF] py-8 rounded-md">
+                            <div className="flex justify-center items-center bg-white pt-8 pb-12 rounded-md relative">
                                 <img
-                                    className="h-[213px] transition-transform duration-500 ease-in-out transform group-hover:scale-110"
+                                    className="h-[144px] transition-transform duration-500 "
                                     src="/book1.png"
                                     alt="book"
                                 />
                             </div>
-                            <h1></h1>
+                            <div className='absolute left-1/2 bottom-5  -translate-x-1/2'>
+                                <span className='font-semibold text-white bg-[#FF7B6B] p-1.5 px-3 rounded-sm'>25 Books</span>
+                            </div>
+                            <h1 className="text-xl text-center font-bold text-white hover:text-[#FF7B6B] transition duration-700">Book Nmae</h1>
 
                         </div>
                     </SwiperSlide>
