@@ -14,6 +14,10 @@
     "next": "15.5.3",
     "react": "19.1.0",
     "react-dom": "19.1.0",
+<<<<<<< HEAD
+    "react-icons": "^5.5.0",
+=======
+>>>>>>> 3705261c4c4e38d86e39ff5639d2274784879c61
     "swiper": "^12.0.1"
   },
   "devDependencies": {
