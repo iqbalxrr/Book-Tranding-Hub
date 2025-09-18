@@ -16,8 +16,7 @@ export default function Home() {
       <Hero />
 
       {/* Top Rated Books Section */}
-      <TopRatedBooks />
-       <Hero/>
+      {/* <TopRatedBooks /> */}
       <Featured />
       <TopRated/>
 
