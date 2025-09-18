@@ -29,7 +29,7 @@ const books = [
 
 export default function TopRatedBooks() {
   return (
-    <section className="max-w-7xl mx-auto px-4 py-10">
+    <section className="container mx-auto px-4 py-10">
       <h2 className="text-3xl font-bold text-teal-500 mb-6">Top Rated Books</h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
         {books.map((book) => (

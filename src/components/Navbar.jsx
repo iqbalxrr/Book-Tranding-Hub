@@ -30,8 +30,8 @@ export default function Navbar() {
       }`}
     >
       {/* --- Top Navbar --- */}
-      <div className="bg-teal-500 text-white text-sm">
-        <div className="max-w-7xl mx-auto flex justify-between items-center px-4 py-2">
+      <div className="bg-teal-500 text-white text-sm ">
+        <div className="container mx-auto flex justify-between items-center px-4 py-2">
           {/* Left: Social Links with Icons */}
           <div className="flex space-x-3">
             <Link href="#" className="hover:text-gray-200">
@@ -62,7 +62,7 @@ export default function Navbar() {
 
       {/* --- Main Navbar --- */}
       <nav className="bg-white shadow-md">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="container mx-auto px-4 py-3 ">
           <div className="flex justify-between items-center h-16">
             {/* Logo */}
             <Link href="/" className="text-2xl font-bold text-teal-500">
@@ -136,9 +136,6 @@ export default function Navbar() {
               <div className="ml-6 flex items-center space-x-4">
                 <button className="hover:text-teal-500">
                   <Search size={20} />
-                </button>
-                <button className="hover:text-teal-500">
-                  <ShoppingCart size={20} />
                 </button>
                 <button className="hover:text-teal-500">
                   <Heart size={20} />
