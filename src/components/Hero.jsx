@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 
 export default function HeroSection() {
   return (
-    <section className="relative bg-[url('/hero-bg-1.jpg')] text-white pt-10">
+    <section className="relative bg-[url('/hero-bg-1.jpg')] bg-no-repeat  text-white pt-36">
       <div className="container mx-auto grid grid-cols-1 md:grid-cols-2 gap-10 items-center px-6">
         {/* Left Content */}
         <div className="space-y-6 md:pb-10 ">
@@ -38,7 +38,7 @@ export default function HeroSection() {
             <button className="bg-white text-black w-fit px-6 py-3 rounded-full font-medium hover:bg-gray-200 transition">
               Shop Now →
             </button>
-            <button className="bg-orange-500 w-fit text-white px-6 py-3 rounded-full font-medium z-50 hover:bg-orange-600 transition">
+            <button className="bg-orange-500 w-fit text-white px-6 py-3 rounded-full font-medium z-40 hover:bg-orange-600 transition">
               View All Books →
             </button>
 
