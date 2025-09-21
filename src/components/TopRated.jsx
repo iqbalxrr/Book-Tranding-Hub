@@ -137,7 +137,7 @@ export default function TopRated() {
                     </button>
                   </div>
 
-                  <button className="bg-[#FF7B6B] hover:bg-[#ff6650] text-white px-4 py-2 rounded-lg transition text-sm">
+                  <button className=" btn px-4 py-2 rounded-lg  text-sm">
                     Enchange
                   </button>
                 </div>

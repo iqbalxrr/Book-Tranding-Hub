@@ -5,6 +5,7 @@ import "swiper/css";
 import { Autoplay, Pagination, Navigation } from "swiper/modules";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
+import "../styles/variables.css";
 
 const FeaturedBooks = () => {
   const books = [
@@ -120,7 +121,7 @@ const FeaturedBooks = () => {
               </div>
 
               {/* Button */}
-              <button className="w-full text-[#FF7B6B] bg-white border-2 border-[#FF7B6B] rounded-full font-bold py-3 hover:text-white hover:bg-[#FF7B6B] transition duration-700">
+              <button className="w-full btn rounded-full font-bold py-3  ">
                 Exchange
               </button>
             </div>
