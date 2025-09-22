@@ -51,7 +51,7 @@ export default function Tabs() {
 
 
     return (
-        <div className='flex flex-col items-center px-4 lg:px-16'>
+        <div className='flex flex-col items-center px-3 lg:px-16'>
 
             <div role="tablist" className="tabs tabs-bordered justify-center">
                 {tabs.map((tab, idx) => (
@@ -62,7 +62,7 @@ export default function Tabs() {
                             role="tab"
                             aria-label={tab.label}
                             defaultChecked={idx === 0}
-                            className="tab px-4 py-2 text-xl font-semibold checked:text-[#FF7B6B] text-center mb-3"
+                            className="tab px-1 py-2 text-base md:text-xl font-semibold checked:text-[#FF7B6B] text-center mb-3"
                         />
                         <div role="tabpanel" className="tab-content p-8 border-y-1 border-y-gray-200">
                             {tab.content}

@@ -131,7 +131,7 @@ export default function Navbar() {
                     </div>
                   </div>
                 ))}
-                <Link href='/detailes'>detailes</Link>
+                <Link href='/detailes'>Detailes</Link>
               </div>
 
               {/* Notification + Icons */}
@@ -176,6 +176,7 @@ export default function Navbar() {
                   links: [
                     { href: "/books/all", label: "All Books" },
                     { href: "/books/latest", label: "Latest" },
+                     { href: "/detailes", label: "Detailes" },
                   ],
                 },
                 {

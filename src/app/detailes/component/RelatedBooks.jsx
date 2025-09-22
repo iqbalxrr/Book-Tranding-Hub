@@ -44,7 +44,7 @@ export default function RelatedBooks() {
         <div className="my-20 px-7 md:px-14 lg:px-20 mx-auto container space-y-12">
             {/* heading */}
             <div className="text-center w-full md:w-3/5 mx-auto space-y-3">
-                <h1 className="text-3xl font-bold">Related Products</h1>
+                <h1 className="text-3xl font-bold">Related Books</h1>
                 <p>Interdum et malesuada fames ac ante ipsum primis in faucibus.
                     Donec at nulla nulla. Duis posuere ex lacus</p>
             </div>
