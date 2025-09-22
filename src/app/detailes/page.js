@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { RiPokerHeartsLine } from 'react-icons/ri';
 import { TbArrowsCross } from 'react-icons/tb';
 import Tabs from './component/Tabs';
+import RelatedBooks from './component/RelatedBooks';
 
 
 const DetailesPage = () => {
@@ -179,7 +180,10 @@ const DetailesPage = () => {
 
             {/* tabs */}
             <Tabs />
-            
+
+            {/* Related Books */}
+            <RelatedBooks />
+
         </div>
     );
 };

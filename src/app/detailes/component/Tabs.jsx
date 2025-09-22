@@ -11,6 +11,9 @@ export default function Tabs() {
                     Lorem ipsum dolor sit amet, consectetur adipisicing elit. Nesciunt officia veritatis
                     perferendis enim repellendus quae vero illo tenetur quas suscipit.  Lorem ipsum dolor sit, amet consectetur adipisicing elit. Rem minus magnam dicta commodi
                     porro, inventore, veritatis at eius, asperiores delectus tenetur magni minima architecto
+                    ullam pariatur quaerat eligendi autem saepe.Lorem ipsum dolor sit amet, consectetur adipisicing elit. Nesciunt officia veritatis
+                    perferendis enim repellendus quae vero illo tenetur quas suscipit.  Lorem ipsum dolor sit, amet consectetur adipisicing elit. Rem minus magnam dicta commodi
+                    porro, inventore, veritatis at eius, asperiores delectus tenetur magni minima architecto
                     ullam pariatur quaerat eligendi autem saepe.
                 </p>
             ),
@@ -34,6 +37,8 @@ export default function Tabs() {
                         <h3 className="font-semibold">Leslie Alexander</h3>
                         <p className="text-sm text-gray-500">February 10, 2024 at 2:37 pm</p>
                         <p className="mt-2">
+                            Neque porro est qui dolorem ipsum quia quaed inventor veritatis et quasi architect.
+                            Neque porro est qui dolorem ipsum quia quaed inventor veritatis et quasi architect.
                             Neque porro est qui dolorem ipsum quia quaed inventor veritatis et quasi architecto…
                         </p>
                         <div className="mt-2 text-orange-500">⭐⭐⭐⭐☆</div>
@@ -57,12 +62,9 @@ export default function Tabs() {
                             role="tab"
                             aria-label={tab.label}
                             defaultChecked={idx === 0}
-                            className="tab appearance-none px-4 py-2 text-xl font-semibold
-              [--tab-border-color:transparent]
-              checked:text-orange-500
-              checked:[--tab-border-color:#fb923c] text-center"
+                            className="tab px-4 py-2 text-xl font-semibold checked:text-[#FF7B6B] text-center mb-3"
                         />
-                        <div role="tabpanel" className="tab-content p-8 border-t-1 border-t-gray-200">
+                        <div role="tabpanel" className="tab-content p-8 border-y-1 border-y-gray-200">
                             {tab.content}
                         </div>
                     </React.Fragment>
