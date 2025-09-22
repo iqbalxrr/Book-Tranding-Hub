@@ -5,6 +5,7 @@ import Buttons from './component/Buttons';
 import Image from 'next/image';
 import { RiPokerHeartsLine } from 'react-icons/ri';
 import { TbArrowsCross } from 'react-icons/tb';
+import Tabs from './component/Tabs';
 
 
 const DetailesPage = () => {
@@ -114,6 +115,7 @@ const DetailesPage = () => {
 
                     <hr className="my-6 border-t border-gray-200" />
 
+                    {/* 8 information */}
                     <div className='border border-gray-200 rounded-2xl p-2'>
                         <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4  bg-gray-50 p-6 rounded-2xl gap-3">
                             <div >
@@ -151,7 +153,8 @@ const DetailesPage = () => {
                         </div>
                     </div>
 
-                       <div className='border border-gray-200 rounded-2xl p-2 my-6'>
+                    {/* 4 information */}
+                    <div className='border border-gray-200 rounded-2xl p-2 my-6'>
                         <div className="grid grid-cols-2  bg-gray-50 p-6 rounded-2xl gap-3">
                             <div className='flex gap-4 items-start'>
                                 <p className='text-[#FF7B6B]'><TbArrowsCross /></p>
@@ -171,14 +174,12 @@ const DetailesPage = () => {
                             </div>
                         </div>
                     </div>
-
                 </div>
-
             </div>
 
-
             {/* tabs */}
-            <div></div>
+            <Tabs />
+            
         </div>
     );
 };
