@@ -115,41 +115,60 @@ const DetailesPage = () => {
                     <hr className="my-6 border-t border-gray-200" />
 
                     <div className='border border-gray-200 rounded-2xl p-2'>
-                        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4  bg-gray-50 p-6 rounded-2xl">
+                        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4  bg-gray-50 p-6 rounded-2xl gap-3">
                             <div >
-                                <h3 className="text-xl font-semibold mb-2">SKU:</h3>
+                                <h3 className="text-xl font-semibold mb-1">SKU:</h3>
                                 <p className="text-gray-600">FTC1020B65D</p>
                             </div>
                             <div >
-                                <h3 className="text-xl font-semibold mb-2">Tage</h3>
+                                <h3 className="text-xl font-semibold mb-1">Tage</h3>
                                 <p className="text-gray-600">Low Book</p>
                             </div>
                             <div >
-                                <h3 className="text-xl font-semibold mb-2">Total Pages</h3>
+                                <h3 className="text-xl font-semibold mb-1">Total Pages</h3>
                                 <p className="text-gray-600">360</p>
                             </div>
                             <div >
-                                <h3 className="text-xl font-semibold mb-2">Pulish Year</h3>
+                                <h3 className="text-xl font-semibold mb-1">Pulish Year</h3>
                                 <p className="text-gray-600">2023</p>
                             </div>
                             <div >
-                                <h3 className="text-xl font-semibold mb-2">Category</h3>
+                                <h3 className="text-xl font-semibold mb-1">Category</h3>
                                 <p className="text-gray-600">Kids Toys</p>
                             </div>
                             <div >
-                                <h3 className="text-xl font-semibold mb-2">Format</h3>
+                                <h3 className="text-xl font-semibold mb-1">Format</h3>
                                 <p className="text-gray-600">Hardcover</p>
                             </div>
                             <div >
-                                <h3 className="text-xl font-semibold mb-2">Language</h3>
+                                <h3 className="text-xl font-semibold mb-1">Language</h3>
                                 <p className="text-gray-600">English</p>
                             </div>
                             <div >
-                                <h3 className="text-xl font-semibold mb-2">Century</h3>
+                                <h3 className="text-xl font-semibold mb-1">Century</h3>
                                 <p className="text-gray-600">United States</p>
                             </div>
+                        </div>
+                    </div>
 
-
+                       <div className='border border-gray-200 rounded-2xl p-2 my-6'>
+                        <div className="grid grid-cols-2  bg-gray-50 p-6 rounded-2xl gap-3">
+                            <div className='flex gap-4 items-start'>
+                                <p className='text-[#FF7B6B]'><TbArrowsCross /></p>
+                                <p className="text-gray-600">Free shipping orders from $150</p>
+                            </div>
+                            <div className='flex gap-4 items-start'>
+                                <p className='text-[#FF7B6B]'><TbArrowsCross /></p>
+                                <p className="text-gray-600">Free shipping orders from $150</p>
+                            </div>
+                            <div className='flex gap-4 items-start'>
+                                <p className='text-[#FF7B6B]'><TbArrowsCross /></p>
+                                <p className="text-gray-600">Free shipping orders from $150</p>
+                            </div>
+                            <div className='flex gap-4 items-start'>
+                                <p className='text-[#FF7B6B]'><TbArrowsCross /></p>
+                                <p className="text-gray-600">Free shipping orders from $150</p>
+                            </div>
                         </div>
                     </div>
 
