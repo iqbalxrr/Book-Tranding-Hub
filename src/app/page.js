@@ -1,12 +1,12 @@
 import Image from "next/image";
-import Hero from "@/components/Hero";
-import Featured from "@/components/FeaturedBooks";
-import TopCategories from "@/components/TopCategories";
-import FeaturedBooks from "@/components/FeaturedBooks";
+import Hero from "@/app/components/Hero";
+import Featured from "@/app/components/FeaturedBooks";
+import TopCategories from "@/app/components/TopCategories";
+import FeaturedBooks from "@/app/components/FeaturedBooks";
 
-import TopRatedBooks from "../components/TopRatedBooks";
+import TopRatedBooks from "./components/TopRatedBooks";
 
-import TopRated from "@/components/TopRated";
+import TopRated from "@/app/components/TopRated";
 
 
 

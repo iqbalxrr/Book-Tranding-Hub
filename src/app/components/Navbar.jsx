@@ -61,7 +61,7 @@ export default function Navbar() {
       </div>
 
       {/* --- Main Navbar --- */}
-      <nav className="bg-white shadow-md">
+      <nav className="bg-white">
         <div className="container mx-auto px-4 py-3 ">
           <div className="flex justify-between items-center h-16">
             {/* Logo */}
@@ -85,6 +85,7 @@ export default function Navbar() {
                     links: [
                       { href: "/books/all", label: "All Books" },
                       { href: "/books/latest", label: "Latest" },
+                      { href: "/detailes", label: "Detailes" },
                     ],
                   },
                   {
@@ -130,6 +131,7 @@ export default function Navbar() {
                     </div>
                   </div>
                 ))}
+                <Link href='/detailes'>detailes</Link>
               </div>
 
               {/* Notification + Icons */}

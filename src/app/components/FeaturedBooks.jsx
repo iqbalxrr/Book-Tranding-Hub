@@ -12,7 +12,7 @@ import { Autoplay, Pagination } from "swiper/modules";
 
 const FeaturedBooks = () => {
     return (
-        <div className='my-20 px-7 md:px-14 lg:px-20 mx-auto space-y-12'>
+        <div className='my-20 px-7 md:px-14 lg:px-20 mx-auto container space-y-12'>
             {/* heading */}
             <div className='flex justify-between items-center'>
                 <h1 className='text-5xl font-bold'>Featured Books</h1>
