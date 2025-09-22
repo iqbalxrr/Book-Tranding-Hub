@@ -127,9 +127,9 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* Main Navbar */}
-      <nav className="bg-white shadow-md">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* --- Main Navbar --- */}
+      <nav className="bg-white">
+        <div className="container mx-auto px-4 py-3 ">
           <div className="flex justify-between items-center h-16">
             {/* Logo */}
             <Link href="/" className="text-2xl font-bold text-teal-500">
@@ -139,7 +139,44 @@ export default function Navbar() {
             {/* Desktop Menu */}
             <div className="hidden md:flex items-center space-x-6 relative">
               <div className="flex space-x-6 items-center">
-                {menus.map((menu) => (
+                {[
+                  {
+                    name: "Home",
+                    links: [
+                      { href: "/home1", label: "Home1" },
+                      { href: "/home2", label: "Home2" },
+                    ],
+                  },
+                  {
+                    name: "Books",
+                    links: [
+                      { href: "/books/all", label: "All Books" },
+                      { href: "/books/latest", label: "Latest" },
+                      { href: "/detailes", label: "Detailes" },
+                    ],
+                  },
+                  {
+                    name: "Trending",
+                    links: [
+                      { href: "/trending/today", label: "Today" },
+                      { href: "/trending/week", label: "This Week" },
+                    ],
+                  },
+                  {
+                    name: "About",
+                    links: [
+                      { href: "/about/team", label: "Our Team" },
+                      { href: "/about/mission", label: "Mission" },
+                    ],
+                  },
+                  {
+                    name: "Contact",
+                    links: [
+                      { href: "/contact/email", label: "Email" },
+                      { href: "/contact/location", label: "Location" },
+                    ],
+                  },
+                ].map((menu) => (
                   <div key={menu.name} className="relative group">
                     <button className="flex items-center hover:text-teal-500">
                       {menu.name}
@@ -161,6 +198,7 @@ export default function Navbar() {
                     </div>
                   </div>
                 ))}
+                <Link href='/detailes'>Detailes</Link>
               </div>
 
               {/* Icons */}
@@ -195,7 +233,44 @@ export default function Navbar() {
         {isOpen && (
           <div className="md:hidden bg-white shadow-md">
             <div className="flex flex-col px-4 py-2 space-y-2">
-              {menus.map((menu) => (
+              {[
+                {
+                  name: "Home",
+                  links: [
+                    { href: "/home1", label: "Home1" },
+                    { href: "/home2", label: "Home2" },
+                  ],
+                },
+                {
+                  name: "Books",
+                  links: [
+                    { href: "/books/all", label: "All Books" },
+                    { href: "/books/latest", label: "Latest" },
+                     { href: "/detailes", label: "Detailes" },
+                  ],
+                },
+                {
+                  name: "Trending",
+                  links: [
+                    { href: "/trending/today", label: "Today" },
+                    { href: "/trending/week", label: "This Week" },
+                  ],
+                },
+                {
+                  name: "About",
+                  links: [
+                    { href: "/about/team", label: "Our Team" },
+                    { href: "/about/mission", label: "Mission" },
+                  ],
+                },
+                {
+                  name: "Contact",
+                  links: [
+                    { href: "/contact/email", label: "Email" },
+                    { href: "/contact/location", label: "Location" },
+                  ],
+                },
+              ].map((menu) => (
                 <details key={menu.name} className="group">
                   <summary className="flex justify-between items-center cursor-pointer hover:text-teal-500">
                     {menu.name}
