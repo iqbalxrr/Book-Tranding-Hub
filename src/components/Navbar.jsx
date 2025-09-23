@@ -150,6 +150,7 @@ export default function Navbar() {
                   {
                     name: "Books",
                     links: [
+                      { href: "/addNewBook", label: "Add New Book" },
                       { href: "/books/all", label: "All Books" },
                       { href: "/books/latest", label: "Latest" },
                       { href: "/detailes", label: "Detailes" },
