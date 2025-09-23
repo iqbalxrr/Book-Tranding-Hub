@@ -82,6 +82,7 @@ export default function Navbar() {
               📚 BookMate
             </Link>
 
+            {/* Desktop Menu */}
             {/* Desktop Menu with Dropdown */}
             <div className="hidden md:flex items-center space-x-6 relative">
               <div className="flex space-x-6 items-center">
@@ -89,6 +90,7 @@ export default function Navbar() {
                   {
                     name: "Home",
                     links: [
+                      { href: "/home1", label: "Home1" },
                       { href: "/", label: "Home1" },
                       { href: "/home2", label: "Home2" },
                     ],
@@ -96,15 +98,22 @@ export default function Navbar() {
                   {
                     name: "Books",
                     links: [
+                      { href: "/addNewBook", label: "Add New Book" },
                       { href: "/books/all", label: "All Books" },
                       { href: "/books/latest", label: "Latest" },
+                      { href: "/detailes", label: "Detailes" },
                     ],
                   },
-                 
+                  {
+                    name: "Trending",
+                    links: [
+                      { href: "/trending/today", label: "Today" },
+                      { href: "/trending/week", label: "This Week" },
+                    ],
+                  },
                   {
                     name: "About",
                     links: [
-                      { href: "/about", label: "About" },
                       { href: "/about/team", label: "Our Team" },
                       { href: "/about/mission", label: "Mission" },
                     ],
@@ -138,12 +147,16 @@ export default function Navbar() {
                     </div>
                   </div>
                 ))}
+                <Link href='/detailes'>Detailes</Link>
               </div>
 
-              {/* Notification + Icons */}
+              {/* Icons */}
               <div className="ml-6 flex items-center space-x-4">
                 <button className="hover:text-teal-500">
                   <Search size={20} />
+                </button>
+                <button className="hover:text-teal-500">
+                  <ShoppingCart size={20} />
                 </button>
                 <button className="hover:text-teal-500">
                   <Heart size={20} />

@@ -18,6 +18,7 @@ export async function GET() {
 export async function POST(req) {
   try {
     const body = await req.json();
+    // console.log(body);
     const db = await getDb();
     const result = await db.collection("books").insertOne(body);
 
@@ -29,3 +30,6 @@ export async function POST(req) {
     return NextResponse.json({ error: "Failed to add book" }, { status: 500 });
   }
 }
+
+
+
