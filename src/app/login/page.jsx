@@ -9,12 +9,27 @@ export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    console.log("Login with:", email, password);
+ const handleSubmit = async (e) => {
+  e.preventDefault();
+  try {
+    const res = await fetch("/api/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
+    });
 
-    // এখানে তোমার backend API call করে login logic বসাতে হবে
-  };
+    const data = await res.json();
+    if (!res.ok) {
+      alert(data.error);
+      return;
+    }
+
+    alert("Login successful! Welcome " + data.user.name);
+  } catch (err) {
+    console.error(err);
+    alert("Something went wrong");
+  }
+};
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
