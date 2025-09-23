@@ -7,11 +7,34 @@ export default function RegisterPage() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleRegister = async (e) => {
     e.preventDefault();
-    console.log("Register with:", name, email, password);
-    // এখানে তোমার backend API call করে user create করতে হবে
+    setLoading(true);
+
+    try {
+      const res = await fetch("/api/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, password }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        alert("✅ Registration successful! Please login.");
+        // চাইলে register এর পর auto login করতে পারো
+        // await signIn("credentials", { email, password, redirect: true, callbackUrl: "/" });
+      } else {
+        alert("❌ " + data.message);
+      }
+    } catch (err) {
+      console.error(err);
+      alert("❌ Something went wrong!");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -47,9 +70,10 @@ export default function RegisterPage() {
 
           <button
             type="submit"
-            className="w-full bg-indigo-600 text-white py-2 rounded-md hover:bg-indigo-700"
+            disabled={loading}
+            className="w-full bg-indigo-600 text-white py-2 rounded-md hover:bg-indigo-700 disabled:opacity-50"
           >
-            Register
+            {loading ? "Registering..." : "Register"}
           </button>
         </form>
 
@@ -71,7 +95,6 @@ export default function RegisterPage() {
           Continue with Google
         </button>
 
-        {/* 👇 Already have account section */}
         <p className="text-center text-sm text-gray-600 mt-6">
           Already have an account?{" "}
           <Link href="/login" className="text-indigo-600 hover:underline">
