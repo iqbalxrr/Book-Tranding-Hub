@@ -2,8 +2,10 @@
 
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Pagination } from "swiper/modules";
-import BookCard from "@/app/detailes/component/BookCard";
+import BookCard from "@/components/details/BookCard";
 import { FaArrowRightLong } from "react-icons/fa6";
+import 'swiper/css';
+
 
 const books = [
   {

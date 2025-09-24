@@ -1,11 +1,14 @@
 'use client'
 import { useForm } from "react-hook-form";
 import baseUrl from "../../hooks/BaseUrl";
+import { useState } from "react";
+import toast from "react-hot-toast";
 
 
 export default function AddNewBook() {
 
     const axiosInstance = baseUrl()
+    const [loading, setLoading] = useState(false)
 
 
     const {
@@ -16,8 +19,7 @@ export default function AddNewBook() {
     } = useForm();
 
     const onSubmit = async (data) => {
-        // console.log(data);
-        // You can send data to your API here
+       setLoading(true)
         reset();
         const nweBook = {
             ...data
@@ -27,12 +29,15 @@ export default function AddNewBook() {
         try {
             const {data} = await axiosInstance.post('/api/books', nweBook)
 
-            console.log(data);
+            if(data?.insertedId){
+                toast.success('The Book Added Successful!')
+            }
+            setLoading(false)
         } catch (error) {
             console.log(error);
         }
 
-
+        
     };
 
     return (
@@ -80,7 +85,7 @@ export default function AddNewBook() {
                             type="url"
                             {...register("bookImage", { required: "Book image URL is required" })}
                             className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
-                        // placeholder="https://example.com/book.jpg"
+                        placeholder="Photo URL"
                         />
                     </div>
 
@@ -211,7 +216,7 @@ export default function AddNewBook() {
                             type="submit"
                             className="w-full text-white bg-[#FF7B6B] rounded-full font-bold py-2.5 hover:text-[#FF7B6B] hover:bg-[#FFEFEF] hover:border-1 hover:border-[#FF7B6B] transition duration-700"
                         >
-                            Add Book
+                            {loading ? (<span className="loading loading-spinner text-success"></span>) : "Add Book"}
                         </button>
                     </div>
                 </form>

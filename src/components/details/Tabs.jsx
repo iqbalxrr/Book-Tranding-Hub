@@ -2,26 +2,22 @@ import React from 'react';
 import Table from './Table';
 
 
-export default function Tabs() {
+export default function Tabs({book}) {
     const tabs = [
         {
             label: "Description",
             content: (
                 <p>
-                    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Nesciunt officia veritatis
-                    perferendis enim repellendus quae vero illo tenetur quas suscipit.  Lorem ipsum dolor sit, amet consectetur adipisicing elit. Rem minus magnam dicta commodi
-                    porro, inventore, veritatis at eius, asperiores delectus tenetur magni minima architecto
-                    ullam pariatur quaerat eligendi autem saepe.Lorem ipsum dolor sit amet, consectetur adipisicing elit. Nesciunt officia veritatis
-                    perferendis enim repellendus quae vero illo tenetur quas suscipit.  Lorem ipsum dolor sit, amet consectetur adipisicing elit. Rem minus magnam dicta commodi
-                    porro, inventore, veritatis at eius, asperiores delectus tenetur magni minima architecto
-                    ullam pariatur quaerat eligendi autem saepe.
+                    {book?.description}
                 </p>
             ),
         },
         {
             label: "Additional Information",
             content: (
-               <Table />
+               <Table 
+               book={book}
+               />
             ),
         },
         {
