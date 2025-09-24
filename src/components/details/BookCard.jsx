@@ -4,14 +4,17 @@ import { TbArrowsCross } from "react-icons/tb";
 import { FaRegEye } from "react-icons/fa6";
 
 const BookCard = ({ book }) => {
+
+
+
   return (
     <div className="space-y-6 group relative">
       {/* Image */}
       <div className="flex justify-center items-center bg-[#FFEFEF] py-8 rounded-md">
         <img
           className="h-[213px] transition-transform duration-500 ease-in-out transform group-hover:scale-110"
-          src={book.image}
-          alt={book.title}
+          src={book?.image}
+          alt={book?.title}
         />
       </div>
 
@@ -31,20 +34,20 @@ const BookCard = ({ book }) => {
 
       {/* Details */}
       <div className="space-y-2.5">
-        <h4 className="text-gray-400 font-bold">{book.author}</h4>
+        <h4 className="text-gray-400 font-bold">{book?.author}</h4>
         <h2 className="text-2xl font-bold hover:text-[#FF7B6B] transition duration-700">
-          {book.title}
+          {book?.title}
         </h2>
         <div className="flex justify-between items-center">
           <div className="flex gap-2 items-center">
             <img
               className="w-8 h-8 rounded-full"
-              src={book.reviewerImg}
-              alt={book.reviewer}
+              src={book?.reviewerImg}
+              alt={book?.reviewer}
             />
-            <p>{book.reviewer}</p>
+            <p>{book?.reviewer}</p>
           </div>
-          <p>{book.rating}</p>
+          <p>{book?.rating}</p>
         </div>
       </div>
 

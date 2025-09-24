@@ -99,9 +99,9 @@ export default function Navbar() {
                     name: "Books",
                     links: [
                       { href: "/addNewBook", label: "Add New Book" },
-                      { href: "/books/all", label: "All Books" },
+                     
                       { href: "/books/latest", label: "Latest" },
-                      { href: "/detailes", label: "Detailes" },
+                      { href: "/allBooks", label: "All Books" },
                     ],
                   },
                   {
@@ -147,7 +147,7 @@ export default function Navbar() {
                     </div>
                   </div>
                 ))}
-                <Link href='/detailes'>Detailes</Link>
+            
               </div>
 
               {/* Icons */}
