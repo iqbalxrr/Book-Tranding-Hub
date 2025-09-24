@@ -20,61 +20,7 @@ import { useSession, signIn, signOut } from "next-auth/react";
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [showNav, setShowNav] = useState(true);
-  const [lastScrollY, setLastScrollY] = useState(0);
-
-  const { data: session } = useSession();
-
-  // Optional: Scroll hide/show effect
-  useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > lastScrollY) {
-        setShowNav(false);
-      } else {
-        setShowNav(true);
-      }
-      setLastScrollY(window.scrollY);
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [lastScrollY]);
-
-  const menus = [
-    {
-      name: "Home",
-      links: [
-        { href: "/", label: "Home1" },
-        { href: "/home2", label: "Home2" },
-      ],
-    },
-    {
-      name: "Books",
-      links: [
-        { href: "/books/all", label: "All Books" },
-        { href: "/books/latest", label: "Latest" },
-      ],
-    },
-    {
-      name: "Trending",
-      links: [
-        { href: "/trending/today", label: "Today" },
-        { href: "/trending/week", label: "This Week" },
-      ],
-    },
-    {
-      name: "About",
-      links: [
-        { href: "/about/team", label: "Our Team" },
-        { href: "/about/mission", label: "Mission" },
-      ],
-    },
-    {
-      name: "Contact",
-      links: [
-        { href: "/contact/email", label: "Email" },
-        { href: "/contact/location", label: "Location" },
-      ],
-    },
-  ];
+  const { data: session } = useSession(); // <-- NextAuth session
 
   return (
     <header
@@ -82,10 +28,10 @@ export default function Navbar() {
         showNav ? "translate-y-0" : "-translate-y-full"
       }`}
     >
-      {/* Top Navbar */}
-      <div className="bg-teal-500 text-white text-sm">
-        <div className="max-w-7xl mx-auto flex justify-between items-center px-4 py-2">
-          {/* Social Icons */}
+      {/* --- Top Navbar --- */}
+       <div className="bg-teal-500 text-white text-sm ">
+        <div className="container mx-auto flex justify-between items-center px-4 py-2">
+          {/* Left: Social Links with Icons */}
           <div className="flex space-x-3">
             <Link href="#" className="hover:text-gray-200">
               <Facebook size={16} />
@@ -101,7 +47,7 @@ export default function Navbar() {
             </Link>
           </div>
 
-          {/* Auth Links */}
+          {/* Right: Auth Links */}
           <div className="space-x-4 flex items-center">
             {session ? (
               <>
@@ -115,12 +61,12 @@ export default function Navbar() {
               </>
             ) : (
               <>
-                 <Link href="/register" className="hover:underline">
-      Register
-    </Link>
-    <Link href="/login" className="hover:underline">
-      Login
-    </Link>
+                <Link href="/register" className="hover:underline">
+                  Register
+                </Link>
+                <Link href="/login" className="hover:underline">
+                  Login
+                </Link>
               </>
             )}
           </div>
@@ -128,15 +74,16 @@ export default function Navbar() {
       </div>
 
       {/* --- Main Navbar --- */}
-      <nav className="bg-white">
+      <nav className="bg-white shadow-md">
         <div className="container mx-auto px-4 py-3 ">
           <div className="flex justify-between items-center h-16">
             {/* Logo */}
             <Link href="/" className="text-2xl font-bold text-teal-500">
-              📚 Book Hub
+              📚 BookMate
             </Link>
 
             {/* Desktop Menu */}
+            {/* Desktop Menu with Dropdown */}
             <div className="hidden md:flex items-center space-x-6 relative">
               <div className="flex space-x-6 items-center">
                 {[
@@ -144,15 +91,17 @@ export default function Navbar() {
                     name: "Home",
                     links: [
                       { href: "/home1", label: "Home1" },
+                      { href: "/", label: "Home1" },
                       { href: "/home2", label: "Home2" },
                     ],
                   },
                   {
                     name: "Books",
                     links: [
-                      { href: "/books/all", label: "All Books" },
+                      { href: "/addNewBook", label: "Add New Book" },
+                     
                       { href: "/books/latest", label: "Latest" },
-                      { href: "/detailes", label: "Detailes" },
+                      { href: "/allBooks", label: "All Books" },
                     ],
                   },
                   {
@@ -198,7 +147,7 @@ export default function Navbar() {
                     </div>
                   </div>
                 ))}
-                <Link href='/detailes'>Detailes</Link>
+            
               </div>
 
               {/* Icons */}
@@ -237,7 +186,7 @@ export default function Navbar() {
                 {
                   name: "Home",
                   links: [
-                    { href: "/home1", label: "Home1" },
+                    { href: "/", label: "Home1" },
                     { href: "/home2", label: "Home2" },
                   ],
                 },
@@ -246,7 +195,6 @@ export default function Navbar() {
                   links: [
                     { href: "/books/all", label: "All Books" },
                     { href: "/books/latest", label: "Latest" },
-                     { href: "/detailes", label: "Detailes" },
                   ],
                 },
                 {
@@ -297,34 +245,11 @@ export default function Navbar() {
                 <button className="hover:text-teal-500">
                   <ShoppingCart size={20} />
                 </button>
+                
                 <button className="relative p-2 text-gray-700 hover:text-teal-500">
                   <Bell size={22} />
                   <span className="absolute top-0 right-0 inline-block w-2 h-2 bg-red-500 rounded-full"></span>
                 </button>
-              </div>
-
-              {/* Mobile Auth Links */}
-              <div className="mt-3 space-y-2">
-                {session ? (
-                  <>
-                    <span>Welcome, {session.user?.name}</span>
-                    <button
-                      onClick={() => signOut()}
-                      className="hover:underline"
-                    >
-                      Logout
-                    </button>
-                  </>
-                ) : (
-                  <>
-                   <Link href="/register" className="hover:underline">
-      Register
-    </Link>
-                     <Link href="/login" className="hover:underline">
-      Login
-    </Link>
-                  </>
-                )}
               </div>
             </div>
           </div>
