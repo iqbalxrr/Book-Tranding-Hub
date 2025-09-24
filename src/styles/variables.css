@@ -1,7 +1,7 @@
 
 /* custome css here  */
 
-.btn {
+.custom-btn {
  display: inline-block;
  font-size: 16px;
  font-weight: 700;
@@ -16,7 +16,7 @@
  font-family: inherit;
  background: white;
 }
-.btn::before {
+.custom-btn::before {
  content: "";
  position: absolute;
  left: 0;
@@ -29,11 +29,11 @@
  z-index: -1;
 }
 
-.btn:hover::before {
+.custom-btn:hover::before {
  transform: translateX(0);
 
 }
-.btn:hover {
+.custom-btn:hover {
  color: white;
  font-weight: 800;
 }
