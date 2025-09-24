@@ -1,5 +1,3 @@
-
-
 import BookCard from '@/components/details/BookCard';
 import HoverButtons from '@/components/details/HoverButtons';
 import baseUrl from '@/hooks/BaseUrl'
