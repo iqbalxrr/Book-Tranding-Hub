@@ -3,7 +3,6 @@ import Buttons from '@/components/details/Buttons';
 import RelatedBooks from '@/components/details/RelatedBooks';
 import Tabs from '@/components/details/Tabs';
 import ReadMore from '@/components/modal/ReadMore';
-import baseUrl from '@/hooks/BaseUrl';
 import React from 'react';
 import { RiPokerHeartsLine } from 'react-icons/ri';
 import { TbArrowsCross } from 'react-icons/tb';
@@ -13,14 +12,16 @@ import { TbArrowsCross } from 'react-icons/tb';
 const DetailesPage =async ({params}) => {
 
   const {id} =await params
-  const axiosInstance = baseUrl()
+//   const axiosInstance = baseUrl()
+  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/books/${id}`, {
+    cache: "no-store", // so it always fetches fresh data
+  });
 
-  const {data} = await axiosInstance.get(`/api/books/${id}`)
-  const { authorName, bookImage, bookName, category, description, format, language, publishYear, readFreeText, sku, tags, totalPages} = data || {}
+    const {book,relatedBooks} = await res.json();
+    // console.log(book, relatedBooks);
 
-  const readMore =()=>{
-     
-  }
+  const { authorName, bookImage, bookName, category, description, format, language, publishYear, readFreeText, sku, tags, totalPages} = book || {}
+
 
     return (
         <div className='mt-30 space-y-24'>
@@ -92,15 +93,15 @@ const DetailesPage =async ({params}) => {
                 <div className='flex-5/9'>
 
                     <div className="py-6">
-                        <h2 className="text-4xl font-bold mb-4">{bookName}</h2>
-                        <h2 className="text-3xl font-semibold mb-4">{authorName}</h2>
+                        <h2 className="text-3xl font-bold mb-4">    <span className='text-gray-600'>Book Name:</span> {bookName}</h2>
+                        <h2 className="text-3xl font-semibold mb-4"><span className='text-gray-600'>Author:</span> {authorName}</h2>
                         <p className="text-gray-600 mb-6">
-                            {description}
+                            <span className='text-black font-bold'>Description:</span> {description}
                         </p>
                         <div className="flex gap-4">
                           {/* read more modal */}
                             <ReadMore 
-                            book={data}
+                            book={book}
                             />
 
                             <button className="rounded-full font-bold py-3 px-8 text-white bg-[#FF7B6B] hover:bg-[#FFEFEF] hover:text-[#FF7B6B] transition duration-700">
@@ -184,11 +185,13 @@ const DetailesPage =async ({params}) => {
 
             {/* tabs */}
             <Tabs 
-            book={data}
+            book={book}
             />
 
             {/* Related Books */}
-            <RelatedBooks />
+            <RelatedBooks 
+            relatedBooks={relatedBooks}
+            />
 
         </div>
     );
