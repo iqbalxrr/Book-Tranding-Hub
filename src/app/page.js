@@ -3,6 +3,7 @@ import TopCategories from "@/components/TopCategories";
 import TopRated from "@/components/TopRated";
 import FeaturedBooks from "@/components/FeaturedBooks";
 import LatestNews from "@/components/LatestNews";
+import WhatClientSay from "@/components/WhatClientSay";
 
 
 
@@ -14,6 +15,7 @@ export default function Home() {
       <TopCategories />
       <TopRated />
       <LatestNews />
+      <WhatClientSay />
     </div>
   );
 }
