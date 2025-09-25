@@ -7,7 +7,6 @@ export default function BookModal({ book }) {
 
     return (
         <>
-            {/* <button onClick={() => setOpen(true)}>Open Modal</button> */}
             <button
                 onClick={() => setOpen(true)}
                 className="rounded-full font-bold py-3 px-8 text-[#FF7B6B] bg-[#FFEFEF] border border-[#FF7B6B] hover:bg-[#FF7B6B] hover:text-[#FFEFEF] transition duration-700">
