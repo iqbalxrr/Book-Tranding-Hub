@@ -1,4 +1,5 @@
 "use client";
+
 import Link from "next/link";
 import {
   Menu,
@@ -6,19 +7,20 @@ import {
   ChevronDown,
   Bell,
   Search,
-  ShoppingCart,
   Heart,
   Facebook,
   Twitter,
   Instagram,
   Linkedin,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { useSession, signIn, signOut } from "next-auth/react";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [showNav, setShowNav] = useState(true);
-  
+  const { data: session } = useSession(); // <-- NextAuth session
+
   return (
     <header
       className={`w-full fixed top-0 left-0 z-50 transform transition-transform duration-500 ${
@@ -45,13 +47,24 @@ export default function Navbar() {
           </div>
 
           {/* Right: Auth Links */}
-          <div className="space-x-4">
-            <Link href="/register" className="hover:underline">
-              Register
-            </Link>
-            <Link href="/login" className="hover:underline">
-              Log In
-            </Link>
+          <div className="space-x-4 flex items-center">
+            {session ? (
+              <>
+                <span>Welcome, {session.user?.name}</span>
+                <button onClick={() => signOut()} className="hover:underline">
+                  Logout
+                </button>
+              </>
+            ) : (
+              <>
+                <Link href="/register" className="hover:underline">
+                  Register
+                </Link>
+                <Link href="/login" className="hover:underline">
+                  Login
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </div>
@@ -65,30 +78,36 @@ export default function Navbar() {
               📚 BookMate
             </Link>
 
-            {/* Desktop Menu with Dropdown */}
+            {/* Desktop Menu */}
             <div className="hidden md:flex items-center space-x-6 relative">
               <div className="flex space-x-6 items-center">
+                {/* Home (no dropdown) */}
+                <Link href="/" className="hover:text-teal-500">
+                  Home
+                </Link>
+
+                {/* Other Menus with dropdown */}
                 {[
-                  {
-                    name: "Home",
-                    links: [
-                      { href: "/home1", label: "Home1" },
-                      { href: "/home2", label: "Home2" },
-                    ],
-                  },
                   {
                     name: "Books",
                     links: [
-                      { href: "/books/all", label: "All Books" },
+                      { href: "/addNewBook", label: "Add New Book" },
                       { href: "/books/latest", label: "Latest" },
+                      { href: "/books", label: "Books" },
+                      { href: "/allBooks", label: "All Books" },
                     ],
                   },
-                 
+                  {
+                    name: "Trending",
+                    links: [
+                      { href: "/trending/today", label: "Today" },
+                      { href: "/trending/week", label: "This Week" },
+                    ],
+                  },
                   {
                     name: "About",
                     links: [
                       { href: "/about", label: "About" },
-                      { href: "/about/team", label: "Our Team" },
                       { href: "/about/mission", label: "Mission" },
                     ],
                   },
@@ -123,7 +142,7 @@ export default function Navbar() {
                 ))}
               </div>
 
-              {/* Notification + Icons */}
+              {/* Icons */}
               <div className="ml-6 flex items-center space-x-4">
                 <button className="hover:text-teal-500">
                   <Search size={20} />
@@ -152,14 +171,13 @@ export default function Navbar() {
         {isOpen && (
           <div className="md:hidden bg-white shadow-md">
             <div className="flex flex-col px-4 py-2 space-y-2">
+              {/* Home (no dropdown) */}
+              <Link href="/" className="hover:text-teal-500">
+                Home
+              </Link>
+
+            
               {[
-                {
-                  name: "Home",
-                  links: [
-                    { href: "/home1", label: "Home1" },
-                    { href: "/home2", label: "Home2" },
-                  ],
-                },
                 {
                   name: "Books",
                   links: [
@@ -213,9 +231,8 @@ export default function Navbar() {
                   <Search size={20} />
                 </button>
                 <button className="hover:text-teal-500">
-                  <ShoppingCart size={20} />
+                  < Heart size={20} />
                 </button>
-                
                 <button className="relative p-2 text-gray-700 hover:text-teal-500">
                   <Bell size={22} />
                   <span className="absolute top-0 right-0 inline-block w-2 h-2 bg-red-500 rounded-full"></span>

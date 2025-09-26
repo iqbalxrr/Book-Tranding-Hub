@@ -2,6 +2,7 @@
 "use client";
 import Image from "next/image";
 import { Heart, X, Eye } from "lucide-react";
+import Link from "next/link";
 
 const topRatedBooks = [
   {
@@ -69,9 +70,11 @@ export default function TopRated() {
           <h2 className="text-2xl md:text-3xl font-bold text-gray-800 text-center sm:text-left">
             Top Rating Books
           </h2>
+          <Link href="/books">
           <button className="bg-[#FF7B6B] hover:bg-[#ff6650] text-white px-5 py-2 rounded-full transition text-sm md:text-base">
             View More Books →
           </button>
+          </Link>
         </div>
 
         {/* Grid */}
@@ -137,7 +140,7 @@ export default function TopRated() {
                     </button>
                   </div>
 
-                  <button className=" btn px-4 py-2 rounded-lg  text-sm">
+                  <button className=" custom-btn px-4 py-2 rounded-lg  text-sm">
                     Enchange
                   </button>
                 </div>

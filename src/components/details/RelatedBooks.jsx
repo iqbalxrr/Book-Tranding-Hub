@@ -5,10 +5,9 @@ import "swiper/css";
 import { Autoplay, Pagination, Navigation } from "swiper/modules";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
-import "../styles/variables.css";
-import Link from "next/link";
+import "../../styles/variables.css";
 
-const FeaturedBooks = () => {
+const RelatedBooks = () => {
   const books = [
     {
       id: 1,
@@ -68,15 +67,10 @@ const FeaturedBooks = () => {
   ];
 
   return (
-    <div className=" container mx-auto my-16 px-4">
+    <div className=" my-16 px-4">
       {/* Title and Button */}
-      <div className="flex justify-between items-center mb-8">
-        <h2 className="text-3xl md:text-4xl font-bold">Featured Books</h2>
-        <Link href="/books">
-        <button className="bg-[#FF7B6B] text-white px-6 py-2 rounded-full hover:bg-[#ff6450] transition">
-          View All
-        </button>
-        </Link>
+      <div className=" text-center mb-8">
+        <h2 className="text-3xl md:text-4xl font-bold">Related Books</h2>
       </div>
 
       {/* Swiper Slider */}
@@ -135,4 +129,4 @@ const FeaturedBooks = () => {
   );
 };
 
-export default FeaturedBooks;
+export default RelatedBooks;
