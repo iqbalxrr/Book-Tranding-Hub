@@ -19,7 +19,7 @@ import { useSession, signIn, signOut } from "next-auth/react";
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [showNav, setShowNav] = useState(true);
-  const { data: session } = useSession(); // <-- NextAuth session
+  const { data: session } = useSession(); 
 
   return (
     <header
@@ -91,7 +91,9 @@ export default function Navbar() {
                   {
                     name: "Books",
                     links: [
-                      { href: "/addNewBook", label: "Add New Book" },
+                      ...(session
+                        ? [{ href: "/addNewBook", label: "Add New Book" }]
+                        : []),
                       { href: "/books/latest", label: "Latest" },
                       { href: "/books", label: "Books" },
                       { href: "/allBooks", label: "All Books" },
