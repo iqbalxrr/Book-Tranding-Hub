@@ -4,6 +4,7 @@ import TopRated from "@/components/TopRated";
 import FeaturedBooks from "@/components/FeaturedBooks";
 import LatestNews from "@/components/LatestNews";
 import WhatClientSay from "@/components/WhatClientSay";
+import CtaSection from "@/components/CtaSection";
 
 
 
@@ -14,6 +15,7 @@ export default function Home() {
       <FeaturedBooks />
       <TopCategories />
       <TopRated />
+      <CtaSection />
       <LatestNews />
       <WhatClientSay />
     </div>

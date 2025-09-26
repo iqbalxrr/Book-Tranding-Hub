@@ -20,7 +20,7 @@ export async function GET(req, {params}) {
 
     return NextResponse.json({
       book,
-      relatedBooks
+      relatedBooks,
     });
   } catch (error) {
     return NextResponse.json({ error: "Failed to fetch books" }, { status: 500 });

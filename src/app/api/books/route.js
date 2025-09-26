@@ -8,7 +8,17 @@ export async function GET() {
   try {
     const db = await getDb();
     const books = await db.collection("books").find({}).toArray();
-    return NextResponse.json(books);
+
+    const featuredBooks = await db.collection("books")
+      .find({
+        category: "Kids Toys",
+      })
+      .toArray()
+
+    return NextResponse.json({
+      books,
+      featuredBooks
+    });
   } catch (error) {
     return NextResponse.json({ error: "Failed to fetch books" }, { status: 500 });
   }
