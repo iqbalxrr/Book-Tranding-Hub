@@ -6,6 +6,7 @@ import { Autoplay, Pagination, Navigation } from "swiper/modules";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
 import "../styles/variables.css";
+import Link from "next/link";
 
 const FeaturedBooks = () => {
   const books = [
@@ -71,9 +72,11 @@ const FeaturedBooks = () => {
       {/* Title and Button */}
       <div className="flex justify-between items-center mb-8">
         <h2 className="text-3xl md:text-4xl font-bold">Featured Books</h2>
+        <Link href="/books">
         <button className="bg-[#FF7B6B] text-white px-6 py-2 rounded-full hover:bg-[#ff6450] transition">
           View All
         </button>
+        </Link>
       </div>
 
       {/* Swiper Slider */}
