@@ -3,19 +3,22 @@ import TopCategories from "@/components/TopCategories";
 import TopRated from "@/components/TopRated";
 import FeaturedBooks from "@/components/FeaturedBooks";
 import LatestNews from "@/components/LatestNews";
-import WhatClientSay from "@/components/WhatClientSay";
+import FeaturedAuthors from "@/components/FeaturedAuthors";
+import Testmonial from "@/components/Testmonial";
+
 
 
 
 export default function Home() {
   return (
     <div>
-      <Hero />
-      <FeaturedBooks />
-      <TopCategories />
-      <TopRated />
-      <LatestNews />
-      <WhatClientSay />
+       <Hero />
+       <FeaturedBooks/>
+       <TopCategories />
+      <TopRated/>
+      <Testmonial/>
+      <FeaturedAuthors/> 
+      <LatestNews/>
     </div>
   );
 }

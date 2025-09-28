@@ -2,12 +2,15 @@
 import { useState } from "react";
 import { signIn } from "next-auth/react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { toast, Toaster } from "react-hot-toast";
 
 export default function RegisterPage() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   const handleRegister = async (e) => {
     e.preventDefault();
@@ -23,22 +26,32 @@ export default function RegisterPage() {
       const data = await res.json();
 
       if (res.ok) {
-        alert("✅ Registration successful! Please login.");
-        // চাইলে register এর পর auto login করতে পারো
-        // await signIn("credentials", { email, password, redirect: true, callbackUrl: "/" });
+        toast.success("✅ Registration successful! Redirecting to login...");
+        setTimeout(() => router.push("/login"), 1500);
       } else {
-        alert("❌ " + data.message);
+        toast.error("❌ " + data.message);
       }
     } catch (err) {
       console.error(err);
-      alert("❌ Something went wrong!");
+      toast.error("❌ Something went wrong!");
     } finally {
       setLoading(false);
     }
   };
 
+  const handleGoogleRegister = async () => {
+    const res = await signIn("google", { redirect: false });
+    if (res?.error) {
+      toast.error("Google login failed");
+    } else {
+      toast.success("✅ Login successful!");
+      setTimeout(() => router.push("/"), 1500);
+    }
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
+      <Toaster position="top-right" />
       <div className="bg-white shadow-md rounded-lg p-8 w-full max-w-md">
         <h2 className="text-2xl font-bold text-center mb-6">Create Account</h2>
 
@@ -84,7 +97,7 @@ export default function RegisterPage() {
         </div>
 
         <button
-          onClick={() => signIn("google")}
+          onClick={handleGoogleRegister}
           className="w-full border border-gray-300 py-2 rounded-md hover:bg-gray-100 flex justify-center items-center gap-2"
         >
           <img
