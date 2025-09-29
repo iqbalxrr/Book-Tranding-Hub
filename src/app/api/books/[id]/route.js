@@ -5,7 +5,7 @@ import { NextResponse } from "next/server";
 // GET a single data fatch 
 export async function GET(req, {params}) {
   try {
-    const {id} = params
+    const {id} =await params
     // console.log(id);
     const query = {_id: new ObjectId(id)}
     const db = await getDb();

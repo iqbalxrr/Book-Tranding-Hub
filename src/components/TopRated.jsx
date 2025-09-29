@@ -80,7 +80,9 @@ export default function TopRated() {
         {/* Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 md:gap-8">
           {topRatedBooks.map((book) => (
-           <div className="bg-white rounded-2xl shadow-md hover:shadow-xl transition duration-300 p-6 ">
+           <div 
+           key={book.id}
+           className="bg-white rounded-2xl shadow-md hover:shadow-xl transition duration-300 p-6 ">
            <div
               key={book.id}
               className="flex flex-col sm:flex-row items-center sm:items-start"

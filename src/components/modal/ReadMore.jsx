@@ -16,7 +16,7 @@ export default function BookModal({ book }) {
             {open && (
                 <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
                     <div className="bg-white p-6 rounded-xl max-w-9/12 lg:max-w-xl mx-auto ">
-                        <h2 className="mt-5"><span className="font-bold">Book Name:</span> {book.bookName}</h2>
+                        <h2 className="mt-5"><span className="font-bold">Book Name:</span> {book?.bookName}</h2>
                         <p className="mt-3.5"><span className="font-bold">Read For Free:</span> {book?.readFreeText}</p>
                         <div className="mt-3 flex justify-end">
                             <button
