@@ -15,7 +15,7 @@ export const authOptions = {
   ],
   secret: process.env.NEXTAUTH_SECRET,
   session: {
-    strategy: "jwt", // important for client-side useSession()
+    strategy: "jwt", // client-side useSession() এর জন্য
   },
   callbacks: {
     async jwt({ token, account, profile }) {
@@ -29,6 +29,10 @@ export const authOptions = {
       session.user = token.user;
       session.accessToken = token.accessToken;
       return session;
+    },
+    async redirect({ url, baseUrl }) {
+      // Login এর পরে homepage এ redirect করবে
+      return baseUrl;
     },
   },
 };

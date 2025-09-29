@@ -1,38 +1,51 @@
-
-
 "use client";
 import { signIn } from "next-auth/react";
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { toast, Toaster } from "react-hot-toast";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const router = useRouter();
 
- const handleSubmit = async (e) => {
-  e.preventDefault();
-  try {
-    const res = await fetch("/api/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-    });
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await fetch("/api/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
 
-    const data = await res.json();
-    if (!res.ok) {
-      alert(data.error);
-      return;
+      const data = await res.json();
+      if (!res.ok) {
+        toast.error(data.error || "Login failed");
+        return;
+      }
+
+      toast.success("Login successful! Welcome " + data.user.name);
+      setTimeout(() => router.push("/"), 1500); // redirect after toast
+    } catch (err) {
+      console.error(err);
+      toast.error("Something went wrong");
     }
+  };
 
-    alert("Login successful! Welcome " + data.user.name);
-  } catch (err) {
-    console.error(err);
-    alert("Something went wrong");
-  }
-};
+  const handleGoogleLogin = async () => {
+    const res = await signIn("google", { redirect: false });
+    if (res?.error) {
+      toast.error("Google login failed");
+    } else {
+      toast.success("Login successful!");
+      setTimeout(() => router.push("/"), 1500);
+    }
+  };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 mt-35">
+      <Toaster position="top-right" />
       <div className="bg-white shadow-md rounded-lg p-8 w-full max-w-md">
         <h2 className="text-2xl font-bold text-center mb-6">Login</h2>
 
@@ -71,7 +84,7 @@ export default function LoginPage() {
 
         {/* Google Login */}
         <button
-          onClick={() => signIn("google")}
+          onClick={handleGoogleLogin}
           className="w-full border border-gray-300 py-2 rounded-md hover:bg-gray-100 flex justify-center items-center gap-2"
         >
           <img
