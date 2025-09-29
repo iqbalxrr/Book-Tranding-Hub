@@ -33,7 +33,8 @@ const DetailesPage = async ({ params }) => {
     sku,
     tags,
     totalPages,
-  } = data || {};
+  } = data?.book || {};
+// console.log(data);
 
   return (
     <div className="mt-20 space-y-24">
@@ -90,7 +91,7 @@ const DetailesPage = async ({ params }) => {
             <p className="text-gray-600 mb-6 leading-relaxed">{description}</p>
             <div className=" flex flex-wrap gap-4 mb-6">
               {/* Read More Modal */}
-              <ReadMore book={data} />
+              <ReadMore book={data?.book} />
 
               <button className="rounded-full font-bold py-3 px-8 text-white bg-[#FF7B6B] hover:bg-[#FFEFEF] hover:text-[#FF7B6B] transition duration-500">
                 Exchange
@@ -159,12 +160,14 @@ const DetailesPage = async ({ params }) => {
 
       {/* Tabs */}
       <div className="container mx-auto px-4 lg:px-8">
-        <Tabs book={data} />
+        <Tabs book={data?.book} />
       </div>
 
       {/* Related Books */}
       <div className="container mx-auto ">
-        <RelatedBooks />
+        <RelatedBooks 
+        relatedBooks={data?.relatedBooks}
+        />
       </div>
     </div>
   );
