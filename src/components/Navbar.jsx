@@ -26,6 +26,7 @@ export default function Navbar() {
   const pathName = usePathname()
   const isDashboard = pathName.includes("/dashboard")
 
+  const user = "user"
 
   if (!isDashboard) {
 
@@ -101,7 +102,10 @@ export default function Navbar() {
                         ...(session
                           ? [
                             { href: "/addNewBook", label: "Add New Book" },
-                            { href: "/dashboard/adminPages/settings", label: "DashBoard" }
+                             user === "admin" ? 
+                              { href: "/dashboard/adminPages/settings", label: "Dashboard" }
+                              :
+                               { href: "/dashboard/userPages/exchangeRequest", label: "Dashboard" },
                           ]
                           : []),
                         { href: "/books/latest", label: "Latest" },
