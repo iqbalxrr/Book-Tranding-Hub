@@ -2,7 +2,7 @@ import React from 'react'
 
 export default function page() {
   return (
-    <div>
+    <div className='text-center mt-40 text-4xl font-bold' >
         admin profile page
     </div>
   )
