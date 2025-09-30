@@ -1,3 +1,6 @@
+
+"use server";
+
 import Buttons from "@/components/details/Buttons";
 import RelatedBooks from "@/components/details/RelatedBooks";
 import Tabs from "@/components/details/Tabs";
