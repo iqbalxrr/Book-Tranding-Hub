@@ -22,15 +22,15 @@ const items = [
     url: "/",
     icon: Home,
   },
-    {
-    title: "Exchange Request",
-    url: "/dashboard/userPages/exchangeRequest",
-    icon: Repeat,
-  },
   {
     title: "My Books",
     url: "/dashboard/userPages/myBooks",
     icon: BookOpen,
+  },
+    {
+    title: "Exchange Request",
+    url: "/dashboard/userPages/exchangeRequest",
+    icon: Repeat,
   },
   {
     title: "Chat",
@@ -48,7 +48,7 @@ export default function UserSidebar() {
     <Sidebar>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Book Mate</SidebarGroupLabel>
+          <SidebarGroupLabel className="text-xl font-bold">Book Mate</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {items.map((item) => {

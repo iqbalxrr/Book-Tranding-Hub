@@ -42,7 +42,7 @@ export default function AdminSidebar() {
     <Sidebar>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Book Mate</SidebarGroupLabel>
+          <SidebarGroupLabel className="text-xl font-bold">Book Mate</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {items.map((item) => {
