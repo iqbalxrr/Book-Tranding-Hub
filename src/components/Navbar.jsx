@@ -105,7 +105,7 @@ export default function Navbar() {
                              user === "admin" ? 
                               { href: "/dashboard/adminPages/settings", label: "Dashboard" }
                               :
-                               { href: "/dashboard/userPages/exchangeRequest", label: "Dashboard" },
+                               { href: "/dashboard/userPages/myBooks", label: "Dashboard" },
                           ]
                           : []),
                         { href: "/books/latest", label: "Latest" },
