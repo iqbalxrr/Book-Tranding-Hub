@@ -12,7 +12,7 @@ import {
   SidebarMenuButton, 
   SidebarMenuItem
 } from "../ui/sidebar";
-import { Calendar, Home, Inbox, Search, Settings, User } from "lucide-react"
+import { Home, Repeat, BookOpen, MessageCircle } from "lucide-react"
 import { cn } from "@/lib/utils";
 
 
@@ -23,19 +23,25 @@ const items = [
     icon: Home,
   },
   {
-    title: "Settings",
-    url: "/dashboard/adminPages/settings",
-    icon: Settings,
+    title: "My Books",
+    url: "/dashboard/userPages/myBooks",
+    icon: BookOpen,
+  },
+    {
+    title: "Exchange Request",
+    url: "/dashboard/userPages/exchangeRequest",
+    icon: Repeat,
   },
   {
-    title: "Profile",
-    url: "/dashboard/adminPages/profile",
-    icon: User,
+    title: "Chat",
+    url: "/dashboard/userPages/chat",
+    icon: MessageCircle,
   },
+
 
 ]
 
-export default function AdminSidebar() {
+export default function UserSidebar() {
   const pathname = usePathname();
 
   return (
