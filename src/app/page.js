@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Hero from "@/components/Hero";
 import TopCategories from "@/components/TopCategories";
 import TopRated from "@/components/TopRated";
