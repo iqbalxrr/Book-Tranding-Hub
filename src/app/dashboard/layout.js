@@ -21,7 +21,7 @@ export default function DashboardLayout({ children }) {
         :
         <UserSidebar />
       }
-      <main>
+      <main className="w-full h-screen">
         <SidebarTrigger />
         {children}
       </main>

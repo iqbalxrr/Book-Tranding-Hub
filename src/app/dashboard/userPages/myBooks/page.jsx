@@ -75,11 +75,11 @@ const books = [
 export default function page() {
 
   return (
-    <div className="">
-  <div className="">
-    <div className="pl-0 md:pl-10">
+  
+  <div className="h-screen flex justify-center">
+    <div className="max-w-4xl w-full">
       <Table>
-        <TableCaption className="caption-top text-3xl font-semibold mb-5 text-center">
+        <TableCaption className="caption-top text-3xl font-semibold mb-5">
           My Books
         </TableCaption>
         <TableHeader>
@@ -120,7 +120,7 @@ export default function page() {
       </Table>
     </div>
   </div>
-</div>
+
 
   )
 }
