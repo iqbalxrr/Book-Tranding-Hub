@@ -32,7 +32,7 @@ export default function ChatInbox() {
 
   return (
     <div className="p-6">
-      <h2 className="text-xl font-bold mb-4">Chats</h2>
+      <h2 className="text-xl font-bold mb-4">Chats List </h2>
       {chats.length === 0 && <p>No chats yet</p>}
       <ul className="space-y-3">
         {chats.map((chat) => {

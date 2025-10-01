@@ -85,7 +85,7 @@ export default function Testmonial() {
         {testimonials?.map((t, idx) => (
           <SwiperSlide key={idx}>
             <div
-              className={`card w-full h-72 bg-base-100 shadow-md border border-gray-200 `}
+              className={`card w-full h-72 bg-white shadow-md border border-gray-200 `}
             >
               <div className="card-body p-6 flex flex-col justify-between h-full">
                 {/* Quote */}

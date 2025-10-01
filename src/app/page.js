@@ -5,6 +5,7 @@ import FeaturedBooks from "@/components/FeaturedBooks";
 import LatestNews from "@/components/LatestNews";
 import FeaturedAuthors from "@/components/FeaturedAuthors";
 import Testmonial from "@/components/Testmonial";
+import CtaSection from "@/components/CtaSection";
 
 
 
@@ -16,6 +17,7 @@ export default function Home() {
        <FeaturedBooks/>
        <TopCategories />
       <TopRated/>
+      <CtaSection/>
       <Testmonial/>
       <FeaturedAuthors/> 
       <LatestNews/>
