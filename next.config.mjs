@@ -3,9 +3,9 @@ const nextConfig = {
   images: {
     remotePatterns: [
       {
-        protocol: "https",   // optional but recommended
+        protocol: "https",   
         hostname: "i.ibb.co",
-        pathname: "/**",     // সব path allow করবে
+        pathname: "/**",     
       },
     ],
   },
