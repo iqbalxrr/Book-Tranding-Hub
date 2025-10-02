@@ -12,7 +12,7 @@ export const metadata = {
 
 export default function DashboardLayout({ children }) {
 
-  const user = "user"
+  const user = "admin"
 
   return (
     <SidebarProvider>

@@ -26,7 +26,7 @@ export default function Navbar() {
   const pathName = usePathname()
   const isDashboard = pathName.includes("/dashboard")
 
-  const user = "user"
+  const user = "admin"
 
   if (!isDashboard) {
 

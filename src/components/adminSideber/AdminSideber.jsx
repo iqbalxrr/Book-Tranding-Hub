@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { 
   Sidebar, 
   SidebarContent, 
+  SidebarFooter, 
   SidebarGroup, 
   SidebarGroupContent, 
   SidebarGroupLabel, 
@@ -12,8 +13,9 @@ import {
   SidebarMenuButton, 
   SidebarMenuItem
 } from "../ui/sidebar";
-import { Calendar, Home, Inbox, Search, Settings, User } from "lucide-react"
+import { Book, Calendar, FileClock, Home, Inbox, LogOut, Search, Settings, User } from "lucide-react"
 import { cn } from "@/lib/utils";
+import { Button } from "../ui/button";
 
 
 const items = [
@@ -23,14 +25,24 @@ const items = [
     icon: Home,
   },
   {
-    title: "Settings",
-    url: "/dashboard/adminPages/settings",
-    icon: Settings,
-  },
-  {
     title: "Profile",
     url: "/dashboard/adminPages/profile",
     icon: User,
+  },
+  {
+    title: "All Books",
+    url: "/dashboard/adminPages/allBooks",
+    icon: Book,
+  },
+  {
+    title: "Pending Books",
+    url: "/dashboard/adminPages/pendingBooks",
+    icon: FileClock,
+  },
+  {
+    title: "Settings",
+    url: "/dashboard/adminPages/settings",
+    icon: Settings,
   },
 
 ]
@@ -74,6 +86,13 @@ export default function AdminSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
+      {/* sidebar footer  */}
+      <SidebarFooter>
+        <Button>
+          Log Out <LogOut />
+        </Button>
+      </SidebarFooter>
+      
     </Sidebar>
   );
 }
