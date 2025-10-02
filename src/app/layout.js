@@ -22,6 +22,8 @@ export const metadata = {
 };
 
 export default async function RootLayout({ children }) {
+
+
   return (
     <html lang="en">
       <body
@@ -35,7 +37,6 @@ export default async function RootLayout({ children }) {
           <Navbar />
           {children}
         </AuthProvider>
-
         <Footer />
       </body>
     </html>

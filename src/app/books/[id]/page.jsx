@@ -1,6 +1,7 @@
 import Buttons from "@/components/details/Buttons";
 import RelatedBooks from "@/components/details/RelatedBooks";
 import Tabs from "@/components/details/Tabs";
+import LiveChatButton from "@/components/Live Chat/LiveChatButton";
 import ReadMore from "@/components/modal/ReadMore";
 import baseUrl from "@/hooks/BaseUrl";
 import React from "react";
@@ -8,10 +9,18 @@ import { RiPokerHeartsLine } from "react-icons/ri";
 import { TbArrowsCross } from "react-icons/tb";
 
 const DetailesPage = async ({ params }) => {
+  //  Loded id from params
   const { id } = await params;
+
+  // Example values (replace with DB / session data)
+  const currentUserId = "rahim";
+  const bookOwnerId = "karim";
+  const bookTitle = "The Alchemist";
+
   const axiosInstance = baseUrl();
 
   const { data } = await axiosInstance.get(`/api/books/${id}`);
+
   const {
     authorName,
     bookImage,
@@ -24,7 +33,8 @@ const DetailesPage = async ({ params }) => {
     sku,
     tags,
     totalPages,
-  } = data || {};
+  } = data?.book || {};
+// console.log(data);
 
   return (
     <div className="mt-20 space-y-24">
@@ -79,13 +89,20 @@ const DetailesPage = async ({ params }) => {
               {authorName}
             </h3>
             <p className="text-gray-600 mb-6 leading-relaxed">{description}</p>
-            <div className="flex gap-4">
+            <div className=" flex flex-wrap gap-4 mb-6">
               {/* Read More Modal */}
-              <ReadMore book={data} />
+              <ReadMore book={data?.book} />
 
               <button className="rounded-full font-bold py-3 px-8 text-white bg-[#FF7B6B] hover:bg-[#FFEFEF] hover:text-[#FF7B6B] transition duration-500">
                 Exchange
               </button>
+
+              <LiveChatButton
+                bookId={id}
+                bookOwnerId={bookOwnerId}
+                currentUserId={currentUserId}
+                bookTitle={bookTitle}
+              />
             </div>
           </div>
 
@@ -143,12 +160,14 @@ const DetailesPage = async ({ params }) => {
 
       {/* Tabs */}
       <div className="container mx-auto px-4 lg:px-8">
-        <Tabs book={data} />
+        <Tabs book={data?.book} />
       </div>
 
       {/* Related Books */}
       <div className="container mx-auto ">
-        <RelatedBooks />
+        <RelatedBooks 
+        relatedBooks={data?.relatedBooks}
+        />
       </div>
     </div>
   );

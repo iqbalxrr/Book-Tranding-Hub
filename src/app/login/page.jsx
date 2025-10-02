@@ -44,7 +44,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 mt-35">
       <Toaster position="top-right" />
       <div className="bg-white shadow-md rounded-lg p-8 w-full max-w-md">
         <h2 className="text-2xl font-bold text-center mb-6">Login</h2>
@@ -67,6 +67,25 @@ export default function LoginPage() {
             className="w-full border rounded-md px-3 py-2"
             required
           />
+
+          {/* Forgot Password Link */}
+          <div className="text-right">
+            <Link
+              href="/forgot-password"
+              className="text-sm text-indigo-600 hover:underline"
+            >
+              Forgot password?
+            </Link>
+          </div>
+          <div className="text-right mt-2">
+  <Link
+    href="/phone-login" // তোমার আলাদা OTP page এর route
+    className="text-sm text-indigo-600 hover:underline"
+  >
+    Login with Phone OTP
+  </Link>
+</div>
+
           <button
             type="submit"
             className="w-full bg-indigo-600 text-white py-2 rounded-md hover:bg-indigo-700"

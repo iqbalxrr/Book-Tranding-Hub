@@ -7,71 +7,51 @@ import "swiper/css/pagination";
 import "swiper/css/navigation";
 import "../../styles/variables.css";
 
-const RelatedBooks = () => {
-  const books = [
-    {
-      id: 1,
-      title: "The Hidden Mystery Behind",
-      author: "Hawkins",
-      price: 29.0,
-      image: "/book1.png",
-      reviewer: "Hawkins",
-      rating: "⭐⭐⭐⭐☆",
-    },
-    {
-      id: 2,
-      title: "Qple GPad With Retina Sisplay",
-      author: "Albert",
-      price: 19.0,
-      image: "/book2.png",
-      reviewer: "Albert",
-      rating: "⭐⭐⭐⭐⭐",
-    },
-    {
-      id: 3,
-      title: "Flovely And Unicorn Erna",
-      author: "Alexander",
-      price: 30.0,
-      image: "/book3.png",
-      reviewer: "Alexander",
-      rating: "⭐⭐⭐⭐☆",
-    },
-    {
-      id: 4,
-      title: "Simple Things You To Save BOOK",
-      author: "Wilson",
-      price: 30.0,
-      oldPrice: 39.99,
-      image: "/book4.png",
-      reviewer: "Wilson",
-      rating: "⭐⭐⭐⭐☆",
-    },
-    {
-      id: 5,
-      title: "How Deal With Very Bad BOOK",
-      author: "Esther",
-      price: 39.0,
-      image: "/book3.png",
-      reviewer: "Esther",
-      rating: "⭐⭐⭐⭐☆",
-    },
-    {
-      id: 6,
-      title: "How Deal With Very Bad BOOK",
-      author: "Esther",
-      price: 39.0,
-      image: "/book1.png",
-      reviewer: "Esther",
-      rating: "⭐⭐⭐⭐☆",
-    },
-  ];
 
-  return (
-    <div className=" my-16 px-4">
-      {/* Title and Button */}
-      <div className=" text-center mb-8">
-        <h2 className="text-3xl md:text-4xl font-bold">Related Books</h2>
-      </div>
+const books = [
+    {
+        image: "/book1.png",
+        author: "Author One",
+        title: "Book One",
+        reviewerImg: "/book1.png",
+        reviewer: "Reviewer One",
+        rating: "⭐⭐⭐⭐",
+    },
+    {
+        image: "/book2.png",
+        author: "Author Two",
+        title: "Book Two",
+        reviewerImg: "/book1.png",
+        reviewer: "Reviewer Two",
+        rating: "⭐⭐⭐",
+    },
+    {
+        image: "/book3.png",
+        author: "Author Three",
+        title: "Book Three",
+        reviewerImg: "/book1.png",
+        reviewer: "Reviewer Three",
+        rating: "⭐⭐⭐⭐⭐",
+    },
+    {
+        image: "/book4.png",
+        author: "Author Four",
+        title: "Book Four",
+        reviewerImg: "/book1.png",
+        reviewer: "Reviewer Four",
+        rating: "⭐⭐⭐",
+    },
+];
+
+export default function RelatedBooks() {
+    return (
+        <div className="my-20 px-7 md:px-14 lg:px-20 mx-auto container space-y-12">
+            {/* heading */}
+            <div className="text-center w-full md:w-3/5 mx-auto space-y-3">
+                <h1 className="text-3xl font-bold">Related Books</h1>
+                <p>Interdum et malesuada fames ac ante ipsum primis in faucibus.
+                    Donec at nulla nulla. Duis posuere ex lacus</p>
+            </div>
 
       {/* Swiper Slider */}
       <Swiper
@@ -129,4 +109,3 @@ const RelatedBooks = () => {
   );
 };
 
-export default RelatedBooks;
