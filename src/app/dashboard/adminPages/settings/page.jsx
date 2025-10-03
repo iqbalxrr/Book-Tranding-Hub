@@ -1,87 +1,125 @@
 "use client"
 
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { Switch } from "@/components/ui/switch"
-import { Label } from "@/components/ui/label"
+import { useState } from "react"
 
 export default function SettingsPage() {
+
+  const [activeTab, setActiveTab] = useState("account")
+
   return (
-    <div className="max-w-4xl mx-auto p-6">
-      <h1 className="text-3xl font-bold mb-6">Settings</h1>
+    <div className="max-w-11/12 mx-auto p-6  mt-16 lg:mt-4">
+      <h1 className="text-gray-600 text-2xl font-semibold mb-6">Settings</h1>
 
-      <Tabs defaultValue="account" className="w-full">
-        {/* Tabs Header */}
-        <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="account">Account</TabsTrigger>
-          <TabsTrigger value="appearance">Appearance</TabsTrigger>
-          <TabsTrigger value="notifications">Notifications</TabsTrigger>
-          <TabsTrigger value="security">Security</TabsTrigger>
-        </TabsList>
+      {/* Tabs Header */}
+      <div className="grid grid-cols-4 border-b">
+        {["account", "appearance", "notifications", "security"].map((tab) => (
+          <button
+            key={tab}
+            onClick={() => setActiveTab(tab)}
+            className={`px-4 py-2 text-center capitalize font-medium ${
+              activeTab === tab
+                ? "border-b-2 border-blue-500 text-blue-600"
+                : "text-gray-600 hover:text-blue-500"
+            }`}
+          >
+            {tab}
+          </button>
+        ))}
+      </div>
 
-        {/* Account Tab */}
-        <TabsContent value="account">
-          <div className="space-y-6 mt-6 bg-white shadow rounded-lg p-6">
-            <h2 className="text-xl font-semibold">Account Settings</h2>
-            <div className="space-y-4">
-              <div className="space-y-1.5">
-                <Label>Email</Label>
-                <Input type="email" defaultValue="admin@example.com" />
-              </div>
-              <div className="space-y-1.5">
-                <Label>Username</Label>
-                <Input type="text" defaultValue="AdminUser" />
-              </div>
-              <Button className="mt-3">Save Changes</Button>
-            </div>
-          </div>
-        </TabsContent>
-
-        {/* Appearance Tab */}
-        <TabsContent value="appearance">
-          <div className="space-y-6 mt-6 bg-white shadow rounded-lg p-6">
-            <h2 className="text-xl font-semibold">Appearance</h2>
-            <div className="flex items-center gap-4">
-              <Button variant="outline">Light Mode</Button>
-              <Button variant="outline">Dark Mode</Button>
-              <Button variant="outline">System Default</Button>
-            </div>
-          </div>
-        </TabsContent>
-
-        {/* Notifications Tab */}
-        <TabsContent value="notifications">
-          <div className="space-y-6 mt-6 bg-white shadow rounded-lg p-6">
-            <h2 className="text-xl font-semibold">Notifications</h2>
-            <div className="flex items-center justify-between">
-              <Label htmlFor="emailNotif">Email Notifications</Label>
-              <Switch id="emailNotif" defaultChecked />
-            </div>
-            <div className="flex items-center justify-between">
-              <Label htmlFor="pushNotif">Push Notifications</Label>
-              <Switch id="pushNotif" />
-            </div>
-          </div>
-        </TabsContent>
-
-        {/* Security Tab */}
-        <TabsContent value="security">
-          <div className="space-y-6 mt-6 bg-white shadow rounded-lg p-6">
-            <h2 className="text-xl font-semibold">Security</h2>
+      {/* Account Tab */}
+      {activeTab === "account" && (
+        <div className="space-y-6 mt-6 bg-white shadow rounded-lg p-6">
+          <h2 className="text-xl font-semibold">Account Settings</h2>
+          <div className="space-y-4">
             <div className="space-y-1.5">
-              <Label>Change Password</Label>
-              <Input type="password" placeholder="New Password" />
-              <Input type="password" placeholder="Confirm Password" className="mt-2" />
-              <Button className="mt-3 bg-red-500 hover:bg-red-700">Update Password</Button>
+              <label className="block font-medium">Email</label>
+              <input
+                type="email"
+                defaultValue="admin@example.com"
+                className="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
+              />
             </div>
-            <div className="flex items-center justify-between mt-4">
-              <Label htmlFor="2fa">Enable Two-Factor Authentication</Label>
-              <Switch id="2fa" />
+            <div className="space-y-1.5">
+              <label className="block font-medium">Username</label>
+              <input
+                type="text"
+                defaultValue="AdminUser"
+                className="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
+              />
             </div>
+            <button className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">
+              Save Changes
+            </button>
           </div>
-        </TabsContent>
-      </Tabs>
+        </div>
+      )}
+
+      {/* Appearance Tab */}
+      {activeTab === "appearance" && (
+        <div className="space-y-6 mt-6 bg-white shadow rounded-lg p-6">
+          <h2 className="text-xl font-semibold">Appearance</h2>
+          <div className="flex items-center gap-4">
+            <button className="px-4 py-2 border rounded-md hover:bg-gray-100">
+              Light Mode
+            </button>
+            <button className="px-4 py-2 border rounded-md hover:bg-gray-100">
+              Dark Mode
+            </button>
+            <button className="px-4 py-2 border rounded-md hover:bg-gray-100">
+              System Default
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Notifications Tab */}
+      {activeTab === "notifications" && (
+        <div className="space-y-6 mt-6 bg-white shadow rounded-lg p-6">
+          <h2 className="text-xl font-semibold">Notifications</h2>
+          <div className="flex items-center justify-between">
+            <label htmlFor="emailNotif" className="font-medium">
+              Email Notifications
+            </label>
+            <input type="checkbox" id="emailNotif" defaultChecked className="h-5 w-5" />
+          </div>
+          <div className="flex items-center justify-between">
+            <label htmlFor="pushNotif" className="font-medium">
+              Push Notifications
+            </label>
+            <input type="checkbox" id="pushNotif" className="h-5 w-5" />
+          </div>
+        </div>
+      )}
+
+      {/* Security Tab */}
+      {activeTab === "security" && (
+        <div className="space-y-6 mt-6 bg-white shadow rounded-lg p-6">
+          <h2 className="text-xl font-semibold">Security</h2>
+          <div className="space-y-1.5">
+            <label className="block font-medium">Change Password</label>
+            <input
+              type="password"
+              placeholder="New Password"
+              className="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
+            />
+            <input
+              type="password"
+              placeholder="Confirm Password"
+              className="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none mt-2"
+            />
+            <button className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 mt-3">
+              Update Password
+            </button>
+          </div>
+          <div className="flex items-center justify-between mt-4">
+            <label htmlFor="2fa" className="font-medium">
+              Enable Two-Factor Authentication
+            </label>
+            <input type="checkbox" id="2fa" className="h-5 w-5" />
+          </div>
+        </div>
+      )}
     </div>
   )
 }

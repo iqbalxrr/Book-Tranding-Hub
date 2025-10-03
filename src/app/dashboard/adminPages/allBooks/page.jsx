@@ -1,9 +1,6 @@
-import Paginationn from '@/components/pagination/pagination';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Pencil, Search, Star, Trash2 } from 'lucide-react';
 import React from 'react'
+import Paginationn from '@/components/pagination/pagination';
+import { Star, Trash2 } from 'lucide-react';
 
 
 const books = [
@@ -100,86 +97,78 @@ const books = [
 ];
 
 
-
 export default function page() {
 
     return (
-        <div className='max-w-4xl mx-auto mt-6 space-y-3'>
-
-            <div className='flex justify-between items-center'>
-                <h2
-                    className="text-gray-500 text-3xl font-semibold mb-5"
-                >
-                    My Books
-                </h2>
-                <div className="flex justify-end w-full max-w-md gap-2">
-                    <Input
-                        type="text"
-                        placeholder="Search books..."
-                        className="w-2/3"
-                    />
-                    {/* <Button type="submit" className="bg-blue-500 hover:bg-blue-600">
-                        <Search className="w-4 h-4" />
-                    </Button> */}
-                </div>
-            </div>
-
-            <div className="h-screen flex justify-center">
-                <div className="max-w-4xl w-full">
-                    <Table>
-                        {/* <TableCaption className="caption-top text-3xl font-semibold mb-5">
-                            My Books
-                        </TableCaption> */}
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead>No</TableHead>
-                                <TableHead>Image</TableHead>
-                                <TableHead>Book Name</TableHead>
-                                <TableHead>Author Name</TableHead>
-                                <TableHead>Genre</TableHead>
-                                <TableHead>Publish Year</TableHead>
-                                <TableHead>ISBN</TableHead>
-                                <TableHead>Actions</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {books.map((book, index) => (
-                                <TableRow key={index}>
-                                    <TableCell>{index + 1}.</TableCell>
-                                    <TableCell>
-                                        <img
-                                            src={book?.image}
-                                            alt={book.title}
-                                            className="w-8 h-10 object-cover rounded-md mx-auto"
-                                        />
-                                    </TableCell>
-                                    <TableCell>{book.title}</TableCell>
-                                    <TableCell>{book.author}</TableCell>
-                                    <TableCell>{book.genre}</TableCell>
-                                    <TableCell>{book.publishYear}</TableCell>
-                                    <TableCell>{book.isbn}</TableCell>
-                                    <TableCell className="flex gap-2 justify-center">
-                                        <Button
-                                            title="Mark as featured"
-                                            className="bg-yellow-500 hover:bg-yellow-700 transition duration-700">
-                                            <Star />
-                                        </Button>
-                                        <Button
-                                            title="Delete"
-                                            className="bg-red-500 hover:bg-red-700 transition duration-700">
-                                            <Trash2 />
-                                        </Button>
-                                    </TableCell>
-                                </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                </div>
-            </div>
-
-            <Paginationn />
+       <div className="max-w-11/12 mx-auto space-y-6 p-4  mt-16 lg:mt-4">
+      {/* Header */}
+      <div className="flex justify-between items-center">
+        <h2 className="text-gray-600 text-2xl font-semibold">All Books</h2>
+        <div className="flex justify-end w-full max-w-md ">
+          <input
+            type="text"
+            placeholder="Search books..."
+            className="w-2/3 px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
+          />
         </div>
+      </div>
 
+      {/* Table */}
+      <div className="overflow-x-auto bg-white rounded-lg shadow">
+        <table className="min-w-full text-sm text-left">
+          <thead className="bg-gray-100 border-b">
+            <tr>
+              <th className="px-4 py-2">No</th>
+              <th className="px-4 py-2">Image</th>
+              <th className="px-4 py-2">Book Name</th>
+              <th className="px-4 py-2">Author Name</th>
+              <th className="px-4 py-2">Genre</th>
+              <th className="px-4 py-2">Publish Year</th>
+              <th className="px-4 py-2">ISBN</th>
+              <th className="px-4 py-2 text-center">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {books.map((book, index) => (
+              <tr
+                key={index}
+                className="border-b hover:bg-gray-50 transition"
+              >
+                <td className="px-4 py-2">{index + 1}.</td>
+                <td className="px-4 py-2">
+                  <img
+                    src={book.image}
+                    alt={book.title}
+                    className="w-10 h-12 object-cover rounded-md"
+                  />
+                </td>
+                <td className="px-4 py-2">{book.title}</td>
+                <td className="px-4 py-2">{book.author}</td>
+                <td className="px-4 py-2">{book.genre}</td>
+                <td className="px-4 py-2">{book.publishYear}</td>
+                <td className="px-4 py-2">{book.isbn}</td>
+                <td className="px-4 py-2 flex justify-center gap-2">
+                  <button
+                    title="Mark as featured"
+                    className="p-2 rounded-md bg-yellow-500 text-white hover:bg-yellow-600 transition"
+                  >
+                    <Star className="w-4 h-4" />
+                  </button>
+                  <button
+                    title="Delete"
+                    className="p-2 rounded-md bg-red-500 text-white hover:bg-red-600 transition"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+     <Paginationn />
+    </div>
 
     )
 }

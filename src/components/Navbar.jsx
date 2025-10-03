@@ -26,7 +26,7 @@ export default function Navbar() {
   const pathName = usePathname()
   const isDashboard = pathName.includes("/dashboard")
 
-  const user = "admin"
+  const user = "user"
 
   if (!isDashboard) {
 
@@ -103,7 +103,7 @@ export default function Navbar() {
                           ? [
                             { href: "/addNewBook", label: "Add New Book" },
                              user === "admin" ? 
-                              { href: "/dashboard/adminPages/settings", label: "Dashboard" }
+                              { href: "/dashboard/adminPages/profile", label: "Dashboard" }
                               :
                                { href: "/dashboard/userPages/myBooks", label: "Dashboard" },
                           ]

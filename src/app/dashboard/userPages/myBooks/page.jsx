@@ -1,7 +1,6 @@
-import { Button } from '@/components/ui/button';
-import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Pencil, Trash2 } from 'lucide-react';
+
 import React from 'react'
+import { Pencil, Trash2 } from 'lucide-react';
 
 
 const books = [
@@ -76,50 +75,48 @@ export default function page() {
 
   return (
   
-  <div className="h-screen flex justify-center">
-    <div className="max-w-4xl w-full">
-      <Table>
-        <TableCaption className="caption-top text-3xl font-semibold mb-5">
-          My Books
-        </TableCaption>
-        <TableHeader>
-          <TableRow>
-            <TableHead>No</TableHead>
-            <TableHead>Image</TableHead>
-            <TableHead>Book Name</TableHead>
-            <TableHead>Author Name</TableHead>
-            <TableHead>Reviewer</TableHead>
-            <TableHead>Actions</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {books.map((book, index) => (
-            <TableRow key={index}>
-              <TableCell>{index + 1}.</TableCell>
-              <TableCell>
-                <img
-                  src={book?.image}
-                  alt={book.title}
-                  className="w-8 h-10 object-cover rounded-md mx-auto"
-                />
-              </TableCell>
-              <TableCell>{book.title}</TableCell>
-              <TableCell>{book.author}</TableCell>
-              <TableCell>{book.reviewer}</TableCell>
-              <TableCell className="flex gap-2 justify-center">
-                <Button className="bg-green-500 hover:bg-green-700 transition duration-700">
-                  <Pencil />
-                </Button>
-                <Button className="bg-red-500 hover:bg-red-700 transition duration-700">
-                  <Trash2 />
-                </Button>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </div>
-  </div>
+      <div className="max-w-11/12 mx-auto mt-16 lg:mt-4">
+        <div className="text-gray-600 text-2xl font-semibold mb-6">My Books</div>
+        <div className="overflow-x-auto bg-white rounded-lg shadow">
+          <table className="min-w-full text-sm text-left">
+            <thead className="bg-gray-100 border-b">
+              <tr>
+                <th className="px-4 py-2">No</th>
+                <th className="px-4 py-2">Image</th>
+                <th className="px-4 py-2">Book Name</th>
+                <th className="px-4 py-2">Author Name Author Name</th>
+                <th className="px-4 py-2">Reviewer</th>
+                <th className="px-4 py-2 text-center">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {books.map((book, index) => (
+                <tr key={index} className="border-b hover:bg-gray-50 transition">
+                  <td className="px-4 py-2">{index + 1}.</td>
+                  <td className="px-4 py-2">
+                    <img
+                      src={book.image}
+                      alt={book.title}
+                      className="w-10 h-12 object-cover rounded-md mx-auto"
+                    />
+                  </td>
+                  <td className="px-4 py-2">{book.title}</td>
+                  <td className="px-4 py-2">{book.author}</td>
+                  <td className="px-4 py-2">{book.reviewer}</td>
+                  <td className="px-4 py-2 flex justify-center gap-2">
+                    <button className="p-2 rounded-md bg-green-500 text-white hover:bg-green-700 transition">
+                      <Pencil className="w-4 h-4" />
+                    </button>
+                    <button className="p-2 rounded-md bg-red-500 text-white hover:bg-red-700 transition">
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
 
 
   )
