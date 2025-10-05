@@ -1,45 +1,48 @@
 "use client";
-import { signIn } from "next-auth/react";
+
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast, Toaster } from "react-hot-toast";
+import { auth, googleProvider } from "@/lib/firebase"; // Firebase imports
+import { signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
+  // Email/Password login
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     try {
-      const res = await fetch("/api/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
-
-      const data = await res.json();
-      if (!res.ok) {
-        toast.error(data.error || "Login failed");
-        return;
-      }
-
-      toast.success("Login successful! Welcome " + data.user.name);
-      setTimeout(() => router.push("/"), 1500); // redirect after toast
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+      toast.success("✅ Login successful! Welcome " + (user.displayName || user.email));
+      setTimeout(() => router.push("/"), 1500);
     } catch (err) {
       console.error(err);
-      toast.error("Something went wrong");
+      toast.error("❌ " + err.message);
+    } finally {
+      setLoading(false);
     }
   };
 
+  // Google login
   const handleGoogleLogin = async () => {
-    const res = await signIn("google", { redirect: false });
-    if (res?.error) {
-      toast.error("Google login failed");
-    } else {
-      toast.success("Login successful!");
+    setLoading(true);
+    try {
+      const result = await signInWithPopup(auth, googleProvider);
+      const user = result.user;
+      toast.success("✅ Login successful! Welcome " + (user.displayName || user.email));
       setTimeout(() => router.push("/"), 1500);
+    } catch (err) {
+      console.error(err);
+      toast.error("❌ Google login failed: " + err.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -68,29 +71,24 @@ export default function LoginPage() {
             required
           />
 
-          {/* Forgot Password Link */}
+          {/* Forgot Password */}
           <div className="text-right">
-            <Link
-              href="/forgot-password"
-              className="text-sm text-indigo-600 hover:underline"
-            >
+            <Link href="/forgot-password" className="text-sm text-indigo-600 hover:underline">
               Forgot password?
             </Link>
           </div>
           <div className="text-right mt-2">
-  <Link
-    href="/phone-login" // তোমার আলাদা OTP page এর route
-    className="text-sm text-indigo-600 hover:underline"
-  >
-    Login with Phone OTP
-  </Link>
-</div>
+            <Link href="/phone-login" className="text-sm text-indigo-600 hover:underline">
+              Login with Phone OTP
+            </Link>
+          </div>
 
           <button
             type="submit"
-            className="w-full bg-indigo-600 text-white py-2 rounded-md hover:bg-indigo-700"
+            disabled={loading}
+            className="w-full bg-indigo-600 text-white py-2 rounded-md hover:bg-indigo-700 disabled:opacity-50"
           >
-            Login
+            {loading ? "Logging in..." : "Login"}
           </button>
         </form>
 
@@ -104,7 +102,8 @@ export default function LoginPage() {
         {/* Google Login */}
         <button
           onClick={handleGoogleLogin}
-          className="w-full border border-gray-300 py-2 rounded-md hover:bg-gray-100 flex justify-center items-center gap-2"
+          disabled={loading}
+          className="w-full border border-gray-300 py-2 rounded-md hover:bg-gray-100 flex justify-center items-center gap-2 disabled:opacity-50"
         >
           <img
             src="https://www.svgrepo.com/show/475656/google-color.svg"

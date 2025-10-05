@@ -1,9 +1,11 @@
 "use client";
+
 import { useState } from "react";
-import { signIn } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast, Toaster } from "react-hot-toast";
+import { auth, googleProvider } from "@/lib/firebase";
+import { createUserWithEmailAndPassword, signInWithPopup, updateProfile } from "firebase/auth";
 
 export default function RegisterPage() {
   const [name, setName] = useState("");
@@ -12,40 +14,36 @@ export default function RegisterPage() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
+  // Email & Password Registration
   const handleRegister = async (e) => {
     e.preventDefault();
     setLoading(true);
-
     try {
-      const res = await fetch("/api/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, password }),
-      });
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
 
-      const data = await res.json();
+      // Add display name
+      await updateProfile(user, { displayName: name });
 
-      if (res.ok) {
-        toast.success("✅ Registration successful! Redirecting to login...");
-        setTimeout(() => router.push("/login"), 1500);
-      } else {
-        toast.error("❌ " + data.message);
-      }
+      toast.success("✅ Registration successful! Redirecting...");
+      setTimeout(() => router.push("/login"), 1500);
     } catch (err) {
       console.error(err);
-      toast.error("❌ Something went wrong!");
+      toast.error("❌ " + err.message);
     } finally {
       setLoading(false);
     }
   };
 
+  // Google Sign-In
   const handleGoogleRegister = async () => {
-    const res = await signIn("google", { redirect: false });
-    if (res?.error) {
-      toast.error("Google login failed");
-    } else {
+    try {
+      await signInWithPopup(auth, googleProvider);
       toast.success("✅ Login successful!");
       setTimeout(() => router.push("/"), 1500);
+    } catch (err) {
+      console.error(err);
+      toast.error("❌ Google login failed");
     }
   };
 
@@ -80,7 +78,6 @@ export default function RegisterPage() {
             className="w-full border rounded-md px-3 py-2"
             required
           />
-
           <button
             type="submit"
             disabled={loading}
