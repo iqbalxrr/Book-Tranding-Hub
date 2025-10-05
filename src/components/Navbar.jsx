@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
-import { auth, firebaseSignOut } from "@/lib/firebase";
+import { auth, signOutUser } from "@/lib/firebase";
 import { onAuthStateChanged } from "firebase/auth";
 
 export default function Navbar() {
@@ -66,7 +66,7 @@ export default function Navbar() {
                 <>
                   <span>Welcome, {user.displayName || user.email}</span>
                   <button
-                    onClick={() => firebaseSignOut(auth)}
+                    onClick={() => signOutUser(auth)}
                     className="hover:underline"
                   >
                     Logout
