@@ -11,12 +11,12 @@ export default function SettingsPage() {
       <h1 className="text-gray-600 text-2xl font-semibold mb-6">Settings</h1>
 
       {/* Tabs Header */}
-      <div className="grid grid-cols-4 border-b">
+      <div className="grid grid-cols-4 border-b gap-2">
         {["account", "appearance", "notifications", "security"].map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
-            className={`px-4 py-2 text-center capitalize font-medium ${
+            className={`md:capitalize md:px4 py-2 text-center text-sm md:text-xl  font-medium ${
               activeTab === tab
                 ? "border-b-2 border-blue-500 text-blue-600"
                 : "text-gray-600 hover:text-blue-500"
