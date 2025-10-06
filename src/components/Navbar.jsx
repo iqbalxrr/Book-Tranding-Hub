@@ -63,7 +63,9 @@ export default function Navbar() {
                     Logout
                   </button>
                 </>
-              ) : (
+              ) 
+              : 
+              (
                 <>
                   <Link href="/register" className="hover:underline">
                     Register
