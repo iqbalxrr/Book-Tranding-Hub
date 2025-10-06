@@ -13,26 +13,17 @@ import {
   Instagram,
   Linkedin,
 } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { usePathname } from "next/navigation";
-import { auth, signOutUser } from "@/lib/firebase";
-import { onAuthStateChanged } from "firebase/auth";
+import { useAuth } from "@/context/AuthContext"; // 🔹 AuthContext import
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [showNav, setShowNav] = useState(true);
-  const [user, setUser] = useState(null);
+  const { user, logout } = useAuth(); // 🔹 useAuth hook থেকে user ও logout পেয়েছি
 
   const pathName = usePathname();
   const isDashboard = pathName.includes("/dashboard");
-
-  // Firebase session replacement
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser);
-    });
-    return () => unsubscribe();
-  }, []);
 
   if (!isDashboard) {
     return (
@@ -65,10 +56,7 @@ export default function Navbar() {
               {user ? (
                 <>
                   <span>Welcome, {user.displayName || user.email}</span>
-                  <button
-                    onClick={() => signOutUser(auth)}
-                    className="hover:underline"
-                  >
+                  <button onClick={logout} className="hover:underline">
                     Logout
                   </button>
                 </>
@@ -111,14 +99,8 @@ export default function Navbar() {
                           ? [
                               { href: "/addNewBook", label: "Add New Book" },
                               user.email === "admin@example.com"
-                                ? {
-                                    href: "/dashboard/adminPages/settings",
-                                    label: "Dashboard",
-                                  }
-                                : {
-                                    href: "/dashboard/userPages/myBooks",
-                                    label: "Dashboard",
-                                  },
+                                ? { href: "/dashboard/adminPages/settings", label: "Dashboard" }
+                                : { href: "/dashboard/userPages/myBooks", label: "Dashboard" },
                             ]
                           : []),
                         { href: "/books/latest", label: "Latest" },
