@@ -20,7 +20,7 @@ export default function LoginPage() {
     try {
       await login(email, password); // Firebase Auth
       toast.success("✅ Login successful!");
-      setTimeout(() => router.push("/dashboard"), 1000);
+      setTimeout(() => router.push("/"), 1000);
     } catch (err) {
       console.error(err);
       toast.error("❌ " + err.message);
@@ -35,7 +35,7 @@ export default function LoginPage() {
     try {
       await loginWithGoogle(); // Firebase + MongoDB handled in AuthContext
       toast.success("✅ Google login successful!");
-      setTimeout(() => router.push("/dashboard"), 1000);
+      setTimeout(() => router.push("/"), 1000);
     } catch (err) {
       console.error(err);
       toast.error("❌ Google login failed: " + err.message);

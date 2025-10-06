@@ -100,8 +100,8 @@ export default function Navbar() {
                         ...(user
                           ? [
                               { href: "/addNewBook", label: "Add New Book" },
-                              user.email === "admin@example.com"
-                                ? { href: "/dashboard/adminPages/settings", label: "Dashboard" }
+                              user.email === "admin@gmail.com"
+                                ? { href: "/dashboard/adminPages/profile", label: "Dashboard" }
                                 : { href: "/dashboard/userPages/myBooks", label: "Dashboard" },
                             ]
                           : []),

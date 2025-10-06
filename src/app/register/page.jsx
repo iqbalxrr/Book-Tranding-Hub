@@ -35,7 +35,7 @@ export default function RegisterPage() {
       }
 
       toast.success("✅ Registration successful!");
-      setTimeout(() => router.push("/login"), 1500);
+      setTimeout(() => router.push("/"), 1500);
     } catch (err) {
       toast.error("❌ " + err.message);
     } finally {

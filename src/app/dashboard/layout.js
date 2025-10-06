@@ -1,7 +1,6 @@
-import AdminSidebar from "@/components/adminSideber/AdminSideber";
-import UserSidebar from "@/components/userSideber/UserSideber";
-import Link from "next/link";
-import { Toaster } from "react-hot-toast";
+
+import Sidebars from "@/components/allsidebar/allSidebar";
+
 
 
 export const metadata = {
@@ -11,10 +10,8 @@ export const metadata = {
 
 export default function DashboardLayout({ children }) {
 
-  const user = "admin"
 
   return (
-
 
     <div className="drawer lg:drawer-open">
       <input id="my-drawer-3" type="checkbox" className="drawer-toggle" />
@@ -49,25 +46,10 @@ export default function DashboardLayout({ children }) {
       <div className="drawer-side pt-8 lg:pt-0">
         <label htmlFor="my-drawer-3" aria-label="close sidebar" className="drawer-overlay"></label>
         <ul className="menu bg-base-200 text-base-content h-screen w-3/5 lg:w-80 p-4">
-          {user === "admin" ?
-            <AdminSidebar />
-            :
-            <UserSidebar />
-          }
+           <Sidebars />
         </ul>
       </div>
     </div>
 
-    // <SidebarProvider>
-    //   {user === "admin" ?
-    //     <AdminSidebar />
-    //     :
-    //     <UserSidebar />
-    //   }
-    //   <main className="w-full h-screen">
-    //     <SidebarTrigger />
-    //     {children}
-    //   </main>
-    // </SidebarProvider>
   );
 }
