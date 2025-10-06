@@ -2,7 +2,7 @@
 
 import { initializeApp, getApps } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
-import { getAuth } from "firebase/auth";
+import { getAuth, signOut } from "firebase/auth"; // ✅ signOut import করা লাগবে
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -21,3 +21,8 @@ export const db = getFirestore(app);
 
 // ✅ Auth
 export const auth = getAuth(app);
+
+// ✅ SignOut Helper
+export const signOutUser = () => {
+  return signOut(auth);
+};
