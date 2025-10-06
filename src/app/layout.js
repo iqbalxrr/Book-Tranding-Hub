@@ -29,14 +29,14 @@ export default async function RootLayout({ children }) {
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <AuthProvider>
+        {/* <AuthProvider> */}
           <Toaster
             position="top-right"
             reverseOrder={false}
           />
           <Navbar />
           {children}
-        </AuthProvider>
+        {/* </AuthProvider> */}
         <Footer />
       </body>
     </html>
