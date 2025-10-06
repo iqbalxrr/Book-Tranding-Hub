@@ -19,7 +19,21 @@ export default function RegisterPage() {
     setLoading(true);
 
     try {
-      await register(email, password); // 🔹 Firebase register
+      // 1️⃣ Firebase এ ইউজার তৈরি
+      const user = await register(email, password);
+
+      // 2️⃣ MongoDB তে সংরক্ষণ
+      const res = await fetch("/api/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, password }), // backend এ hash হবে
+      });
+
+      if (!res.ok) {
+        const error = await res.json();
+        throw new Error(error.error || "MongoDB save failed");
+      }
+
       toast.success("✅ Registration successful!");
       setTimeout(() => router.push("/login"), 1500);
     } catch (err) {
@@ -32,7 +46,19 @@ export default function RegisterPage() {
   const handleGoogleRegister = async () => {
     setLoading(true);
     try {
-      await loginWithGoogle(); // 🔹 Firebase Google Sign-In
+      const user = await loginWithGoogle(); // 🔹 Firebase Google Sign-In
+
+      // Google login হলে MongoDB তেও user insert করো
+      await fetch("/api/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: user.displayName,
+          email: user.email,
+          password: "google-auth", // placeholder (hash হবে)
+        }),
+      });
+
       toast.success("✅ Google login successful!");
       setTimeout(() => router.push("/"), 1500);
     } catch (err) {

@@ -4,50 +4,38 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast, Toaster } from "react-hot-toast";
-import { useAuth } from "@/context/AuthContext"; // AuthContext
+import { useAuth } from "@/context/AuthContext"; // ✅ Import AuthContext
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { loginWithGoogle, register } = useAuth(); // loginWithGoogle + register (email/password handled by Firebase)
+  const { login, loginWithGoogle } = useAuth(); // ✅ use login instead of register
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
-  // Email/Password login
+  // 🔹 Email/Password login via Firebase
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     try {
-      // Firebase signInWithEmailAndPassword
-      const res = await fetch("/api/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
-      const data = await res.json();
-
-      if (!res.ok) {
-        toast.error(data.error || "Login failed");
-        return;
-      }
-
-      toast.success("✅ Login successful! Welcome " + data.user.name);
-      setTimeout(() => router.push("/"), 1500);
+      await login(email, password); // Firebase Auth
+      toast.success("✅ Login successful!");
+      setTimeout(() => router.push("/dashboard"), 1000);
     } catch (err) {
       console.error(err);
-      toast.error("❌ Something went wrong");
+      toast.error("❌ " + err.message);
     } finally {
       setLoading(false);
     }
   };
 
-  // Google login
+  // 🔹 Google login via Firebase + MongoDB
   const handleGoogleLogin = async () => {
     setLoading(true);
     try {
-      await loginWithGoogle(); // AuthContext handle করবে Firebase + MongoDB
+      await loginWithGoogle(); // Firebase + MongoDB handled in AuthContext
       toast.success("✅ Google login successful!");
-      setTimeout(() => router.push("/"), 1500);
+      setTimeout(() => router.push("/dashboard"), 1000);
     } catch (err) {
       console.error(err);
       toast.error("❌ Google login failed: " + err.message);
