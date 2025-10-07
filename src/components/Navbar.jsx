@@ -47,8 +47,8 @@ export default function Navbar() {
   useEffect(() => {
     fetchBookmarks(); // initial load
     const interval = setInterval(() => {
-      fetchBookmarks(); // refresh every 10s
-    }, 10000);
+      fetchBookmarks(); // refresh every 1s
+    }, 1000);
     return () => clearInterval(interval);
   }, [user?.email]);
 
