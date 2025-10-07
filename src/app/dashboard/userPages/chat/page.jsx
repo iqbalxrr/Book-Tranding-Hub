@@ -9,7 +9,7 @@ import { useRouter } from "next/navigation";
 // Example current user
 const currentUser = "karim";
 
-export default function ChatInbox() {
+export default function ChatInbox({ children }) {
   const [chats, setChats] = useState([]);
   const router = useRouter();
 
@@ -53,46 +53,67 @@ export default function ChatInbox() {
       </ul>
 
       {/* static chat */}
-     
+
       {/* message */}
       <div className="w-full flex justify-start">
-       <div className="chat chat-start w-full">
-        <div className="chat-image avatar">
-          <div className="w-10 rounded-full">
-            <img
-              alt="Tailwind CSS chat bubble component"
-              src="https://img.daisyui.com/images/profile/demo/kenobee@192.webp"
-            />
-          </div>
+        <div className="chat chat-start w-1/2">
+          <div className="chat-bubble ">You were the Chosen One! You were the Chosen One! You were the Chosen One! You were the Chosen One! You were the Chosen One! You were the Chosen One!</div>
         </div>
-        <div className="chat-header">
-          Obi-Wan Kenobi
-          <time className="text-xs opacity-50">12:45</time>
-        </div>
-        <div className="chat-bubble ">You were the Chosen One!</div>
-        <div className="chat-footer opacity-50">Delivered</div>
-      </div>
       </div>
       {/* my replay */}
       <div className="w-full flex justify-end">
-      <div className="chat chat-end  w-full">
-        <div className="chat-image avatar">
-          <div className="w-10 rounded-full">
-            <img
-              alt="Tailwind CSS chat bubble component"
-              src="https://img.daisyui.com/images/profile/demo/anakeen@192.webp"
-            />
-          </div>
+        <div className="chat chat-end  w-1/2">
+          <div className="chat-bubble">I hate you! I hate you! I hate you! I hate you! I hate you! I hate you! I hate you! I hate you!</div>
         </div>
-        <div className="chat-header">
-          Anakin
-          <time className="text-xs opacity-50">12:46</time>
+      </div>
+        {/* message */}
+      <div className="w-full flex justify-start">
+        <div className="chat chat-start w-1/2">
+          <div className="chat-bubble ">You were the Chosen One! You were the Chosen One! You were the Chosen One!</div>
         </div>
-        <div className="chat-bubble">I hate you!</div>
-        <div className="chat-footer opacity-50">Seen at 12:46</div>
       </div>
+       {/* my replay */}
+      <div className="w-full flex justify-end">
+        <div className="chat chat-end  w-1/2">
+          <div className="chat-bubble">I hate you! You were the Chosen One! You were the Chosen One!</div>
+        </div>
       </div>
-     
+        {/* message */}
+      <div className="w-full flex justify-start">
+        <div className="chat chat-start w-1/2">
+          <div className="chat-bubble ">You were the Chosen One! You were the Chosen One!</div>
+        </div>
+      </div>
+       {/* my replay */}
+      <div className="w-full flex justify-end">
+        <div className="chat chat-end  w-1/2">
+          <div className="chat-bubble">I hate you!</div>
+        </div>
+      </div>
+        {/* message */}
+      <div className="w-full flex justify-start">
+        <div className="chat chat-start w-1/2">
+          <div className="chat-bubble ">You were the Chosen One! You were the Chosen One!</div>
+        </div>
+      </div>
+       {/* my replay */}
+      <div className="w-full flex justify-end">
+        <div className="chat chat-end  w-1/2">
+          <div className="chat-bubble">I hate you!</div>
+        </div>
+      </div>
+        {/* message */}
+      <div className="w-full flex justify-start">
+        <div className="chat chat-start w-1/2">
+          <div className="chat-bubble ">You were the Chosen One!</div>
+        </div>
+      </div>
+       {/* my replay */}
+      <div className="w-full flex justify-end">
+        <div className="chat chat-end  w-1/2">
+          <div className="chat-bubble">I hate you! You were the Chosen One!</div>
+        </div>
+      </div>
 
     </div>
   );
