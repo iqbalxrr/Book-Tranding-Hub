@@ -3,8 +3,8 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { toast, Toaster } from "react-hot-toast";
 import { useAuth } from "@/context/AuthContext"; // 🔹 Import AuthContext
+import Swal from "sweetalert2";
 
 export default function RegisterPage() {
   const [name, setName] = useState("");
@@ -34,10 +34,21 @@ export default function RegisterPage() {
         throw new Error(error.error || "MongoDB save failed");
       }
 
-      toast.success("✅ Registration successful!");
-      setTimeout(() => router.push("/"), 1500);
+      await Swal.fire({
+        title: "Success!",
+        text: "Registration successful!",
+        icon: "success",
+        confirmButtonText: "OK",
+      });
+
+      router.push("/"); // Redirect after alert dismissed
     } catch (err) {
-      toast.error("❌ " + err.message);
+      await Swal.fire({
+        title: "Error!",
+        text: err.message || "Registration failed. Please try again.",
+        icon: "error",
+        confirmButtonText: "OK",
+      });
     } finally {
       setLoading(false);
     }
@@ -59,10 +70,21 @@ export default function RegisterPage() {
         }),
       });
 
-      toast.success("✅ Google login successful!");
-      setTimeout(() => router.push("/"), 1500);
+      await Swal.fire({
+        title: "Success!",
+        text: "Google login successful!",
+        icon: "success",
+        confirmButtonText: "OK",
+      });
+
+      router.push("/"); // Redirect after alert dismissed
     } catch (err) {
-      toast.error("❌ Google login failed: " + err.message);
+      await Swal.fire({
+        title: "Error!",
+        text: err.message || "Google login failed. Please try again.",
+        icon: "error",
+        confirmButtonText: "OK",
+      });
     } finally {
       setLoading(false);
     }
@@ -70,7 +92,6 @@ export default function RegisterPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <Toaster position="top-right" />
       <div className="bg-white shadow-md rounded-lg p-8 w-full max-w-md">
         <h2 className="text-2xl font-bold text-center mb-6">Create Account</h2>
 

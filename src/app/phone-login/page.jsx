@@ -1,9 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { auth } from "@/lib/firebase"; // আপনার firebase instance
-import { RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth"; // <-- এইভাবে আলাদা import
-import { toast, Toaster } from "react-hot-toast";
+import { auth } from "@/lib/firebase"; 
+import { RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth"; 
 import { useRouter } from "next/navigation";
 
 

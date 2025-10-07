@@ -3,13 +3,13 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { toast, Toaster } from "react-hot-toast";
-import { useAuth } from "@/context/AuthContext"; // ✅ Import AuthContext
+import { useAuth } from "@/context/AuthContext"; 
+import Swal from "sweetalert2";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { login, loginWithGoogle } = useAuth(); // ✅ use login instead of register
+  const { login, loginWithGoogle } = useAuth(); 
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
@@ -19,11 +19,24 @@ export default function LoginPage() {
     setLoading(true);
     try {
       await login(email, password); // Firebase Auth
-      toast.success("✅ Login successful!");
-      setTimeout(() => router.push("/"), 1000);
+
+      await Swal.fire({
+        title: "Success!",
+        text: "Login successful!",
+        icon: "success",
+        confirmButtonText: "OK",
+      });
+
+      router.push("/"); // Redirect after alert dismissed
     } catch (err) {
       console.error(err);
-      toast.error("❌ " + err.message);
+
+      await Swal.fire({
+        title: "Error!",
+        text: err.message || "Login failed. Please try again.",
+        icon: "error",
+        confirmButtonText: "OK",
+      });
     } finally {
       setLoading(false);
     }
@@ -33,12 +46,25 @@ export default function LoginPage() {
   const handleGoogleLogin = async () => {
     setLoading(true);
     try {
-      await loginWithGoogle(); // Firebase + MongoDB handled in AuthContext
-      toast.success("✅ Google login successful!");
-      setTimeout(() => router.push("/"), 1000);
+      await loginWithGoogle(); 
+
+      await Swal.fire({
+        title: "Success!",
+        text: "Google login successful!",
+        icon: "success",
+        confirmButtonText: "OK",
+      });
+
+      router.push("/"); // Redirect after alert dismissed
     } catch (err) {
       console.error(err);
-      toast.error("❌ Google login failed: " + err.message);
+
+      await Swal.fire({
+        title: "Error!",
+        text: err.message || "Google login failed. Please try again.",
+        icon: "error",
+        confirmButtonText: "OK",
+      });
     } finally {
       setLoading(false);
     }
@@ -46,7 +72,6 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <Toaster position="top-right" />
       <div className="bg-white shadow-md rounded-lg p-8 w-full max-w-md">
         <h2 className="text-2xl font-bold text-center mb-6">Login</h2>
 
