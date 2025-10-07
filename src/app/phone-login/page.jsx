@@ -69,7 +69,7 @@ export default function PhoneLogin() {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center">
-      {/* <Toaster position="top-right" /> */}
+      {/* <Toaster position="top-right" />  */} //////
       <h2 className="text-2xl font-bold mb-4">Login with Phone OTP</h2>
 
       <input
