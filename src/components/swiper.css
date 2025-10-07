@@ -1,0 +1,5 @@
+/* swiper.css */
+.swiper-slide-active .card {
+  border-top-width: 4px !important;
+  border-top-color: #f97316 !important; /* Tailwind-orange-500 */
+}
