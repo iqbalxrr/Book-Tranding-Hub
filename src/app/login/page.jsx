@@ -18,25 +18,12 @@ export default function LoginPage() {
     e.preventDefault();
     setLoading(true);
     try {
-      await login(email, password); // Firebase Auth
-
-      await Swal.fire({
-        title: "Success!",
-        text: "Login successful!",
-        icon: "success",
-        confirmButtonText: "OK",
-      });
-
-      router.push("/"); // Redirect after alert dismissed
+      await login(email, password);
+      await Swal.fire("Success!", "Login successful!", "success");
+      router.push("/");
     } catch (err) {
       console.error(err);
-
-      await Swal.fire({
-        title: "Error!",
-        text: err.message || "Login failed. Please try again.",
-        icon: "error",
-        confirmButtonText: "OK",
-      });
+      await Swal.fire("Error!", err.message || "Login failed. Please try again.", "error");
     } finally {
       setLoading(false);
     }
@@ -47,24 +34,11 @@ export default function LoginPage() {
     setLoading(true);
     try {
       await loginWithGoogle(); 
-
-      await Swal.fire({
-        title: "Success!",
-        text: "Google login successful!",
-        icon: "success",
-        confirmButtonText: "OK",
-      });
-
-      router.push("/"); // Redirect after alert dismissed
+      await Swal.fire("Success!", "Google login successful!", "success");
+      router.push("/");
     } catch (err) {
       console.error(err);
-
-      await Swal.fire({
-        title: "Error!",
-        text: err.message || "Google login failed. Please try again.",
-        icon: "error",
-        confirmButtonText: "OK",
-      });
+      await Swal.fire("Error!", err.message || "Google login failed. Please try again.", "error");
     } finally {
       setLoading(false);
     }
@@ -111,12 +85,14 @@ export default function LoginPage() {
           </button>
         </form>
 
+        {/* Divider */}
         <div className="my-4 flex items-center">
           <hr className="flex-1 border-gray-300" />
           <span className="px-2 text-gray-500 text-sm">OR</span>
           <hr className="flex-1 border-gray-300" />
         </div>
 
+        {/* 🔹 Google Login */}
         <button
           onClick={handleGoogleLogin}
           disabled={loading}
@@ -129,6 +105,21 @@ export default function LoginPage() {
           />
           Continue with Google
         </button>
+
+        {/* Divider */}
+        <div className="my-4 flex items-center">
+          <hr className="flex-1 border-gray-300" />
+          <span className="px-2 text-gray-500 text-sm">OR</span>
+          <hr className="flex-1 border-gray-300" />
+        </div>
+
+        {/* 🔹 Phone Login Link */}
+        <Link
+          href="/phone-login"
+          className="w-full block text-center bg-green-600 text-white py-2 rounded-md hover:bg-green-700"
+        >
+          Login with Phone (OTP)
+        </Link>
 
         <p className="text-center text-sm text-gray-600 mt-6">
           Don&apos;t have an account?{" "}
