@@ -1,8 +1,16 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { addReview, getReviews } from "@/utils/reviewActions";
-import ReviewCard from "./ReviewCard";
 import { useAuth } from "@/context/AuthContext";
+import ReviewCard from "./ReviewCard";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
 
 const ReviewForm = ({ bookId }) => {
   const { user } = useAuth();
@@ -22,70 +30,123 @@ const ReviewForm = ({ bookId }) => {
     e.preventDefault();
     await addReview(bookId, user, reviewText, rating);
     setReviewText("");
-    const updatedReviews = await getReviews(bookId);
-    setReviews(updatedReviews);
+    const updated = await getReviews(bookId);
+    setReviews(updated);
   };
 
+  // ⭐ Calculate average rating + horizontal bar data
+  const ratingData = useMemo(() => {
+    const counts = [5, 4, 3, 2, 1].map((r) => ({
+      name: `${r}★`,
+      value: reviews.filter((rev) => rev.rating === r).length,
+    }));
+    return counts;
+  }, [reviews]);
+
+  const avgRating =
+    reviews.length > 0
+      ? (
+          reviews.reduce((sum, r) => sum + (r.rating || 0), 0) / reviews.length
+        ).toFixed(1)
+      : 0;
+
   return (
-    <div className="mt-10 bg-white shadow-lg rounded-2xl p-6 border border-[#FFD5CD]">
-      <h3 className="text-2xl font-bold text-center mb-5 text-[#FF7B6B]">
-        ✍️ Write a Review
-      </h3>
+    <div className="mt-10 bg-base-100 rounded-2xl shadow-xl border border-[#FF7B6B]/40 p-8 space-y-8">
+      {/* Header */}
+      <div className="text-center">
+        <h2 className="text-3xl font-bold text-[#FF7B6B]">Ratings & Reviews</h2>
+        <p className="text-gray-500 mt-1">
+          Read what others think and leave your feedback.
+        </p>
+      </div>
 
-      {/* Review Form */}
-      <form
-        onSubmit={handleSubmit}
-        className="flex flex-col gap-4 bg-[#FFF6F5] p-4 rounded-xl border border-[#FFE3DE]"
-      >
-        {/* Review Textarea */}
-        <textarea
-          className="textarea textarea-bordered w-full h-28 text-base bg-white border border-[#FFB7A8] focus:outline-none focus:ring-2 focus:ring-[#FF7B6B] shadow-sm rounded-lg p-3"
-          placeholder="Write your honest thoughts about this book..."
-          value={reviewText}
-          onChange={(e) => setReviewText(e.target.value)}
-          required
-        />
-
-        {/* Rating and Submit Button */}
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
-          <div className="flex items-center gap-2">
-            <label className="font-semibold text-gray-700">Rating:</label>
-            <select
-              className="select select-bordered select-sm md:select-md border border-[#FFB7A8] focus:ring-1 focus:ring-[#FF7B6B]"
-              value={rating}
-              onChange={(e) => setRating(e.target.value)}
-            >
-              {[1, 2, 3, 4, 5].map((r) => (
-                <option key={r} value={r}>
-                  ⭐ {r}
-                </option>
-              ))}
-            </select>
+      {/* ⭐ Rating Overview */}
+      {reviews.length > 0 && (
+        <div className="bg-base-200 p-6 rounded-2xl flex flex-col md:flex-row items-center gap-8">
+          {/* Average Rating */}
+          <div className="text-center md:w-1/4">
+            <h3 className="text-6xl font-bold text-[#FF7B6B]">
+              {avgRating}
+              <span className="text-3xl text-gray-400">/5</span>
+            </h3>
+            <p className="text-gray-600 mt-1">{reviews.length} total reviews</p>
           </div>
 
-          <button
-            type="submit"
-            className="rounded-full font-semibold py-3 px-8 text-white bg-[#FF7B6B] hover:bg-[#FF9F90] hover:shadow-md transition duration-500"
-          >
-            Submit Review
-          </button>
+          {/* Horizontal Bar Chart */}
+          <div className="flex-1 w-full h-48">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart
+                data={ratingData}
+                layout="vertical"
+                margin={{ top: 10, right: 30, left: 10, bottom: 10 }}
+              >
+                <XAxis type="number" hide />
+                <YAxis
+                  type="category"
+                  dataKey="name"
+                  tick={{ fill: "#555" }}
+                  width={40}
+                />
+                <Tooltip />
+                <Bar dataKey="value" fill="#FF7B6B" radius={[0, 8, 8, 0]} barSize={15} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
         </div>
-      </form>
+      )}
 
-      {/* Review List */}
-      <div className="mt-10">
-        <h4 className="text-lg font-semibold mb-4 text-[#FF7B6B]">
-          💬 Customer Reviews:
-        </h4>
+      {/* 📝 Review Form */}
+      <div className="bg-base-200 p-6 rounded-2xl">
+        <h3 className="text-xl font-semibold text-[#FF7B6B] mb-4">
+          Write a Review
+        </h3>
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+          <textarea
+            className="textarea textarea-bordered w-full h-32 text-base focus:outline-none focus:ring-2 focus:ring-[#FF7B6B] focus:border-transparent"
+            placeholder="Share your honest thoughts about this book..."
+            value={reviewText}
+            onChange={(e) => setReviewText(e.target.value)}
+            required
+          />
+
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <label className="font-semibold text-gray-700">Rating:</label>
+              <select
+                className="select select-bordered select-sm md:select-md focus:ring-[#FF7B6B]"
+                value={rating}
+                onChange={(e) => setRating(parseInt(e.target.value))}
+              >
+                {[1, 2, 3, 4, 5].map((r) => (
+                  <option key={r} value={r}>
+                    ⭐ {r}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <button
+              type="submit"
+              className="rounded-full font-bold py-3 px-10 bg-[#FF7B6B] text-white hover:bg-[#ff9586] transition-all duration-300 shadow-md"
+            >
+              Submit Review
+            </button>
+          </div>
+        </form>
+      </div>
+
+      {/* 💬 Review List */}
+      <div className="mt-6">
+        <h4 className="text-xl font-semibold mb-4">Customer Reviews</h4>
         {reviews.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="space-y-4 border-2">
             {reviews.map((r) => (
-              <ReviewCard key={r.id} review={r} />
+              <ReviewCard key={r._id} review={r} />
             ))}
           </div>
         ) : (
-          <p className="text-gray-500 italic text-center">
-            No reviews yet — be the first to share your thoughts!
+          <p className="text-gray-500 italic">
+            No reviews yet. Be the first to share your thoughts!
           </p>
         )}
       </div>

@@ -1,39 +1,13 @@
-import { db } from "@/lib/firebase";
-import {
-  collection,
-  addDoc,
-  getDocs,
-  query,
-  orderBy,
-} from "firebase/firestore";
-
-// 🔹 Add a new review
-export const addReview = async (bookId, user, reviewText, rating) => {
-  try {
-    await addDoc(collection(db, "books", bookId, "reviews"), {
-      userName: user.displayName || "Anonymous",
-      userEmail: user.email,
-      review: reviewText,
-      rating: rating,
-      createdAt: new Date(),
-    });
-    console.log("✅ Review added!");
-  } catch (error) {
-    console.error("❌ Error adding review:", error);
-  }
+export const getReviews = async (bookId) => {
+  const res = await fetch(`/api/reviews?bookId=${bookId}`);
+  return res.json();
 };
 
-// 🔹 Get all reviews for a book
-export const getReviews = async (bookId) => {
-  try {
-    const q = query(
-      collection(db, "books", bookId, "reviews"),
-      orderBy("createdAt", "desc")
-    );
-    const snapshot = await getDocs(q);
-    return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-  } catch (error) {
-    console.error("❌ Error fetching reviews:", error);
-    return [];
-  }
+export const addReview = async (bookId, user, reviewText, rating) => {
+  const res = await fetch(`/api/reviews`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ bookId, user, reviewText, rating }),
+  });
+  return res.json();
 };
