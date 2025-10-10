@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import getDb from "@/lib/db";
 import bcrypt from "bcryptjs";
+import { doc, getDoc, setDoc } from "firebase/firestore";
+import { DB } from "@/lib/firebase";
 
 export async function POST(req) {
   try {
