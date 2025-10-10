@@ -22,9 +22,9 @@ const auth = getAuth(app);
 const googleProvider = new GoogleAuthProvider();
 
 // Firestore
-const db = getFirestore(app);
+const DB = getFirestore(app);
 
 // SignOut helper
 const signOutUser = () => signOut(auth);
 
-export { app, auth, googleProvider, db, signOutUser };
+export { app, auth, googleProvider, DB, signOutUser };
