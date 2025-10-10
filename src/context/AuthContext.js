@@ -41,7 +41,7 @@ const provider = new GoogleAuthProvider();
 const res = await signInWithPopup(auth, provider);
 const user = res.user;
 
-```
+
 // ✅ Save user to MongoDB via API
 try {
   await fetch("/api/saveUser", {
@@ -60,7 +60,7 @@ try {
 
 setUser(user);
 return user;
-```
+
 
 };
 
