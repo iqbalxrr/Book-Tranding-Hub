@@ -70,19 +70,6 @@ export default function LoginPage() {
             className="w-full border rounded-md px-3 py-2"
             required
           />
-
-          {/* Forgot Password */}
-          <div className="text-right">
-            <Link href="/forgot-password" className="text-sm text-indigo-600 hover:underline">
-              Forgot password?
-            </Link>
-          </div>
-          <div className="text-right mt-2">
-            <Link href="/phone-login" className="text-sm text-indigo-600 hover:underline">
-              Login with Phone OTP
-            </Link>
-          </div>
-
           <button
             type="submit"
             disabled={loading}

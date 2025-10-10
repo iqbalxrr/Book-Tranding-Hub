@@ -1,8 +1,10 @@
-// Firebase App (the core Firebase SDK) is always required and must be listed first
-import { initializeApp } from "firebase/app";
-import { getAuth, GoogleAuthProvider, signOut as firebaseSignOut } from "firebase/auth";
+"use client";
 
-// Your web app's Firebase configuration
+import { initializeApp, getApps } from "firebase/app";
+import { getAuth, GoogleAuthProvider, signOut } from "firebase/auth";
+import { getFirestore } from "firebase/firestore";
+
+// Firebase configuration
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
   authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
@@ -12,9 +14,17 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const googleProvider = new GoogleAuthProvider(); // Add Google provider for sign-in
+// Initialize Firebase (only once)
+const app = !getApps().length ? initializeApp(firebaseConfig) : getApps()[0];
 
-export { auth, firebaseSignOut, googleProvider };
+// Auth and Google Provider
+const auth = getAuth(app);
+const googleProvider = new GoogleAuthProvider();
+
+// Firestore
+const db = getFirestore(app);
+
+// SignOut helper
+const signOutUser = () => signOut(auth);
+
+export { app, auth, googleProvider, db, signOutUser };

@@ -3,33 +3,65 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+
 import { toast, Toaster } from "react-hot-toast";
 import { auth, googleProvider } from "@/lib/firebase";
-import { createUserWithEmailAndPassword, signInWithPopup, updateProfile } from "firebase/auth";
+import {
+  createUserWithEmailAndPassword,
+  signInWithPopup,
+  updateProfile,
+} from "firebase/auth";
+
+import { useAuth } from "@/context/AuthContext"; 
+import Swal from "sweetalert2";
 
 export default function RegisterPage() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
+  const { loginWithGoogle } = useAuth(); 
   const router = useRouter();
+  const [loading, setLoading] = useState(false);
 
   // Email & Password Registration
   const handleRegister = async (e) => {
     e.preventDefault();
     setLoading(true);
+
     try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      // Firebase registration
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
       const user = userCredential.user;
 
       // Add display name
       await updateProfile(user, { displayName: name });
 
-      toast.success("✅ Registration successful! Redirecting...");
-      setTimeout(() => router.push("/login"), 1500);
+      // Save user in MongoDB
+      const res = await fetch("/api/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, password }),
+      });
+
+      if (!res.ok) {
+        const error = await res.json();
+        throw new Error(error.error || "MongoDB save failed");
+      }
+
+      toast.success("✅ Registration successful!");
+      router.push("/login");
     } catch (err) {
       console.error(err);
-      toast.error("❌ " + err.message);
+      await Swal.fire({
+        title: "Error!",
+        text: err.message || "Registration failed. Please try again.",
+        icon: "error",
+        confirmButtonText: "OK",
+      });
     } finally {
       setLoading(false);
     }
@@ -37,13 +69,35 @@ export default function RegisterPage() {
 
   // Google Sign-In
   const handleGoogleRegister = async () => {
+    setLoading(true);
     try {
-      await signInWithPopup(auth, googleProvider);
-      toast.success("✅ Login successful!");
-      setTimeout(() => router.push("/"), 1500);
+      // Firebase Google login
+      const result = await signInWithPopup(auth, googleProvider);
+      const user = result.user;
+
+      // Save user in MongoDB
+      await fetch("/api/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: user.displayName,
+          email: user.email,
+          password: "google-auth",
+        }),
+      });
+
+      toast.success("✅ Google login successful!");
+      router.push("/");
     } catch (err) {
       console.error(err);
-      toast.error("❌ Google login failed");
+      await Swal.fire({
+        title: "Error!",
+        text: err.message || "Google login failed. Please try again.",
+        icon: "error",
+        confirmButtonText: "OK",
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -95,7 +149,8 @@ export default function RegisterPage() {
 
         <button
           onClick={handleGoogleRegister}
-          className="w-full border border-gray-300 py-2 rounded-md hover:bg-gray-100 flex justify-center items-center gap-2"
+          disabled={loading}
+          className="w-full border border-gray-300 py-2 rounded-md hover:bg-gray-100 flex justify-center items-center gap-2 disabled:opacity-50"
         >
           <img
             src="https://www.svgrepo.com/show/475656/google-color.svg"

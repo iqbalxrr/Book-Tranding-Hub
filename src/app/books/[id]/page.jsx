@@ -1,3 +1,7 @@
+
+"use server";
+
+import BookMarkButton from "@/components/AllButtons/BookMarkButton";
 import Buttons from "@/components/details/Buttons";
 import RelatedBooks from "@/components/details/RelatedBooks";
 import Tabs from "@/components/details/Tabs";
@@ -108,9 +112,9 @@ const DetailesPage = async ({ params }) => {
 
           {/* Action Buttons */}
           <div className="flex items-center gap-3 my-6 s">
-            <button className="w-12 h-12 flex justify-center items-center text-white hover:text-[#FF7B6B] transition duration-500 rounded-full bg-[#FF7B6B] hover:bg-[#FFEFEF] border hover:border-[#FF7B6B]">
-              <RiPokerHeartsLine />
-            </button>
+            
+            <BookMarkButton book={data?.book} />
+
             <button className="w-12 h-12 flex justify-center items-center hover:text-white transition duration-500 rounded-full border border-gray-300 hover:bg-[#FF7B6B]">
               <TbArrowsCross />
             </button>
@@ -166,7 +170,7 @@ const DetailesPage = async ({ params }) => {
       {/* Related Books */}
       <div className="container mx-auto ">
         <RelatedBooks 
-        relatedBooks={data?.relatedBooks}
+         category={data?.book?.category}
         />
       </div>
     </div>
