@@ -1,7 +1,7 @@
 'use client'
 
-import FirestoreChat from '@/components/Live Chat/FirestoreChat'
 import { useAuth } from '@/context/AuthContext'
+import { useRouter } from 'next/navigation'
 
 import React, { useEffect, useState } from 'react'
 
@@ -9,10 +9,9 @@ export default  function page() {
 
 
   const {user} = useAuth()
-  // console.log(user);
+  const router = useRouter()
 
   const [users, setUsers] = useState()
-  const [selectedUser, setSelectedUser] = useState(null)
 
  useEffect(() => {
   const fetchUsers = async () => {
@@ -26,7 +25,11 @@ export default  function page() {
   };
   fetchUsers();
 }, []);
- console.log(users);
+//  console.log(users);
+
+const goToPrivateChat =(email)=>{
+   router.push(`/dashboard/userPages/chat/${email}`)
+}
 
   return (
     <div className="flex h-screen">
@@ -36,10 +39,8 @@ export default  function page() {
         {users?.map((U) => (
           <div
             key={U?.email}
-            onClick={() => setSelectedUser(U?.email)}
-            className={`p-2 rounded-md mb-1 cursor-pointer hover:bg-gray-200 ${
-              selectedUser === U?.email ? "bg-gray-200" : ""
-            }`}
+            onClick={()=> goToPrivateChat(U?.email)}
+            className={`p-2 rounded-md mb-1 cursor-pointer hover:bg-gray-200 `}
           >
             {
               user?.email === U?.email ? <p className="font-medium text-orange-300">My-Self</p>
@@ -51,12 +52,10 @@ export default  function page() {
       </div>
 
       {/* Right: chat box */}
-      <div className="w-3/4">
-        {selectedUser ? (
-          <FirestoreChat recipientEmail={selectedUser} />
-        ) : (
-          <p className="text-gray-500 text-center mt-10">Select a user to chat</p>
-        )}
+      <div className="w-3/4 flex items-center justify-center">
+
+      <p className="text-gray-500 md:text-3xl lg:text-4xl">Select a user to start chatting</p>
+      
       </div>
     </div>
   )

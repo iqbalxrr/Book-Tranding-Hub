@@ -16,11 +16,6 @@ const DetailesPage = async ({ params }) => {
   //  Loded id from params
   const { id } = await params;
 
-  // Example values (replace with DB / session data)
-  const currentUserId = "rahim";
-  const bookOwnerId = "karim";
-  const bookTitle = "The Alchemist";
-
   const axiosInstance = baseUrl();
 
   const { data } = await axiosInstance.get(`/api/books/${id}`);
@@ -37,8 +32,9 @@ const DetailesPage = async ({ params }) => {
     sku,
     tags,
     totalPages,
+    bookOwner
   } = data?.book || {};
-// console.log(data);
+console.log(data?.book);
 
   return (
     <div className="mt-20 space-y-24">
@@ -102,10 +98,7 @@ const DetailesPage = async ({ params }) => {
               </button>
 
               <LiveChatButton
-                bookId={id}
-                bookOwnerId={bookOwnerId}
-                currentUserId={currentUserId}
-                bookTitle={bookTitle}
+                bookOwner={bookOwner}
               />
             </div>
           </div>
