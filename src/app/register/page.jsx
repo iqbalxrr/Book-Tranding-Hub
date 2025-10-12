@@ -3,30 +3,48 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useAuth } from "@/context/AuthContext"; // 🔹 Import AuthContext
+
+import { toast, Toaster } from "react-hot-toast";
+import { auth, googleProvider } from "@/lib/firebase";
+import {
+  createUserWithEmailAndPassword,
+  signInWithPopup,
+  updateProfile,
+} from "firebase/auth";
+
+import { useAuth } from "@/context/AuthContext"; 
 import Swal from "sweetalert2";
 
 export default function RegisterPage() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { register, loginWithGoogle } = useAuth(); // 🔹 Destructure functions
+  const { loginWithGoogle } = useAuth(); 
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
+  // Email & Password Registration
   const handleRegister = async (e) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      // 1️⃣ Firebase এ ইউজার তৈরি
-      const user = await register(email, password);
+      // Firebase registration
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      const user = userCredential.user;
 
-      // 2️⃣ MongoDB তে সংরক্ষণ
+      // Add display name
+      await updateProfile(user, { displayName: name });
+
+      // Save user in MongoDB
       const res = await fetch("/api/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, password }), // backend এ hash হবে
+        body: JSON.stringify({ name, email, password }),
       });
 
       if (!res.ok) {
@@ -34,15 +52,10 @@ export default function RegisterPage() {
         throw new Error(error.error || "MongoDB save failed");
       }
 
-      await Swal.fire({
-        title: "Success!",
-        text: "Registration successful!",
-        icon: "success",
-        confirmButtonText: "OK",
-      });
-
-      router.push("/"); // Redirect after alert dismissed
+      toast.success("✅ Registration successful!");
+      router.push("/login");
     } catch (err) {
+      console.error(err);
       await Swal.fire({
         title: "Error!",
         text: err.message || "Registration failed. Please try again.",
@@ -54,31 +67,29 @@ export default function RegisterPage() {
     }
   };
 
+  // Google Sign-In
   const handleGoogleRegister = async () => {
     setLoading(true);
     try {
-      const user = await loginWithGoogle(); // 🔹 Firebase Google Sign-In
+      // Firebase Google login
+      const result = await signInWithPopup(auth, googleProvider);
+      const user = result.user;
 
-      // Google login হলে MongoDB তেও user insert করো
+      // Save user in MongoDB
       await fetch("/api/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name: user.displayName,
           email: user.email,
-          password: "google-auth", // placeholder (hash হবে)
+          password: "google-auth",
         }),
       });
 
-      await Swal.fire({
-        title: "Success!",
-        text: "Google login successful!",
-        icon: "success",
-        confirmButtonText: "OK",
-      });
-
-      router.push("/"); // Redirect after alert dismissed
+      toast.success("✅ Google login successful!");
+      router.push("/");
     } catch (err) {
+      console.error(err);
       await Swal.fire({
         title: "Error!",
         text: err.message || "Google login failed. Please try again.",
@@ -92,6 +103,7 @@ export default function RegisterPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
+      <Toaster position="top-right" />
       <div className="bg-white shadow-md rounded-lg p-8 w-full max-w-md">
         <h2 className="text-2xl font-bold text-center mb-6">Create Account</h2>
 
@@ -120,7 +132,6 @@ export default function RegisterPage() {
             className="w-full border rounded-md px-3 py-2"
             required
           />
-
           <button
             type="submit"
             disabled={loading}

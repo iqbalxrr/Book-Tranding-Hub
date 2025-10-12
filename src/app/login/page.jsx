@@ -3,78 +3,56 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useAuth } from "@/context/AuthContext"; 
-import Swal from "sweetalert2";
+import { toast, Toaster } from "react-hot-toast";
+import { auth, googleProvider } from "@/lib/firebase"; // Firebase imports
+import { signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { login, loginWithGoogle } = useAuth(); 
-  const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
-  // 🔹 Email/Password login via Firebase
+  // Email/Password login
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     try {
-      await login(email, password); // Firebase Auth
-
-      await Swal.fire({
-        title: "Success!",
-        text: "Login successful!",
-        icon: "success",
-        confirmButtonText: "OK",
-      });
-
-      router.push("/"); // Redirect after alert dismissed
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+      toast.success("✅ Login successful! Welcome " + (user.displayName || user.email));
+      setTimeout(() => router.push("/"), 1500);
     } catch (err) {
       console.error(err);
-
-      await Swal.fire({
-        title: "Error!",
-        text: err.message || "Login failed. Please try again.",
-        icon: "error",
-        confirmButtonText: "OK",
-      });
+      toast.error("❌ " + err.message);
     } finally {
       setLoading(false);
     }
   };
 
-  // 🔹 Google login via Firebase + MongoDB
+  // Google login
   const handleGoogleLogin = async () => {
     setLoading(true);
     try {
-      await loginWithGoogle(); 
-
-      await Swal.fire({
-        title: "Success!",
-        text: "Google login successful!",
-        icon: "success",
-        confirmButtonText: "OK",
-      });
-
-      router.push("/"); // Redirect after alert dismissed
+      const result = await signInWithPopup(auth, googleProvider);
+      const user = result.user;
+      toast.success("✅ Login successful! Welcome " + (user.displayName || user.email));
+      setTimeout(() => router.push("/"), 1500);
     } catch (err) {
       console.error(err);
-
-      await Swal.fire({
-        title: "Error!",
-        text: err.message || "Google login failed. Please try again.",
-        icon: "error",
-        confirmButtonText: "OK",
-      });
+      toast.error("❌ Google login failed: " + err.message);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 mt-35">
+      <Toaster position="top-right" />
       <div className="bg-white shadow-md rounded-lg p-8 w-full max-w-md">
         <h2 className="text-2xl font-bold text-center mb-6">Login</h2>
 
+        {/* Login Form */}
         <form onSubmit={handleSubmit} className="space-y-4">
           <input
             type="email"
@@ -92,16 +70,6 @@ export default function LoginPage() {
             className="w-full border rounded-md px-3 py-2"
             required
           />
-
-          <div className="text-right">
-            <Link
-              href="/forgot-password"
-              className="text-sm text-indigo-600 hover:underline"
-            >
-              Forgot password?
-            </Link>
-          </div>
-
           <button
             type="submit"
             disabled={loading}
@@ -111,12 +79,14 @@ export default function LoginPage() {
           </button>
         </form>
 
+        {/* Divider */}
         <div className="my-4 flex items-center">
           <hr className="flex-1 border-gray-300" />
           <span className="px-2 text-gray-500 text-sm">OR</span>
           <hr className="flex-1 border-gray-300" />
         </div>
 
+        {/* Google Login */}
         <button
           onClick={handleGoogleLogin}
           disabled={loading}
@@ -130,7 +100,8 @@ export default function LoginPage() {
           Continue with Google
         </button>
 
-        <p className="text-center text-sm text-gray-600 mt-6">
+        {/* Register Redirect */}
+        <p className="mt-6 text-center text-sm text-gray-600">
           Don&apos;t have an account?{" "}
           <Link href="/register" className="text-indigo-600 hover:underline">
             Register here

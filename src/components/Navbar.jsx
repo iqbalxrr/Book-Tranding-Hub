@@ -16,7 +16,7 @@ import {
 import { useState, useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 import toast from "react-hot-toast";
-import { useAuth } from "@/context/AuthContext"; // 🔹 AuthContext import
+import { useAuth } from "@/context/AuthContext"; 
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);

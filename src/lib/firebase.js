@@ -1,9 +1,10 @@
 "use client";
 
 import { initializeApp, getApps } from "firebase/app";
+import { getAuth, GoogleAuthProvider, signOut } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
-import { getAuth, signOut } from "firebase/auth"; // ✅ signOut import করা লাগবে
 
+// Firebase configuration
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
   authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
@@ -13,16 +14,17 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
-// একবারই app initialize করব
+// Initialize Firebase (only once)
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApps()[0];
 
-// ✅ Firestore
-export const db = getFirestore(app);
+// Auth and Google Provider
+const auth = getAuth(app);
+const googleProvider = new GoogleAuthProvider();
 
-// ✅ Auth
-export const auth = getAuth(app);
+// Firestore
+const DB = getFirestore(app);
 
-// ✅ SignOut Helper
-export const signOutUser = () => {
-  return signOut(auth);
-};
+// SignOut helper
+const signOutUser = () => signOut(auth);
+
+export { app, auth, googleProvider, DB, signOutUser };
