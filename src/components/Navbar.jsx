@@ -16,7 +16,7 @@ import {
 import { useState, useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 import toast from "react-hot-toast";
-import { useAuth } from "@/context/AuthContext"; // 🔹 AuthContext import
+import { useAuth } from "@/context/AuthContext"; 
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -48,7 +48,7 @@ export default function Navbar() {
     fetchBookmarks(); // initial load
     const interval = setInterval(() => {
       fetchBookmarks(); // refresh every 1s
-    }, 1000);
+    }, 10000);
     return () => clearInterval(interval);
   }, [user?.email]);
 

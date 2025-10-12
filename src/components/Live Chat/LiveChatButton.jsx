@@ -2,8 +2,9 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { db } from "@/lib/firebase";
+
 import { collection, addDoc, getDocs, query, where, serverTimestamp } from "firebase/firestore";
+import { DB } from "@/lib/firebase";
 
 export default function LiveChatButton({ bookId, bookOwnerId, currentUserId, bookTitle }) {
   const router = useRouter();
@@ -13,7 +14,7 @@ export default function LiveChatButton({ bookId, bookOwnerId, currentUserId, boo
     const chatId = [currentUserId, bookOwnerId].sort().join("_");
 
     // Check if chat already exists
-    const chatRef = collection(db, "chats");
+    const chatRef = collection(DB, "chats");
     const q = query(chatRef, where("chatId", "==", chatId));
     const snapshot = await getDocs(q);
 

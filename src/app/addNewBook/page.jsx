@@ -1,14 +1,17 @@
 "use client";
 import { useForm } from "react-hook-form";
-import baseUrl from "../../hooks/BaseUrl";
 import { useState } from "react";
-import toast from "react-hot-toast";
 import axios from "axios";
+import Swal from "sweetalert2";
+import { useAuth } from "@/context/AuthContext";
 
 export default function AddNewBook() {
-  const axiosInstance = baseUrl();
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const { user } = useAuth();
+
+  // 🔑 ImgBB API Key
+  const imgbbApiKey = "5db559a13c9f779e3398fe1e81c15a64";
 
   const {
     register,
@@ -17,10 +20,7 @@ export default function AddNewBook() {
     formState: { errors },
   } = useForm();
 
-  // ✅ ImgBB API Key (replace with your key)
-  const imgbbApiKey = "5db559a13c9f779e3398fe1e81c15a64";
-
-  // ✅ Upload Image to imgbb
+  // ✅ Upload Image to ImgBB
   const uploadImage = async (imageFile) => {
     const formData = new FormData();
     formData.append("image", imageFile);
@@ -32,19 +32,23 @@ export default function AddNewBook() {
         formData
       );
       setUploading(false);
-      return response.data.data.url; // hosted image url
+      return response.data.data.url;
     } catch (error) {
       setUploading(false);
-      toast.error("Image upload failed!");
+      Swal.fire({
+        icon: "error",
+        title: "Image Upload Failed!",
+        text: "Please try again later.",
+      });
       console.error(error);
       return null;
     }
   };
 
+  // ✅ Handle Form Submit
   const onSubmit = async (data) => {
     setLoading(true);
 
-    // 🔗 Upload Image First
     let imageUrl = "";
     if (data.bookImage[0]) {
       imageUrl = await uploadImage(data.bookImage[0]);
@@ -53,24 +57,43 @@ export default function AddNewBook() {
     const newBook = {
       ...data,
       bookImage: imageUrl,
+      bookOwner: user?.email || "unknown",
+      status: "available",
     };
 
     try {
-      const { data: res } = await axiosInstance.post("/api/books", newBook);
-      if (res?.insertedId) {
-        toast.success("Book Added Successfully!");
+      const res = await axios.post("/api/books", newBook);
+      if (res?.data?.insertedId) {
+        Swal.fire({
+          icon: "success",
+          title: "Book Added Successfully!",
+          showConfirmButton: false,
+          timer: 1500,
+        });
         reset();
+      } else {
+        Swal.fire({
+          icon: "warning",
+          title: "Something went wrong!",
+          text: "Please check your inputs and try again.",
+        });
       }
     } catch (error) {
       console.log(error);
-      toast.error("Something went wrong!");
+      Swal.fire({
+        icon: "error",
+        title: "Submission Failed!",
+        text: "Please try again later.",
+      });
     }
+
     setLoading(false);
   };
 
   return (
-    <div className="min-h-screen   py-30">
-        <section className="bg-[url('/ratting-bg.jpg')] py-22 relative">
+    <div className="min-h-screen py-30">
+      {/* Header Section */}
+      <section className="bg-[url('/ratting-bg.jpg')] py-22 relative">
         <div className="container mx-auto px-6 text-center">
           <h1 className="text-3xl md:text-4xl font-bold text-gray-900">
             Add New Book
@@ -84,8 +107,8 @@ export default function AddNewBook() {
         </div>
       </section>
 
-      <div className="container mx-auto    p-8">
-        
+      {/* Form Section */}
+      <div className="container mx-auto p-8">
         <form
           onSubmit={handleSubmit(onSubmit)}
           className="grid grid-cols-1 md:grid-cols-2 gap-6"
@@ -139,7 +162,7 @@ export default function AddNewBook() {
           <div>
             <label className="block text-sm font-semibold mb-1">Category</label>
             <select
-              {...register("category")}
+              {...register("category", { required: "Category is required" })}
               className="w-full p-3 border border-gray-400 focus:ring-2 focus:ring-blue-500"
             >
               <option value="">Select Category</option>
@@ -150,15 +173,20 @@ export default function AddNewBook() {
             </select>
           </div>
 
-          {/* SKU */}
+          {/* Location */}
           <div>
-            <label className="block text-sm font-semibold mb-1">SKU</label>
+            <label className="block text-sm font-semibold mb-1">Location</label>
             <input
               type="text"
-              {...register("sku")}
+              {...register("location", { required: "Location is required" })}
               className="w-full p-3 border border-gray-400 focus:ring-2 focus:ring-blue-500"
-              placeholder="FTC1020B65D"
+              placeholder="Dhaka, Bangladesh"
             />
+            {errors.location && (
+              <p className="text-red-500 text-xs mt-1">
+                {errors.location.message}
+              </p>
+            )}
           </div>
 
           {/* Tags */}
@@ -251,7 +279,9 @@ export default function AddNewBook() {
               Description
             </label>
             <textarea
-              {...register("description", { required: "Description is required" })}
+              {...register("description", {
+                required: "Description is required",
+              })}
               rows="4"
               className="w-full p-3 border border-gray-400 focus:ring-2 focus:ring-blue-500"
               placeholder="Enter book description..."
@@ -270,11 +300,7 @@ export default function AddNewBook() {
               disabled={loading || uploading}
               className="text-white bg-gradient-to-r from-[#FF7B6B] to-[#FF4E4E] rounded-full font-bold py-3 px-8 shadow-lg hover:opacity-90 transition duration-500"
             >
-              {loading ? (
-                <span className="loading loading-spinner text-white"></span>
-              ) : (
-                "Add Book"
-              )}
+              {loading ? "Adding..." : "Add Book"}
             </button>
           </div>
         </form>
