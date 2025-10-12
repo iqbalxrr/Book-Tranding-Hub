@@ -11,7 +11,6 @@ export async function GET(req) {
       return NextResponse.json({ message: "Book ID required" }, { status: 400 });
     }
 
-    // ✅ Database connect
     const db = await getDb();
     const reviews = await db
       .collection("reviews")
@@ -36,12 +35,13 @@ export async function POST(req) {
       return NextResponse.json({ message: "Missing fields" }, { status: 400 });
     }
 
-    // ✅ Database connect
     const db = await getDb();
 
     const review = {
       bookId,
-      user,
+      userName: user.displayName || user.name || "Anonymous",
+      userEmail: user.email || "No email",
+      userPhoto: user.photoURL || "",
       reviewText,
       rating: parseInt(rating),
       createdAt: new Date(),
