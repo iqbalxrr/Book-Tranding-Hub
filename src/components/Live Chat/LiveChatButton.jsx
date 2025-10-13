@@ -3,47 +3,24 @@
 
 import { useRouter } from "next/navigation";
 
-import { collection, addDoc, getDocs, query, where, serverTimestamp } from "firebase/firestore";
-import { DB } from "@/lib/firebase";
+export default function LiveChatButton({  bookData }) {
+  console.log(bookData);
 
-export default function LiveChatButton({ bookId, bookOwnerId, currentUserId, bookTitle }) {
+  const {bookOwner, _id, bookImage, bookName} = bookData || {}
+
   const router = useRouter();
 
-  const startChat = async () => {
-
-    const chatId = [currentUserId, bookOwnerId].sort().join("_");
-
-    // Check if chat already exists
-    const chatRef = collection(DB, "chats");
-    const q = query(chatRef, where("chatId", "==", chatId));
-    const snapshot = await getDocs(q);
-
-    if (snapshot.empty) {
-      // Create chat room
-      await addDoc(chatRef, {
-        chatId,
-        participants: [currentUserId, bookOwnerId],
-        createdAt: serverTimestamp(),
-        lastMessage: "",
-      });
+  const startChat =()=>{
+    //  Redirect to bookOwner chat page
+    const bookInfo = {
+      path: `/books/${_id}`,
+      image: bookImage,
+      name: bookName
     }
-
-    // Add notification for owner
-    if (currentUserId !== bookOwnerId) {
-      await addDoc(collection(db, "notifications"), {
-        receiverId: bookOwnerId,
-        senderId: currentUserId,
-        type: "chat",
-        chatId,
-        message: `${currentUserId} started a chat with you about "${bookTitle}"`,
-        createdAt: serverTimestamp(),
-        seen: false,
-      });
-    }
-
-    // Redirect to chat page
-    router.push(`/dashboard/chat/${chatId}`);
-  };
+    // const bookPath = `/books/${_id}`
+    localStorage.setItem(`chatWith_${bookOwner}`, JSON.stringify(bookInfo))
+    router.push(`/dashboard/userPages/chat/${bookOwner}`);
+  }
 
   return (
     <button

@@ -9,7 +9,7 @@ import Swal from "sweetalert2";
 const items = [
   { title: "My Books", url: "/dashboard/userPages/myBooks", icon: <FaBookOpen /> },
   { title: "Exchange Request", url: "/dashboard/userPages/exchangeRequest", icon: <FaExchangeAlt /> },
-  { title: "Chat", url: "/dashboard/userPages/chat", icon: <FaCommentDots /> },
+  { title: "Chat List", url: "/dashboard/userPages/chat", icon: <FaCommentDots /> },
 ];
 
 export default function UserSidebar() {
