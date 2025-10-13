@@ -32,9 +32,8 @@ const DetailesPage = async ({ params }) => {
     sku,
     tags,
     totalPages,
-    bookOwner
   } = data?.book || {};
-console.log(data?.book);
+// console.log(data?.book);
 
   return (
     <div className="mt-20 space-y-24">
@@ -98,7 +97,7 @@ console.log(data?.book);
               </button>
 
               <LiveChatButton
-                bookOwner={bookOwner}
+                bookData={data?.book}
               />
             </div>
           </div>
