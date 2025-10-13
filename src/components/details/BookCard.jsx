@@ -37,7 +37,7 @@ const BookCard = ({ book }) => {
         <h2 className="text-xl font-bold text-gray-900 hover:text-[#FF7B6B] transition-colors duration-500 line-clamp-1">
           {book?.bookName}
         </h2>
-        <p className="text-gray-600 text-sm line-clamp-2">
+        <p className="text-gray-600 text-sm line-clamp-1">
           {book?.description}
         </p>
         <div className="text-gray-500 text-sm space-y-1">

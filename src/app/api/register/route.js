@@ -1,15 +1,13 @@
 import { NextResponse } from "next/server";
 import getDb from "@/lib/db";
 import bcrypt from "bcryptjs";
-import { doc, getDoc, setDoc } from "firebase/firestore";
-import { DB } from "@/lib/firebase";
 
 export async function POST(req) {
   try {
-    const { name, email, password } = await req.json();
+    const { name, email, password, image } = await req.json(); // 🔹 image include করলাম
     const db = await getDb();
 
-    // Already user exists?
+    // Check existing user
     const existing = await db.collection("users").findOne({ email });
     if (existing) {
       return NextResponse.json(
@@ -18,7 +16,7 @@ export async function POST(req) {
       );
     }
 
-    // Password hash
+    // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // Insert new user
@@ -26,6 +24,10 @@ export async function POST(req) {
       name,
       email,
       password: hashedPassword,
+      image:
+        image ||
+        "https://i.ibb.co/F5nVJjR/default-avatar.png", // ✅ default profile image
+      provider: "email",
       createdAt: new Date(),
     });
 

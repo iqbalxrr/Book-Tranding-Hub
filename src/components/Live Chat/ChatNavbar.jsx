@@ -54,16 +54,19 @@ const ChatNavbar = ({ recipientData, onBack }) => {
             </div>
 
             {/* middle */}
-
+            
             <div className="flex items-center gap-2">
+                {bookInfo?.image ? <>
                 <p className="text-gray-600">The last chat with {recipientData?.name} <br /> was about <span className="font-bold">{bookInfo?.name}</span></p>
-                {bookInfo?.image && (
                     <img
                         src={bookInfo?.image}
                         alt={bookInfo?.name}
                         className="w-8 h-11 object-cover rounded-md"
                     />
-                )}
+                </>
+                : 
+                <p className="text-gray-600">No conversation with {recipientData?.name} yet</p>
+            }
             </div>
 
             {/* Right side icons */}
