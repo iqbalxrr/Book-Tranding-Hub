@@ -126,7 +126,11 @@ export default function LoginPage() {
           disabled={loading}
           className="w-full border border-gray-300 py-2.5 rounded-md hover:bg-gray-50 flex justify-center items-center gap-2 transition disabled:opacity-50"
         >
-          <FaGoogle className="text-red-500" />
+           <img
+            src="https://www.svgrepo.com/show/475656/google-color.svg"
+            alt="Google"
+            className="w-5 h-5"
+          />
           Continue with Google
         </button>
 
