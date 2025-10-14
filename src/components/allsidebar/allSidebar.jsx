@@ -11,7 +11,7 @@ export default function Sidebars() {
 
 
   return (
-    <div className='h-screen'>
+    <div className='fixed  '>
         {user?.email === "admin@gmail.com" ?
             <AdminSidebar />
             :
