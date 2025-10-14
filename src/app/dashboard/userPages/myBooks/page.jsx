@@ -1,6 +1,8 @@
+'use client'
 
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { Pencil, Trash2 } from 'lucide-react';
+import { useAuth } from '@/context/AuthContext';
 
 
 const books = [
@@ -72,6 +74,19 @@ const books = [
 
 
 export default function page() {
+  const { user } = useAuth()
+  const [books, setBooks] = useState([])
+
+  useEffect(() => {
+    const fetchMyBooks = async () => {
+      const myBooks = await fetch(`/api/books/myBooks?email=${user?.email}`)
+      const data =await myBooks.json()
+      setBooks(data)
+    }
+    fetchMyBooks()
+  }, [user?.email])
+
+  console.log(books);
 
   return (
 
@@ -86,7 +101,7 @@ export default function page() {
               <th className="px-4 py-2">Image</th>
               <th className="px-4 py-2">Book Name</th>
               <th className="px-4 py-2">Author Name</th>
-              <th className="px-4 py-2">Reviewer</th>
+              <th className="px-4 py-2">Category</th>
               <th className="px-4 py-2 text-center">Actions</th>
             </tr>
           </thead>
@@ -96,14 +111,14 @@ export default function page() {
                 <td className="px-4 py-2">{index + 1}.</td>
                 <td className="px-4 py-2">
                   <img
-                    src={book.image}
-                    alt={book.title}
-                    className="w-10 h-12 object-cover rounded-md mx-auto"
+                    src={book?.bookImage}
+                    alt={book?.bookName}
+                    className="w-10 h-12 object-cover rounded-md mx-auto border border-gray-200"
                   />
                 </td>
-                <td className="px-4 py-2">{book.title}</td>
-                <td className="px-4 py-2">{book.author}</td>
-                <td className="px-4 py-2">{book.reviewer}</td>
+                <td className="px-4 py-2">{book?.bookName}</td>
+                <td className="px-4 py-2">{book?.authorName}</td>
+                <td className="px-4 py-2">{book?.category}</td>
                 <td className="px-4 py-2 flex justify-center gap-2">
                   <button className="p-2 rounded-md bg-green-500 text-white hover:bg-green-700 transition">
                     <Pencil className="w-4 h-4" />
@@ -129,8 +144,8 @@ export default function page() {
               {/* Col 1: Image */}
               <div className="flex flex-2 items-center justify-center p-4">
                 <img
-                  src={book.image}
-                  alt={book.title}
+                  src={book?.bookImage}
+                  alt={book?.bookName}
                   className="w-20 h-24 object-cover rounded-md"
                 />
               </div>
@@ -138,9 +153,9 @@ export default function page() {
               {/* Col 2: Information */}
               <div className="p-4 space-y-1 flex-6 text-sm">
                 {/* <p><span className="font-semibold">No:</span> {index + 1}</p> */}
-                <p><span className="font-semibold">Book:</span> {book.title}</p>
-                <p><span className="font-semibold">Author:</span> {book.author}</p>
-                <p><span className="font-semibold">Reviewer:</span> {book.reviewer}</p>
+                <p><span className="font-semibold">Book:</span> {book?.bookName}</p>
+                <p><span className="font-semibold">Author:</span> {book?.authorName}</p>
+                <p><span className="font-semibold">Category:</span> {book?.category}</p>
               </div>
 
               {/* Col 3: Actions (vertical stack) */}

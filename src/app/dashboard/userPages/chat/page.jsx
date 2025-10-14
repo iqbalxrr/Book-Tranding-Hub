@@ -87,8 +87,8 @@ export default function page() {
               className={`p-2 rounded-md mb-1 cursor-pointer bg-white `}
             >
               <div className='flex items-center relative gap-2 '>
-                {U?.photo ?
-                  <img className='w-8 h-8 rounded-full border-1' src={U?.photo} alt="userPhoto" />
+                {U?.image ?
+                  <img className='w-8 h-8 rounded-full border-1' src={U?.image} alt="userPhoto" />
                   :
                   <FaCircleUser size={33} />
                 }
