@@ -33,7 +33,7 @@ export default function Navbar() {
   useEffect(() => {
     if (user) {
       Swal.fire({
-        title: `Welcome ${user.displayName || user.email.split("@")[0]}!`,
+        title: `Welcome ${user.displayName }!`,
         text: "You have successfully logged in.",
         icon: "success",
         timer: 2000,

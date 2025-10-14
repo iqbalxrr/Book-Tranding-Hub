@@ -5,9 +5,13 @@ import Sidebars from "@/components/allsidebar/allSidebar";
 import { FiBell, FiSun } from "react-icons/fi";
 import { FaUserCircle } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
+import { useAuth } from "@/context/AuthContext";
 
 export default function DashboardLayout({ children }) {
   const [isOpen, setIsOpen] = useState(false);
+
+  const {user} = useAuth();
+
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col ">
@@ -39,9 +43,14 @@ export default function DashboardLayout({ children }) {
                 3
               </span>
             </div>
-            <div className="flex items-center gap-2 cursor-pointer hover:bg-gray-100 px-2 py-1 rounded-xl transition">
-              <FaUserCircle className="w-8 h-8 text-gray-600" />
-              <span className="text-gray-700 text-sm font-medium">Profile</span>
+            <div className="flex justify-end items-center gap-2 cursor-pointer hover:bg-gray-100 px-2 py-1 rounded-xl transition">
+
+              <img src={user?.photoURL || "/default-profile.png"} alt="Profile" className="w-9 h-9 rounded-full border border-gray-500 object-cover" />
+
+              <div className="flex flex-col">
+                <span className="text-gray-700 text-sm font-medium">{user?.displayName || "Guest"}</span>
+                <span className="text-gray-500 text-xs hidden md:block">{user?.email || "No Email"}</span>
+              </div>
             </div>
 
             {/* Mobile Sidebar Toggle */}
