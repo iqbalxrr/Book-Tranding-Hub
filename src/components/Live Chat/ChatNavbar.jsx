@@ -5,7 +5,7 @@ import { useRouter, } from "next/navigation";
 import { useEffect, useState } from "react";
 import { FaCircleUser } from "react-icons/fa6";
 
-const ChatNavbar = ({ recipientData, onBack }) => {
+const ChatNavbar = ({ recipientData }) => {
 
     const router = useRouter()
     const [bookInfo, setBookInfo] = useState('')
@@ -31,9 +31,9 @@ const ChatNavbar = ({ recipientData, onBack }) => {
             <div className="hidden md:block">
                 <div className="flex items-center gap-3">
                     {
-                        recipientData?.photo ?
+                        recipientData?.image ?
                             <img
-                                src={recipientData?.photo}
+                                src={recipientData?.image}
                                 alt={recipientData?.name || "user"}
                                 className="w-8 h-8 rounded-full object-cover"
                             />
