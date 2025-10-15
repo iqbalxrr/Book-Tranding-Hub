@@ -45,10 +45,10 @@ export default function Navbar() {
 
   // Helper function to get user photo
   const getUserPhoto = () => {
-    if (!user) return "https://i.ibb.co/F5nVJjR/default-avatar.png";
+    if (!user) return "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQkAJEkJQ1WumU0hXNpXdgBt9NUKc0QDVIiaw&s";
     if (user.photoURL && user.photoURL !== "") return user.photoURL;
     if (user.image && user.image !== "") return user.image;
-    return "https://i.ibb.co/F5nVJjR/default-avatar.png";
+    return "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQkAJEkJQ1WumU0hXNpXdgBt9NUKc0QDVIiaw&s";
   };
 
   // Fetch bookmarks
