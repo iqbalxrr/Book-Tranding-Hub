@@ -5,6 +5,7 @@ import Sidebars from "@/components/allsidebar/allSidebar";
 import { FiBell, FiSun } from "react-icons/fi";
 import { FaUserCircle } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
+import TanStackQueryProvider from "@/providers/TanStackQueryProvider";
 
 export default function DashboardLayout({ children }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -99,7 +100,9 @@ export default function DashboardLayout({ children }) {
 
         {/* ======= CONTENT AREA ======= */}
         <main className="flex-1 overflow-auto bg-gray-50 p-4 lg:p-6 rounded-tl-3xl">
+          <TanStackQueryProvider>
           {children}
+          </TanStackQueryProvider>
         </main>
       </div>
     </div>
