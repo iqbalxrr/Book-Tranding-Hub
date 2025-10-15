@@ -1,12 +1,20 @@
 "use client";
 
 import { useAuth } from "@/context/AuthContext";
-import { FaHome, FaExchangeAlt, FaBookOpen, FaCommentDots, FaSignOutAlt } from "react-icons/fa";
+import {
+  FaHome,
+  FaExchangeAlt,
+  FaBookOpen,
+  FaCommentDots,
+  FaSignOutAlt,
+  FaUserCircle,
+} from "react-icons/fa";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import Swal from "sweetalert2";
 
 const items = [
+  { title: "Profile", url: "/dashboard/userPages/profile", icon: <FaUserCircle /> },
   { title: "My Books", url: "/dashboard/userPages/myBooks", icon: <FaBookOpen /> },
   { title: "Exchange Request", url: "/dashboard/userPages/exchangeRequest", icon: <FaExchangeAlt /> },
   { title: "Chat List", url: "/dashboard/userPages/chat", icon: <FaCommentDots /> },
@@ -39,8 +47,8 @@ export default function UserSidebar() {
   };
 
   return (
-    <div className="flex flex-col min-h-[100vh] lg:min-h-[95vh]  bg-white w-72 border-r border-gray-200 shadow-sm">
-      {/* ===== Sidebar Header (Only on small screens) ===== */}
+    <div className="flex flex-col min-h-[100vh] bg-white w-72 border-r border-gray-200 shadow-sm">
+      {/* ===== Sidebar Header (Small screens) ===== */}
       <div className="lg:hidden p-5 border-b border-gray-200 flex items-center justify-between">
         <h2 className="text-xl font-bold text-blue-600 tracking-wide">Book Mate</h2>
       </div>
@@ -55,9 +63,10 @@ export default function UserSidebar() {
                 <Link
                   href={item.url}
                   className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-200 
-                    ${isActive
-                      ? "bg-blue-100 text-blue-600 font-semibold shadow-inner"
-                      : "text-gray-700 hover:bg-gray-100 hover:text-blue-500"
+                    ${
+                      isActive
+                        ? "bg-blue-100 text-blue-600 font-semibold shadow-inner"
+                        : "text-gray-700 hover:bg-gray-100 hover:text-blue-500"
                     }`}
                 >
                   <span className="text-lg">{item.icon}</span>
