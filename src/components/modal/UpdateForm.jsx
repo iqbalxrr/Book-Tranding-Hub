@@ -72,7 +72,6 @@ export default function UpdateForm({ book, onClose }) {
         updateBookMutation.mutate({ id: book?._id, updatedData: bookData })
     };
 
-    console.log('');
 
     return (
         <div

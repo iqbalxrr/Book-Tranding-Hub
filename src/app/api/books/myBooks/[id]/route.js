@@ -4,7 +4,7 @@ import { NextResponse } from "next/server"
 
 export const PUT = async (req, { params }) => {
   try {
-    const { id } = params
+    const { id } =await params
     const query = { _id: new ObjectId(id) }
 
     // Parse the incoming JSON body
@@ -29,6 +29,37 @@ export const PUT = async (req, { params }) => {
   } catch (error) {
     console.error("Update book error:", error)
     return NextResponse.json(
+      {
+        success: false,
+        message: "Internal Server Error",
+        error: error.message,
+      },
+      { status: 500 }
+    )
+  }
+}
+
+
+export const DELETE = async(req, {params})=>{
+  try{
+     const { id } =await params
+    const query = { _id: new ObjectId(id) }
+
+    // Connect to database and perform update
+    const db = await getDb()
+    const result = await db
+      .collection("books")
+      .deleteOne(query)
+
+    // Send successful response
+    return NextResponse.json({
+      success: true,
+      message: "Book deleted successfully",
+      data: result,
+    })
+
+  }catch(error){
+      return NextResponse.json(
       {
         success: false,
         message: "Internal Server Error",
