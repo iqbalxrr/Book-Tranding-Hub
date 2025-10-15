@@ -104,7 +104,7 @@ export default function Navbar() {
       links: [
         { href: "/addNewBook", label: "Add New Book" },
         {
-          href: user.email === "admin@gmail.com" ? "/dashboard/adminPages/profile" : "/dashboard/userPages/myBooks",
+          href: user.email === "admin@gmail.com" ? "/dashboard/adminPages/profile" : "/dashboard/userPages/home",
           label: "Dashboard",
         },
       ],
