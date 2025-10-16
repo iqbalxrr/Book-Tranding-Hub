@@ -49,7 +49,7 @@ export default function UserSidebar() {
   };
 
   return (
-    <div className="flex flex-col min-h-[100vh] bg-white w-72 border-r border-gray-200 shadow-sm">
+    <div className="flex flex-col min-h-[95vh] bg-white w-72 border-r border-gray-200 shadow-sm">
       {/* ===== Sidebar Header (Small screens) ===== */}
       <div className="lg:hidden p-5 border-b border-gray-200 flex items-center justify-between">
         <h2 className="text-xl font-bold text-blue-600 tracking-wide">Book Mate</h2>
