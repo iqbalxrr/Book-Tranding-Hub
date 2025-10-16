@@ -1,30 +1,19 @@
 "use client";
 
 import { useState } from "react";
-import { auth } from "@/lib/firebase";
-import { RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
-import { toast, Toaster } from "react-hot-toast";
-import Swal from "sweetalert2";
 import { useRouter } from "next/navigation";
+import Swal from "sweetalert2";
+import { Toaster } from "react-hot-toast";
+import { useAuth } from "@/context/AuthContext";
 
 export default function PhoneLoginPage() {
   const [phone, setPhone] = useState("");
   const [otp, setOtp] = useState("");
-  const [confirmationResult, setConfirmationResult] = useState(null);
+  const [otpStep, setOtpStep] = useState(false);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
-  // 🔹 Setup reCAPTCHA
-  const setupRecaptcha = () => {
-    if (typeof window !== "undefined" && !window.recaptchaVerifier) {
-      window.recaptchaVerifier = new RecaptchaVerifier(
-        "recaptcha-container",
-        { size: "invisible" },
-        auth
-      );
-    }
-    return window.recaptchaVerifier;
-  };
+  const { sendOtp, verifyOtp } = useAuth();
 
   // 🔹 Send OTP
   const handleSendOtp = async () => {
@@ -35,9 +24,8 @@ export default function PhoneLoginPage() {
 
     setLoading(true);
     try {
-      const appVerifier = setupRecaptcha();
-      const result = await signInWithPhoneNumber(auth, phone, appVerifier);
-      setConfirmationResult(result);
+      await sendOtp(phone);
+      setOtpStep(true);
       Swal.fire("OTP Sent!", "Check your phone for the verification code.", "success");
     } catch (err) {
       console.error(err);
@@ -54,27 +42,9 @@ export default function PhoneLoginPage() {
       return;
     }
 
-    if (!confirmationResult) {
-      Swal.fire("Error!", "Please request OTP first.", "error");
-      return;
-    }
-
     setLoading(true);
     try {
-      const userCredential = await confirmationResult.confirm(otp);
-
-      // Save user to MongoDB
-      await fetch("/api/users/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          uid: userCredential.user.uid,
-          name: userCredential.user.phoneNumber,
-          email: "",
-          provider: "phone",
-        }),
-      });
-
+      await verifyOtp(otp);
       Swal.fire("Success!", "Phone verified and logged in!", "success");
       router.push("/"); // redirect after login
     } catch (err) {
@@ -91,7 +61,7 @@ export default function PhoneLoginPage() {
       <div className="bg-white shadow-md rounded-lg p-8 w-full max-w-md">
         <h2 className="text-2xl font-bold text-center mb-6">Phone OTP Login</h2>
 
-        {!confirmationResult ? (
+        {!otpStep ? (
           <>
             <input
               type="tel"

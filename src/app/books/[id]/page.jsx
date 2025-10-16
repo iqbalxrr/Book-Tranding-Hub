@@ -1,6 +1,7 @@
 "use server";
 
 import BookMarkButton from "@/components/AllButtons/BookMarkButton";
+import ExchangedButton from "@/components/AllButtons/ExchangedButton";
 import Buttons from "@/components/details/Buttons";
 import RelatedBooks from "@/components/details/RelatedBooks";
 import Tabs from "@/components/details/Tabs";
@@ -15,11 +16,6 @@ import { TbArrowsCross } from "react-icons/tb";
 const DetailesPage = async ({ params }) => {
   //  Loded id from params
   const { id } = await params;
-
-  // Example values (replace with DB / session data)
-  const currentUserId = "rahim";
-  const bookOwnerId = "karim";
-  const bookTitle = "The Alchemist";
 
   const axiosInstance = baseUrl();
 
@@ -39,7 +35,7 @@ const DetailesPage = async ({ params }) => {
     tags,
     totalPages,
   } = data?.book || {};
-  // console.log(data);
+// console.log(data?.book);
 
   return (
     <div className="mt-20 space-y-24">
@@ -90,15 +86,10 @@ const DetailesPage = async ({ params }) => {
               {/* Read More Modal */}
               <ReadMore book={data?.book} />
 
-              <button className="rounded-full font-bold py-3 px-8 text-white bg-[#FF7B6B] hover:bg-[#FFEFEF] hover:text-[#FF7B6B] transition duration-500">
-                Exchange
-              </button>
+              <ExchangedButton bookId={data?.book?._id} status={data?.book?.status} />
 
               <LiveChatButton
-                bookId={id}
-                bookOwnerId={bookOwnerId}
-                currentUserId={currentUserId}
-                bookTitle={bookTitle}
+                bookData={data?.book}
               />
             </div>
           </div>

@@ -31,11 +31,7 @@ export default function AdminSidebar() {
   const pathname = usePathname();
 
   return (
-    <div className="flex flex-col justify-between h-screen w-64 border-r border-gray-200">
-      {/* Sidebar Header */}
-      <div className="p-4 border-b border-gray-200">
-        <h2 className="text-2xl font-bold text-blue-600">Book Mate</h2>
-      </div>
+    <div className="flex flex-col justify-between min-h-[95vh] w-72 border-r border-gray-200">
 
       {/* Sidebar Menu */}
       <div className="flex-1 p-4">
