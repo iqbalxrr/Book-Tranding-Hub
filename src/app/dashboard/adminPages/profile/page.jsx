@@ -1,69 +1,111 @@
 "use client";
 
-import React from "react";
-import { MdEdit } from "react-icons/md";
+import { useEffect, useState } from "react";
+import Image from "next/image";
+import { useAuth } from "@/context/AuthContext";
+import { Loader2, Mail, CalendarDays, User } from "lucide-react";
 
 export default function ProfilePage() {
+  const { user } = useAuth();
+  const [userData, setUserData] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  // Fetch logged-in user's data
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const res = await fetch("/api/users/me");
+        if (!res.ok) throw new Error("Failed to load user data");
+        const data = await res.json();
+        setUserData(data);
+      } catch (error) {
+        console.error("❌ Error fetching user data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchUser();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen bg-gray-50">
+        <Loader2 className="animate-spin text-teal-500 w-10 h-10" />
+      </div>
+    );
+  }
+
+  if (!userData) {
+    return (
+      <div className="flex justify-center items-center min-h-screen bg-gray-50">
+        <p className="text-gray-500">No user data found.</p>
+      </div>
+    );
+  }
+
   return (
-    <div className="max-w-6xl mx-auto p-6 mt-16 lg:mt-4">
-      <h1 className="text-gray-600 text-2xl font-semibold mb-6">My Profile</h1>
-
-      <div className="bg-white shadow rounded-lg p-6 grid grid-cols-1 md:grid-cols-3 gap-6">
-        {/* Left Section: Avatar + Basic Info */}
-        <div className=" flex flex-col items-center md:items-start md:col-span-1 border-r pr-4">
-
-     <div className="relative">
-
-            <img
-              src="https://img.daisyui.com/images/profile/demo/kenobee@192.webp"
-              alt="Profile"
-              className=" w-28 h-28 rounded-full object-cover border mb-4"
-            />
-          
-            <button 
-            className="absolute bottom-5 right-1 p-1 bg-white rounded-full border hover:bg-gray-100 ">
-              <MdEdit />
-            </button>
-     </div>
-
-          <h2 className="text-xl font-semibold">Admin User</h2>
-          <p className="text-gray-500">Dhaka, Bangladesh</p>
+    <div className="flex justify-center items-center min-h-screen bg-gray-50 px-4 py-10">
+      <div className="bg-white shadow-lg rounded-2xl p-8 w-full max-w-md text-center border border-gray-100">
+        {/* Profile Image */}
+        <div className="flex justify-center">
+          <Image
+            src={
+              userData.image ||
+              user?.photoURL ||
+              "https://i.ibb.co/F5nVJjR/default-avatar.png"
+            }
+            alt={userData.name}
+            width={120}
+            height={120}
+            className="rounded-full border-4 border-teal-500 object-cover"
+          />
         </div>
 
-        {/* Right Section: Other Info */}
-        <div className="md:col-span-2 space-y-6">
+        {/* Name & Email */}
+        <h2 className="mt-4 text-2xl font-semibold text-gray-800 flex justify-center items-center gap-2">
+          <User className="w-5 h-5 text-teal-500" />
+          {userData.name}
+        </h2>
+        <p className="text-gray-500 mt-2 flex justify-center items-center gap-2">
+          <Mail className="w-4 h-4 text-teal-400" />
+          {userData.email}
+        </p>
+
+        {/* Created Date */}
+        <p className="mt-4 text-sm text-gray-400 flex justify-center items-center gap-2">
+          <CalendarDays className="w-4 h-4 text-teal-400" />
+          Joined on{" "}
+          {new Date(userData.createdAt).toLocaleDateString("en-GB", {
+            day: "2-digit",
+            month: "short",
+            year: "numeric",
+          })}
+        </p>
+
+        {/* Divider */}
+        <div className="my-6 border-t border-gray-200"></div>
+
+        {/* Profile Stats (optional / demo) */}
+        <div className="grid grid-cols-3 gap-4 text-sm">
           <div>
-            <h3 className="text-sm font-medium text-gray-500">Username</h3>
-            <p className="text-lg font-semibold text-gray-800">admin123</p>
+            <p className="text-gray-500">Books</p>
+            <p className="font-semibold text-gray-800">12</p>
           </div>
-
           <div>
-            <h3 className="text-sm font-medium text-gray-500">Bio</h3>
-            <p className="text-gray-700">Admin of BookTradeHub</p>
+            <p className="text-gray-500">Requests</p>
+            <p className="font-semibold text-gray-800">5</p>
           </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <h3 className="text-sm font-medium text-gray-500">Phone Number</h3>
-              <p className="text-gray-700">+880123456789</p>
-            </div>
-            <div>
-              <h3 className="text-sm font-medium text-gray-500">Website / Social Link</h3>
-              <p className="text-blue-600 hover:underline cursor-pointer">
-                https://mywebsite.com
-              </p>
-            </div>
-          </div>
-
-          <div className="pt-4">
-            <button className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
-              Update Profile
-            </button>
+          <div>
+            <p className="text-gray-500">Chats</p>
+            <p className="font-semibold text-gray-800">8</p>
           </div>
         </div>
 
+        {/* Edit Profile Button */}
+        <button className="mt-8 bg-teal-500 hover:bg-teal-600 text-white px-6 py-2 rounded-lg font-medium transition-all">
+          Edit Profile
+        </button>
       </div>
     </div>
-
   );
 }

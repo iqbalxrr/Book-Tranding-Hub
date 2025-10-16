@@ -1,188 +1,282 @@
-"use client"
+"use client";
 
-import React from 'react'
+import { useAuth } from "@/context/AuthContext";
+import React, { useEffect, useState } from "react";
+import Swal from "sweetalert2";
+import { Loader2, BookOpenCheck, RotateCcw, User, Mail, Book } from "lucide-react"; // Import new icons
 
-const books = [
-  {
-    image: "/book1.png",
-    author: "Harper Lee",
-    title: "To Kill a Mockingbird",
-    exchangerName: "Alice Johnson",
-    exchangerEmail: "alice.johnson@example.com",
-  },
-  {
-    image: "/book2.png",
-    author: "George Orwell",
-    title: "1984",
-    exchangerName: "David Smith",
-    exchangerEmail: "david.smith@example.com",
-  },
-  {
-    image: "/book3.png",
-    author: "J.K. Rowling",
-    title: "Harry Potter and the Sorcerer’s Stone",
-    exchangerName: "Sophia Brown",
-    exchangerEmail: "sophia.brown@example.com",
-  },
-  {
-    image: "/book4.png",
-    author: "F. Scott Fitzgerald",
-    title: "The Great Gatsby",
-    exchangerName: "James Wilson",
-    exchangerEmail: "james.wilson@example.com",
-  },
-  {
-    image: "/book4.png",
-    author: "F. Scott Fitzgerald",
-    title: "The Great Gatsby",
-    exchangerName: "James Wilson",
-    exchangerEmail: "james.wilson@example.com",
-  },
-  {
-    image: "/book4.png",
-    author: "F. Scott Fitzgerald",
-    title: "The Great Gatsby",
-    exchangerName: "James Wilson",
-    exchangerEmail: "james.wilson@example.com",
-  },
-  {
-    image: "/book4.png",
-    author: "F. Scott Fitzgerald",
-    title: "The Great Gatsby",
-    exchangerName: "James Wilson",
-    exchangerEmail: "james.wilson@example.com",
-  },
-  {
-    image: "/book4.png",
-    author: "F. Scott Fitzgerald",
-    title: "The Great Gatsby",
-    exchangerName: "James Wilson",
-    exchangerEmail: "james.wilson@example.com",
-  },
-  {
-    image: "/book4.png",
-    author: "F. Scott Fitzgerald",
-    title: "The Great Gatsby",
-    exchangerName: "James Wilson",
-    exchangerEmail: "james.wilson@example.com",
-  },
-]
+// Helper function for status badge styling
+const getStatusBadge = (status) => {
+  const baseStyle = "px-3 py-1 text-xs font-medium rounded-full";
+  switch (status) {
+    case "exchanged":
+      return (
+        <span className={`${baseStyle} bg-green-100 text-green-700`}>
+          <BookOpenCheck className="inline w-3 h-3 mr-1" /> Accepted
+        </span>
+      );
+    case "requested":
+    default:
+      return (
+        <span className={`${baseStyle} bg-blue-100 text-blue-700`}>
+          <RotateCcw className="inline w-3 h-3 mr-1" /> Pending
+        </span>
+      );
+  }
+};
 
 export default function ExchangeRequests() {
+  const [books, setBooks] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const { user } = useAuth();
 
-  const handleAccept = (email) => {
-    console.log("Accepted:", email)
-  }
+  // Load books from API
+  const fetchBooks = async () => {
+    if (!user?.email) return;
+    try {
+      const res = await fetch(`/api/exchange/dashboardApi?bookOwner=${user?.email}`);
+      const data = await res.json();
+      if (data?.success) {
+        setBooks(data?.data || []);
+      } else {
+        console.error("Error:", data?.error);
+      }
+    } catch (error) {
+      console.error("Fetch error:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  const handleReject = (email) => {
-    console.log("Rejected:", email)
+  useEffect(() => {
+    fetchBooks();
+  }, [user?.email]);
+
+  // Update status
+  const updateStatus = async (bookId, newStatus) => {
+    try {
+      const res = await fetch("/api/exchange/dashboardApi", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ bookId, newStatus }),
+      });
+      return await res.json();
+    } catch (error) {
+      console.error(error);
+      Swal.fire("Error", "Server error occurred!", "error");
+    }
+  };
+
+  // Accept Handler
+  const handleAccept = async (bookId) => {
+    const result = await updateStatus(bookId, "exchanged");
+
+    if (result?.success) {
+      // Update UI instantly
+      setBooks((prev) =>
+        prev.map((book) =>
+          book._id === bookId ? { ...book, status: "exchanged" } : book
+        )
+      );
+
+      Swal.fire({
+        icon: "success",
+        title: "Exchange Accepted! 🎉",
+        text: "The exchange is now marked as completed.",
+        timer: 2000,
+        showConfirmButton: false,
+      });
+    } else {
+      Swal.fire("Failed!", result?.error || "Something went wrong.", "error");
+    }
+  };
+
+  // Reject Handler
+  const handleReject = async (bookId) => {
+    const confirm = await Swal.fire({
+      title: "Confirm Rejection?",
+      text: "This will set the book back to 'available' and remove the request.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#EF4444", // Red 500
+      cancelButtonColor: "#3B82F6", // Blue 500
+      confirmButtonText: "Yes, Reject",
+      cancelButtonText: "Cancel",
+    });
+
+    if (confirm.isConfirmed) {
+      const result = await updateStatus(bookId, "available");
+
+      if (result?.success) {
+        // Remove rejected book from UI
+        setBooks((prev) => prev.filter((book) => book._id !== bookId));
+
+        Swal.fire("Rejected!", "The request has been rejected.", "success");
+      } else {
+        Swal.fire("Failed!", result?.error || "Something went wrong.", "error");
+      }
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center py-10">
+        <Loader2 className="w-6 h-6 animate-spin text-blue-500" />
+        <p className="ml-2 text-gray-600">Loading requests...</p>
+      </div>
+    );
   }
 
   return (
-   
-      <div className="max-w-11/12 mx-auto mt-16 lg:mt-4 pb-4">
-        <div className="text-gray-600 text-2xl font-semibold mb-6">Exchange Requests</div>
-        <div className="hidden md:block overflow-x-auto bg-white rounded-lg shadow">
-          <table className="min-w-full text-sm text-left">
-            <thead className="bg-gray-100 border-b border-gray-300">
-              <tr>
-                <th className="px-4 py-2">#</th>
-                <th className="px-4 py-2">Image</th>
-                <th className="px-4 py-2">Book Name</th>
-                <th className="px-4 py-2">Exchanger Name</th>
-                <th className="px-4 py-2">Exchanger Email</th>
-                <th className="px-4 py-2 text-center">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {books.map((book, index) => (
-                <tr key={index} className="border-b border-gray-200 hover:bg-gray-50 transition">
-                  <td className="px-4 py-2">{index + 1}</td>
-                  <td className="px-4 py-2">
-                    <img
-                      src={book.image}
-                      alt={book.title}
-                      className="w-10 h-12 object-cover rounded-md mx-auto"
-                    />
-                  </td>
-                  <td className="px-4 py-2">{book.title}</td>
-                  <td className="px-4 py-2">{book.exchangerName}</td>
-                  <td className="px-4 py-2">{book.exchangerEmail}</td>
-                  <td className="px-4 py-2 flex justify-center gap-3">
-                    {/* Accept Button */}
-                    <button
-                      onClick={() => handleAccept(book.exchangerEmail)}
-                      className="relative overflow-hidden px-4 py-2 text-white rounded-sm bg-green-500 group"
-                    >
-                      <span className="relative z-10">Accept</span>
-                      <span className="absolute inset-0 bg-green-700 -translate-x-full group-hover:translate-x-0 transition-transform duration-500 ease-in-out"></span>
-                    </button>
+    <div className=" p-4 sm:p-6 lg:p-8">
+      <h2 className="text-3xl font-bold text-gray-800 mb-8 flex items-center">
+        <BookOpenCheck className="w-7 h-7 mr-3 text-indigo-500" /> Exchange Requests
+        <span className="ml-3 text-sm font-medium px-3 py-1 rounded-full bg-indigo-100 text-indigo-600">
+          {books.length} Total
+        </span>
+      </h2>
 
-                    {/* Reject Button */}
-                    <button
-                      onClick={() => handleReject(book.exchangerEmail)}
-                      className="relative overflow-hidden px-4 py-2 text-white rounded-sm bg-red-500 group"
-                    >
-                      <span className="relative z-10">Reject</span>
-                      <span className="absolute inset-0 bg-red-700 -translate-x-full group-hover:translate-x-0 transition-transform duration-500 ease-in-out"></span>
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+      {books?.length === 0 ? (
+        <div className="bg-white p-10 rounded-xl shadow-lg border border-gray-100 text-center">
+          <p className="text-xl text-gray-500 font-medium">
+            No exchange requests are currently pending for your books.
+          </p>
+          <p className="text-gray-400 mt-2">Time to share some book love! 📚</p>
         </div>
-
-           {/* Mobile Card Layout */}
-      <div className="grid gap-4 md:hidden">
-        {books?.map((book, index) => (
-          <div
-            key={index}
-            className="border border-gray-200 rounded-lg bg-white overflow-hidden"
-          >
-            <div className="flex flex-9 divide-x divide-gray-200">
-              {/* Col 1: Image */}
-              <div className="flex flex-2 items-center justify-center p-4">
-                <img
-                  src={book.image}
-                  alt={book.title}
-                  className="w-20 h-24 object-cover rounded-md"
-                />
-              </div>
-
-              {/* Col 2: Information */}
-              <div className="p-4 space-y-1 flex-6 text-sm">
-                {/* <p><span className="font-semibold">No:</span> {index + 1}</p> */}
-                <p><span className="font-semibold">Book:</span> {book.title}</p>
-                <p><span className="font-semibold">Exchanger Name:</span> {book.exchangerName}</p>
-                <p><span className="font-semibold">Exchanger Email:</span> {book.exchangerEmail}</p>
-              </div>
-
-              {/* Col 3: Actions (vertical stack) */}
-              <div className="flex flex-col items-center flex-1 justify-center gap-2 p-4">
-                <button
-                      onClick={() => handleAccept(book.exchangerEmail)}
-                      className="relative overflow-hidden px-4 py-2 text-white rounded-sm bg-green-500 group"
-                    >
-                      <span className="relative z-10">Accept</span>
-                      <span className="absolute inset-0 bg-green-700 -translate-x-full group-hover:translate-x-0 transition-transform duration-500 ease-in-out"></span>
-                    </button>
-
-                    {/* Reject Button */}
-                    <button
-                      onClick={() => handleReject(book.exchangerEmail)}
-                      className="relative overflow-hidden px-4 py-2 text-white rounded-sm bg-red-500 group"
-                    >
-                      <span className="relative z-10">Reject</span>
-                      <span className="absolute inset-0 bg-red-700 -translate-x-full group-hover:translate-x-0 transition-transform duration-500 ease-in-out"></span>
-                    </button>
-              </div>
-            </div>
+      ) : (
+        <>
+          {/* Desktop Table (for md and up) */}
+          <div className="hidden md:block overflow-x-auto bg-white rounded-xl shadow-xl border border-gray-200">
+            <table className="min-w-full text-sm text-center text-gray-600 divide-y divide-gray-200">
+              <thead className="bg-gray-50 uppercase text-xs font-semibold tracking-wider">
+                <tr>
+                  <th className="px-6 py-3">Book Details</th>
+                  <th className="px-6 py-3">Requested By</th>
+                  <th className="px-6 py-3 text-center">Status</th>
+                  <th className="px-6 py-3 text-center">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100">
+                {books.map((book) => (
+                  <tr
+                    key={book._id}
+                    className="hover:bg-indigo-50/50 transition duration-150 ease-in-out"
+                  >
+                    <td className="px-6 py-4 mx-auto flex items-center">
+                      <img
+                        src={book.bookImage || "https://via.placeholder.com/60x80?text=Book"}
+                        alt={book.bookName}
+                        className="w-12 h-16 object-cover rounded-md shadow-sm mr-4"
+                      />
+                      <div>
+                        <div className="font-semibold text-gray-800 line-clamp-1">{book.bookName}</div>
+                        <div className="text-xs text-gray-500">By: {book.authorName}</div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex items-center text-sm">
+                        <User className="w-4 h-4 mr-2 text-indigo-400" />
+                        <span className="font-medium text-gray-700">{book.requestedUserName || "User"}</span>
+                      </div>
+                      <div className="flex items-center text-xs text-gray-500 mt-1">
+                        <Mail className="w-3 h-3 mr-2" />
+                        <span>{book.requestedUser || "N/A"}</span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 text-center">
+                      {getStatusBadge(book.status)}
+                    </td>
+                    <td className="px-6 py-4 text-center">
+                      {book.status === "exchanged" ? (
+                        <span className="text-green-600 font-medium flex items-center justify-center">
+                          <BookOpenCheck className="w-5 h-5 mr-1" /> Completed
+                        </span>
+                      ) : (
+                        <div className="flex justify-center gap-3">
+                          <button
+                            onClick={() => handleAccept(book._id)}
+                            className="text-green-600 hover:text-white border border-green-600 hover:bg-green-600 transition-all duration-300 font-medium rounded-full text-sm px-4 py-1.5 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50"
+                          >
+                            Accept
+                          </button>
+                          <button
+                            onClick={() => handleReject(book._id)}
+                            className="text-red-600 hover:text-white border border-red-600 hover:bg-red-600 transition-all duration-300 font-medium rounded-full text-sm px-4 py-1.5 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50"
+                          >
+                            Reject
+                          </button>
+                        </div>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
-        ))}
-      </div>
 
-      </div>
-   
-  )
+          {/* Mobile Card Layout (for sm and below) */}
+          <div className="grid gap-4 md:hidden">
+            {books.map((book) => (
+              <div
+                key={book._id}
+                className="bg-white rounded-xl shadow-lg border border-gray-200 p-4 transition hover:shadow-xl"
+              >
+                <div className="flex items-start mb-4">
+                  <img
+                    src={book.bookImage || "https://via.placeholder.com/60x80?text=Book"}
+                    alt={book.bookName}
+                    className="w-16 h-20 object-cover rounded-lg shadow-md mr-4 flex-shrink-0"
+                  />
+                  <div className="flex-grow">
+                    <p className="font-bold text-lg text-gray-800 line-clamp-2">
+                      {book.bookName}
+                    </p>
+                    <p className="text-sm text-gray-500 mt-0.5">
+                      <Book className="inline w-3 h-3 mr-1" /> By: {book.authorName}
+                    </p>
+                    <div className="mt-2">{getStatusBadge(book.status)}</div>
+                  </div>
+                </div>
+
+                <div className="border-t border-gray-100 pt-3">
+                  <p className="text-sm font-semibold text-gray-700">Requested By:</p>
+                  <div className="flex items-center text-sm text-gray-600 mt-1">
+                    <User className="w-4 h-4 mr-2 text-indigo-400" />
+                    <span>{book.requestedUserName || "User"}</span>
+                  </div>
+                  <div className="flex items-center text-sm text-gray-500 mt-1">
+                    <Mail className="w-4 h-4 mr-2" />
+                    <span>{book.requestedUser || "N/A"}</span>
+                  </div>
+                </div>
+
+                <div className="flex justify-around gap-2 mt-4 pt-4 border-t border-gray-100">
+                  {book.status === "exchanged" ? (
+                    <span className="text-green-600 font-medium w-full text-center">
+                      <BookOpenCheck className="inline w-5 h-5 mr-1" /> Completed
+                    </span>
+                  ) : (
+                    <>
+                      <button
+                        onClick={() => handleAccept(book._id)}
+                        className="w-1/2 text-white bg-green-500 hover:bg-green-600 py-2 rounded-lg text-sm font-medium transition duration-200"
+                      >
+                        Accept
+                      </button>
+                      <button
+                        onClick={() => handleReject(book._id)}
+                        className="w-1/2 text-white bg-red-500 hover:bg-red-600 py-2 rounded-lg text-sm font-medium transition duration-200"
+                      >
+                        Reject
+                      </button>
+                    </>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+    </div>
+  );
 }

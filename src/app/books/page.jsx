@@ -13,7 +13,7 @@ export default function AllBooksPage() {
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("");
   const [categories, setCategories] = useState([]);
-  const limit = 12;
+  const limit = 15;
 
  
   const fetchBooks = async () => {
@@ -106,7 +106,7 @@ export default function AllBooksPage() {
       </section>
 
       {/* Books List */}
-      <section className="container mx-auto px-6 py-16 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-10 items-center">
+      <section className="container mx-auto px-6 py-16 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 items-center">
         {loading ? (
           <Loading />
         ) : books?.length > 0 ? (

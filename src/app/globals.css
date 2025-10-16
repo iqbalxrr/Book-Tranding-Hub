@@ -1,4 +1,12 @@
+<<<<<<< HEAD
 @import "tailwindcss";
 @plugin "daisyui" {
   themes: light --default,  cupcake;
 }
+=======
+ @import "tailwindcss";
+ @plugin "daisyui" {
+  themes: light --default;
+ }
+
+>>>>>>> e6adac69b750e84b89079622e27582bc07d395cd

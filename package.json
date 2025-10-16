@@ -18,11 +18,16 @@
     "@radix-ui/react-switch": "^1.2.6",
     "@radix-ui/react-tabs": "^1.1.13",
     "@radix-ui/react-tooltip": "^1.2.8",
+<<<<<<< HEAD
     "autoprefixer": "^10.4.21",
+=======
+    "@tanstack/react-query": "^5.90.3",
+>>>>>>> e6adac69b750e84b89079622e27582bc07d395cd
     "axios": "^1.12.2",
     "bcryptjs": "^3.0.2",
     "clsx": "^2.1.1",
     "daisyui": "^5.1.26",
+    "date-fns": "^4.1.0",
     "firebase": "^12.3.0",
     "firebase-admin": "^13.5.0",
     "framer-motion": "^12.23.13",
@@ -30,6 +35,7 @@
     "lucide-react": "^0.544.0",
     "mongodb": "^6.20.0",
     "next": "15.5.3",
+    "next-auth": "^4.24.11",
     "nodemailer": "^6.10.1",
     "postcss": "^8.5.6",
     "react": "19.1.0",
@@ -37,6 +43,8 @@
     "react-hook-form": "^7.63.0",
     "react-hot-toast": "^2.6.0",
     "react-icons": "^5.5.0",
+    "react-spinners": "^0.17.0",
+    "recharts": "^3.2.1",
     "sweetalert2": "^11.24.0",
     "swiper": "^12.0.1",
     "tailwind-merge": "^3.3.1"
