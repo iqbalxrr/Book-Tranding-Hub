@@ -26,10 +26,10 @@ export async function POST(req) {
       password: hashedPassword,
       image:
         image ||
-        "https://i.ibb.co/F5nVJjR/default-avatar.png", // ✅ default profile image
+        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQkAJEkJQ1WumU0hXNpXdgBt9NUKc0QDVIiaw&s", // ✅ default profile image
       provider: "email",
       createdAt: new Date(),
-    });
+    })
 
     return NextResponse.json({ success: true }, { status: 201 });
   } catch (err) {

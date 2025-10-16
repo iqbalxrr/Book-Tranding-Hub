@@ -13,8 +13,13 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import Swal from "sweetalert2";
 
+
 const items = [
+
   { title: "Profile", url: "/dashboard/userPages/profile", icon: <FaUserCircle /> },
+
+  { title: "Home", url: "/dashboard/userPages/home", icon: <FaHome /> },
+d2fbcab2729bfebe7a0a644e5bf5b3f19b6961f5
   { title: "My Books", url: "/dashboard/userPages/myBooks", icon: <FaBookOpen /> },
   { title: "Exchange Request", url: "/dashboard/userPages/exchangeRequest", icon: <FaExchangeAlt /> },
   { title: "Chat List", url: "/dashboard/userPages/chat", icon: <FaCommentDots /> },
@@ -54,7 +59,7 @@ export default function UserSidebar() {
       </div>
 
       {/* ===== Sidebar Menu ===== */}
-      <div className="flex-1 px-5 py-10">
+      <div className="flex-1 px-5 py-14">
         <ul className="space-y-1">
           {items.map((item) => {
             const isActive = pathname === item.url;

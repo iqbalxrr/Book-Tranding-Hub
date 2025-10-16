@@ -33,11 +33,11 @@ export default function Navbar() {
   useEffect(() => {
     if (user && !sessionStorage.getItem("welcome_shown")) {
       Swal.fire({
-<<<<<<< Updated upstream
+
         title: `Welcome ${user.displayName }!`,
-=======
+
         title: `Welcome ${user?.displayName || user?.name || "User"}!`,
->>>>>>> Stashed changes
+
         text: "You have successfully logged in.",
         icon: "success",
         timer: 2000,
@@ -50,10 +50,10 @@ export default function Navbar() {
 
   // ✅ Helper: Get user photo
   const getUserPhoto = () => {
-    if (!user) return "https://i.ibb.co/F5nVJjR/default-avatar.png";
+    if (!user) return "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQkAJEkJQ1WumU0hXNpXdgBt9NUKc0QDVIiaw&s";
     if (user.photoURL && user.photoURL !== "") return user.photoURL;
     if (user.image && user.image !== "") return user.image;
-    return "https://i.ibb.co/F5nVJjR/default-avatar.png";
+    return "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQkAJEkJQ1WumU0hXNpXdgBt9NUKc0QDVIiaw&s";
   };
 
   // ✅ Fetch bookmarks
@@ -133,10 +133,14 @@ export default function Navbar() {
       links: [
         { href: "/addNewBook", label: "Add New Book" },
         {
+
           href:
             user.email === "admin@gmail.com"
               ? "/dashboard/adminPages/profile"
               : "/dashboard/userPages/myBooks",
+
+          href: user.email === "admin@gmail.com" ? "/dashboard/adminPages/profile" : "/dashboard/userPages/home",
+
           label: "Dashboard",
         },
       ],
