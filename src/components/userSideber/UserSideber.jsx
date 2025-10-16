@@ -24,7 +24,6 @@ d2fbcab2729bfebe7a0a644e5bf5b3f19b6961f5
   { title: "Exchange Request", url: "/dashboard/userPages/exchangeRequest", icon: <FaExchangeAlt /> },
   { title: "Chat List", url: "/dashboard/userPages/chat", icon: <FaCommentDots /> },
 ];
-
 export default function UserSidebar() {
   const pathname = usePathname();
   const router = useRouter();
