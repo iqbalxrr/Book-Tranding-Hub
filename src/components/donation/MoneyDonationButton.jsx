@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react'
 import MoneyDonationOptions from './MoneyDonationOptions'
+import DonationModal from './MoneyDonationOptions'
 
 export default function MoneyDonationButton() {
 const [amount, setAmount] = useState('')
@@ -36,8 +37,10 @@ const [donate, setDonate] = useState(false)
 
     {
         donate && 
-        <MoneyDonationOptions
+        <DonationModal
         amount={amount} 
+        setAmount={setAmount}
+        isOpen={donate}
         onClose={()=>setDonate(false)}
         />
     }

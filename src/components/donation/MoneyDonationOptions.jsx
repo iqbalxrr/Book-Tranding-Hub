@@ -1,44 +1,99 @@
-import React, { useEffect, useState } from 'react'
+'use client'
+import { useEffect, useState } from 'react'
+import { loadStripe } from '@stripe/stripe-js'
+import {
+  Elements
+} from '@stripe/react-stripe-js'
 import { createPortal } from 'react-dom'
+import PaymentForm from './PaymentForm'
 
-export default function MoneyDonationOptions({amount,onClose}) {
- const [mounted, setMounted] = useState(false)
+
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY)
+
+export default function DonationModal({ isOpen, onClose, amount, setAmount }) {
+  const [clientSecret, setClientSecret] = useState(null)
+  const [loading, setLoading] = useState(false)
+
+  const [mounted, setMounted] = useState(false)
   useEffect(() => setMounted(true), [])
 
+  useEffect(() => {
+    if (!amount || !isOpen) return
+
+    const createPaymentIntent = async () => {
+      setLoading(true)
+      try {
+        const res = await fetch('/api/create-payment-intent', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ amount }),
+        })
+        const data = await res.json()
+        // console.log(data);
+        setClientSecret(data?.clientSecret)
+      } catch (err) {
+        console.log(err)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    createPaymentIntent()
+  }, [amount, isOpen])
+
+  if (!isOpen) return null
   if (!mounted) return null
 
   return createPortal(
-    <div
-      className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
-      onClick={onClose}
-    >
+    <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 backdrop-blur-sm">
       <div
-        className="bg-white p-6 rounded-xl w-full max-w-3xl mx-auto max-h-[90vh] overflow-y-auto"
+        onClick={onClose}
+        className="absolute inset-0"
+      />
+      <div
+        className="relative bg-white/95 rounded-2xl shadow-2xl w-11/12 max-w-lg max-h-[90vh] overflow-y-auto p-8 animate-fadeIn border border-indigo-100"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex justify-between items-center mb-3">
-          <h2 className="text-xl md:text-2xl font-bold text-indigo-600">Donate a Book</h2>
-          <button
-            onClick={onClose}
-            className="rounded-full font-bold py-1 px-5 text-indigo-600 bg-indigo-50 border border-indigo-600 hover:bg-indigo-600 hover:text-white transition duration-500"
-          >
-            X
-          </button>
+        <button
+          onClick={onClose}
+          className="absolute right-4 top-4 btn btn-circle btn-sm bg-indigo-50 hover:bg-indigo-100 text-indigo-500 border-none"
+        >
+          ✕
+        </button>
+
+        <div className="text-center mb-6">
+          <h2
+            className="text-2xl font-bold bg-gradient-to-r from-indigo-500 to-pink-500 bg-clip-text text-transparent">
+            💝 Donate ${amount}
+          </h2>
+          <p className="text-gray-500 mt-2">
+            Secure payment powered by Stripe.
+          </p>
         </div>
 
-        <form className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Form Fields Here */}
-          <div>
-            <label className="block text-sm font-semibold mb-1">Book Title</label>
-            <input
-            placeholder={amount}
-              type="text"
-              className="border border-gray-300 rounded-xl px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-indigo-400"
-            />
+        {loading ? (
+          <div className="flex justify-center py-10">
+            <span className="loading loading-spinner text-primary"></span>
           </div>
-        </form>
+        ) : clientSecret ? (
+          <Elements
+            key={clientSecret} // ✅ Force re-mount when clientSecret changes
+            stripe={stripePromise}
+            options={{ clientSecret }}
+          >
+            <PaymentForm
+              setAmount={setAmount}
+              onClose={onClose}
+            />
+          </Elements>
+        ) : (
+          <p className="text-center text-gray-500">Preparing payment...</p>
+        )}
+        
       </div>
     </div>,
-    document.body // 👈 renders directly inside <body>, full width guaranteed
+    document.body
   )
 }
+
+
