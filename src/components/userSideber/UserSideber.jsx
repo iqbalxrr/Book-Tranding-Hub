@@ -16,11 +16,11 @@ import Swal from "sweetalert2";
 
 const items = [
 
-  { title: "Profile", url: "/dashboard/userPages/profile", icon: <FaUserCircle /> },
   { title: "Home", url: "/dashboard/userPages/home", icon: <FaHome /> },
   { title: "My Books", url: "/dashboard/userPages/myBooks", icon: <FaBookOpen /> },
   { title: "Exchange Request", url: "/dashboard/userPages/exchangeRequest", icon: <FaExchangeAlt /> },
   { title: "Chat List", url: "/dashboard/userPages/chat", icon: <FaCommentDots /> },
+  { title: "Profile", url: "/dashboard/userPages/profile", icon: <FaUserCircle /> },
 ];
 export default function UserSidebar() {
   const pathname = usePathname();
