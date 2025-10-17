@@ -117,14 +117,14 @@ export default function Navbar() {
         { href: "/about", label: "About" },
         { href: "/about/mission", label: "Mission" },
       ],
-    },
-    {
+    },{
       name: "Contact",
       links: [
         { href: "/contact/email", label: "Email" },
         { href: "/contact/location", label: "Location" },
       ],
     },
+    
   ];
 
   if (user) {

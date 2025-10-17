@@ -68,6 +68,8 @@ export default function RegisterPage() {
   };
 
   // Google Sign-In
+   // Google Sign-In
+    // Google Sign-In
   const handleGoogleRegister = async () => {
     setLoading(true);
     try {
@@ -86,20 +88,32 @@ export default function RegisterPage() {
         }),
       });
 
-      toast.success("✅ Google login successful!");
+      // ✅ SweetAlert success message
+      await Swal.fire({
+        title: "Welcome!",
+        text: `${user.displayName || "User"}, you’ve signed in successfully with Google 🎉`,
+        icon: "success",
+        confirmButtonColor: "#4f46e5",
+        confirmButtonText: "Continue",
+      });
+
       router.push("/");
     } catch (err) {
       console.error(err);
+      // ❌ Error alert
       await Swal.fire({
         title: "Error!",
-        text: err.message || "Google login failed. Please try again.",
+        text: err.message || "Google sign-in failed. Please try again.",
         icon: "error",
-        confirmButtonText: "OK",
+        confirmButtonColor: "#ef4444",
+        confirmButtonText: "Try Again",
       });
     } finally {
       setLoading(false);
     }
   };
+
+
 
   return (
     <div className="min-h-screen mt-25 lg:mt-14 flex items-center justify-center bg-gray-100">
