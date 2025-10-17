@@ -1,6 +1,3 @@
-
-
-
 import { MongoClient } from "mongodb";
 
 const uri = process.env.MONGODB_URI;
@@ -26,9 +23,7 @@ if (!global._mongoClientPromise) {
 
 clientPromise = global._mongoClientPromise;
 
-export async function getDb() {
+export default async function getDb() {
   const client = await clientPromise;
   return client.db(dbName);
 }
-
-export default getDb;

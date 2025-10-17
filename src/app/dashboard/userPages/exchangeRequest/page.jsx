@@ -4,6 +4,7 @@ import { useAuth } from "@/context/AuthContext";
 import React, { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import { Loader2, BookOpenCheck, RotateCcw, User, Mail, Book } from "lucide-react"; // Import new icons
+import LoadingSpinner from "@/components/Loading/loadingSpinner";
 
 // Helper function for status badge styling
 const getStatusBadge = (status) => {
@@ -120,9 +121,8 @@ export default function ExchangeRequests() {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center py-10">
-        <Loader2 className="w-6 h-6 animate-spin text-blue-500" />
-        <p className="ml-2 text-gray-600">Loading requests...</p>
+      <div className="flex justify-center h-screen items-center py-10">
+       <LoadingSpinner />
       </div>
     );
   }

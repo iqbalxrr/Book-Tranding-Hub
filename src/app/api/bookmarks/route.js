@@ -14,7 +14,7 @@ export async function POST(req) {
     }
 
     const db = await getDb();
-    const collection = db.collection("bookmarks");
+    const collection =await db.collection("bookmarks");
 
     // Duplicate check
     const exist = await collection.findOne({ "book._id": book._id });
