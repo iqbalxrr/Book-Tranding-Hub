@@ -25,6 +25,7 @@
     "bcryptjs": "^3.0.2",
     "clsx": "^2.1.1",
     "daisyui": "^5.1.26",
+    "date-fns": "^4.1.0",
     "firebase": "^12.3.0",
     "firebase-admin": "^13.5.0",
     "framer-motion": "^12.23.13",
