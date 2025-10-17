@@ -1,30 +1,37 @@
-
 import { Heart, BookOpen } from 'lucide-react'
 import BookDonationButton from './BookDonationButton'
 import MoneyDonationButton from './MoneyDonationButton'
 
 export default function Donation() {
-  
+  const primaryColor = 'text-[#FF7B6B]'; // Define a single primary color for consistency
+
   return (
-    <section className="bg-[#FFEFEF] py-16 px-6 text-center  shadow-sm">
+    // Updated background to a soft light gray for a cleaner look
+    <section className=" py-20 px-4 text-center">
+      
+      {/* Title - Bigger, bolder, and using a modern, deep indigo color */}
       <h2 
-        className="text-3xl text-[#FF7B6B] font-bold  mb-3"
+        className={`text-5xl font-extrabold text-[#1E2939] tracking-tight mb-4`}
       >
-        Give the Gift of Reading 📖
+        Empower a Reader
       </h2>
-      <p className="text-gray-600 max-w-2xl mx-auto mb-8">
-        Your small contribution can make a big difference.  
-        Donate books or funds to help students and readers who can’t afford books.
+      
+      {/* Description - Darker text for better contrast and readability */}
+      <p className="text-gray-700 max-w-3xl mx-auto mb-12 text-lg">
+        Your contribution, no matter how small, fuels our mission to provide books and educational resources to those who need them most.
       </p>
 
-      <div className="flex flex-col md:flex-row justify-center gap-8">
+      {/* Donation Card Container */}
+      <div className="flex flex-col lg:flex-row justify-center gap-8 max-w-5xl mx-auto">
+        
         {/* Book Donation Card */}
-        <div className="bg-white rounded-2xl p-6 w-full md:w-1/3 hover:scale-105 transition duration-700">
-          <BookOpen className="mx-auto text-indigo-500 mb-3" size={40} />
-          <h3 className="text-xl font-semibold mb-2">Donate Books</h3>
-          <p className="text-gray-500 mb-4">
-            Share your old books with others who need them.  
-            Every donated book helps someone continue their learning journey.
+        <div 
+          className="bg-white rounded-3xl p-8 w-full lg:w-1/2 shadow-2xl transition duration-500 hover:shadow-indigo-300/50 hover:scale-[1.02] border border-gray-100"
+        >
+          <BookOpen className={`mx-auto ${primaryColor} mb-4`} size={48} />
+          <h3 className="text-2xl font-bold text-gray-800 mb-3">Donate Books</h3>
+          <p className="text-gray-500 mb-6 leading-relaxed">
+            Share your unused books and directly impact a student's learning journey. We handle the logistics—you provide the literacy.
           </p>
 
           <BookDonationButton />
@@ -32,19 +39,20 @@ export default function Donation() {
         </div>
 
         {/* Monetary Donation Card */}
-        <div className="bg-white rounded-2xl p-6 w-full md:w-1/3 hover:scale-105 transition duration-700">
-          <Heart className="mx-auto text-pink-500 mb-3" size={40} />
-          <h3 className="text-xl font-semibold mb-2">Support Our Mission</h3>
-          <p className="text-gray-500 mb-4">
-            Help us maintain the platform and support literacy projects.  
-            Even $1 makes a difference!
+        <div 
+          className="bg-white rounded-3xl p-8 w-full lg:w-1/2 shadow-2xl transition duration-500 hover:shadow-indigo-300/50 hover:scale-[1.02] border border-gray-100"
+        >
+          {/* Using the same primary color for visual cohesion */}
+          <Heart className={`mx-auto ${primaryColor} mb-4`} size={48} /> 
+          <h3 className="text-2xl font-bold text-gray-800 mb-3">Support Our Mission</h3>
+          <p className="text-gray-500 mb-6 leading-relaxed">
+            Monetary donations help us acquire new books, maintain the platform, and fund literacy programs in underserved communities.
           </p>
-
-            <MoneyDonationButton />
+          
+          <MoneyDonationButton />
 
         </div>
       </div>
     </section>
   )
 }
-
