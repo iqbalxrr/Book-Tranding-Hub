@@ -48,14 +48,6 @@ export default function Navbar() {
     }
   }, [user]);
 
-  // ✅ Helper: Get user photo
-  const getUserPhoto = () => {
-    if (!user) return "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQkAJEkJQ1WumU0hXNpXdgBt9NUKc0QDVIiaw&s";
-    if (user.photoURL && user.photoURL !== "") return user.photoURL;
-    if (user.image && user.image !== "") return user.image;
-    return "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQkAJEkJQ1WumU0hXNpXdgBt9NUKc0QDVIiaw&s";
-  };
-
   // ✅ Fetch bookmarks
   const fetchBookmarks = async () => {
     if (!user?.email) return;
@@ -176,11 +168,7 @@ export default function Navbar() {
           <div className="space-x-4 flex items-center">
             {user ? (
               <div className="flex items-center gap-3">
-                <img
-                  src={getUserPhoto()}
-                  alt="User Avatar"
-                  className="w-8 h-8 rounded-full border border-gray-300 object-cover"
-                />
+              
                 <span className="text-sm">
                   Welcome, {user?.displayName || user?.name}
                 </span>
@@ -189,7 +177,7 @@ export default function Navbar() {
                     logout();
                     sessionStorage.removeItem("welcome_shown");
                   }}
-                  className="hover:underline text-sm text-red-600"
+                  className="underline text-sm "
                 >
                   Logout
                 </button>
