@@ -77,7 +77,7 @@ export default function DonationModal({ isOpen, onClose, amount, setAmount }) {
           </div>
         ) : clientSecret ? (
           <Elements
-            key={clientSecret} // ✅ Force re-mount when clientSecret changes
+            key={clientSecret} //Force re-mount when clientSecret changes
             stripe={stripePromise}
             options={{ clientSecret }}
           >
