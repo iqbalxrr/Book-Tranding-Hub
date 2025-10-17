@@ -49,6 +49,7 @@ export default function PaymentForm({ onClose, setAmount }) {
                 Swal.fire("🎉 Thank you! Your donation was successful!")
 
                 //  save donation to backend
+
                 const donarData = {
                     name,
                     email,
@@ -56,14 +57,36 @@ export default function PaymentForm({ onClose, setAmount }) {
                     amount: paymentIntent.amount / 100,
                     transactionId: paymentIntent.id,
                     date: new Date().toLocaleDateString(),
-                }
+                };
 
-                // console.log(donarData);
-                await fetch("/api/moneyDonation", {
+                const res = await fetch("/api/moneyDonation", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(donarData),
-                })
+                });
+
+                const savedDonation = await res.json();
+
+                if (savedDonation?.insertedId) {
+                    // generate receipt
+                    const receiptRes = await fetch("/api/generateReceipt", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(donarData),
+                    });
+
+                    if (receiptRes.ok) {
+                        const blob = await receiptRes.blob();
+                        const url = URL.createObjectURL(blob);
+
+                        const link = document.createElement("a");
+                        link.href = url;
+                        link.download = `receipt-${donarData.transactionId}.pdf`;
+                        link.click();
+                    } else {
+                        console.error("Failed to generate receipt");
+                    }
+                }
 
                 // Reset state and close modal
                 setAmount("")
@@ -83,7 +106,7 @@ export default function PaymentForm({ onClose, setAmount }) {
         }
     }
 
-    
+
 
     return (
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -117,7 +140,7 @@ export default function PaymentForm({ onClose, setAmount }) {
             <PaymentElement />
             <button
                 type="submit"
-                disabled={!stripe || loading}
+                disabled={!stripe || loading || !elements}
                 className="btn btn-primary w-full mt-4 rounded-xl"
             >
                 {loading ? "Processing..." : "Confirm"}
