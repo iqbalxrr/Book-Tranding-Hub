@@ -22,22 +22,24 @@ export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [showNav, setShowNav] = useState(true);
   const [bookmarks, setBookmarks] = useState([]);
-  const [showDropdown, setShowDropdown] = useState(false);
+  const [notifications, setNotifications] = useState([
+    { id: 1, text: "New book added!" },
+    { id: 2, text: "Your bookmark was liked!" },
+  ]);
+  const [sliderOpen, setSliderOpen] = useState(false);
+  const [sliderType, setSliderType] = useState(""); // "bookmark" or "notification"
+  const [mobileSubMenuOpen, setMobileSubMenuOpen] = useState({}); // track open submenus
   const dropdownRef = useRef(null);
 
   const { user, logout } = useAuth();
   const pathName = usePathname();
   const isDashboard = pathName.includes("/dashboard");
 
-  // ✅ SweetAlert show only once (first login/register)
+  // SweetAlert welcome
   useEffect(() => {
     if (user && !sessionStorage.getItem("welcome_shown")) {
       Swal.fire({
-
-        title: `Welcome ${user.displayName }!`,
-
         title: `Welcome ${user?.displayName || user?.name || "User"}!`,
-
         text: "You have successfully logged in.",
         icon: "success",
         timer: 2000,
@@ -48,7 +50,7 @@ export default function Navbar() {
     }
   }, [user]);
 
-  // ✅ Fetch bookmarks
+  // Fetch bookmarks
   const fetchBookmarks = async () => {
     if (!user?.email) return;
     try {
@@ -62,10 +64,8 @@ export default function Navbar() {
   };
 
   useEffect(() => {
-    fetchBookmarks(); // initial load
-    const interval = setInterval(() => {
-      fetchBookmarks(); // refresh every 1s
-    }, 10000);
+    fetchBookmarks();
+    const interval = setInterval(() => fetchBookmarks(), 10000);
     return () => clearInterval(interval);
   }, [user?.email]);
 
@@ -79,7 +79,7 @@ export default function Navbar() {
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
-        setShowDropdown(false);
+        setSliderOpen(false);
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
@@ -87,6 +87,15 @@ export default function Navbar() {
   }, []);
 
   if (isDashboard) return null;
+
+  const handleSlider = (type) => {
+    if (sliderType === type) {
+      setSliderOpen(!sliderOpen);
+    } else {
+      setSliderType(type);
+      setSliderOpen(true);
+    }
+  };
 
   const menuItems = [
     {
@@ -109,14 +118,14 @@ export default function Navbar() {
         { href: "/about", label: "About" },
         { href: "/about/mission", label: "Mission" },
       ],
-    },{
+    },
+    {
       name: "Contact",
       links: [
         { href: "/contact/email", label: "Email" },
         { href: "/contact/location", label: "Location" },
       ],
     },
-    
   ];
 
   if (user) {
@@ -125,14 +134,10 @@ export default function Navbar() {
       links: [
         { href: "/addNewBook", label: "Add New Book" },
         {
-
           href:
             user.email === "admin@gmail.com"
-              ? "/dashboard/adminPages/profile"
-              : "/dashboard/userPages/myBooks",
-
-          href: user.email === "admin@gmail.com" ? "/dashboard/adminPages/profile" : "/dashboard/userPages/home",
-
+              ? "/dashboard/adminPages/overview"
+              : "/dashboard/userPages/home",
           label: "Dashboard",
         },
       ],
@@ -148,7 +153,6 @@ export default function Navbar() {
       {/* Top Navbar */}
       <div className="bg-teal-500 text-white text-sm">
         <div className="container mx-auto flex justify-between items-center px-4 py-2">
-          {/* Social Links */}
           <div className="flex space-x-3">
             <Link href="#" className="hover:text-gray-200">
               <Facebook size={16} />
@@ -163,12 +167,9 @@ export default function Navbar() {
               <Linkedin size={16} />
             </Link>
           </div>
-
-          {/* Auth Links */}
           <div className="space-x-4 flex items-center">
             {user ? (
               <div className="flex items-center gap-3">
-              
                 <span className="text-sm">
                   Welcome, {user?.displayName || user?.name}
                 </span>
@@ -177,7 +178,7 @@ export default function Navbar() {
                     logout();
                     sessionStorage.removeItem("welcome_shown");
                   }}
-                  className="underline text-sm "
+                  className="underline text-sm"
                 >
                   Logout
                 </button>
@@ -200,7 +201,6 @@ export default function Navbar() {
       <nav className="bg-white shadow-md">
         <div className="container mx-auto px-4 py-3">
           <div className="flex justify-between items-center h-16">
-            {/* Logo */}
             <Link href="/" className="text-2xl font-bold text-teal-500">
               📚 BookMate
             </Link>
@@ -214,7 +214,7 @@ export default function Navbar() {
                 {menuItems.map((menu) => (
                   <div key={menu.name} className="relative group">
                     <button className="flex items-center hover:text-teal-500">
-                      {menu.name}
+                      {menu.name}{" "}
                       <ChevronDown
                         className="ml-1 transform transition-transform duration-300 group-hover:rotate-180"
                         size={16}
@@ -239,7 +239,7 @@ export default function Navbar() {
               <div className="ml-2 flex items-center space-x-4">
                 <div className="relative" ref={dropdownRef}>
                   <button
-                    onClick={() => setShowDropdown(!showDropdown)}
+                    onClick={() => handleSlider("bookmark")}
                     className="hover:text-teal-500 relative"
                   >
                     <Heart size={20} />
@@ -249,41 +249,16 @@ export default function Navbar() {
                       </span>
                     )}
                   </button>
-
-                  {showDropdown && (
-                    <div className="absolute right-0 mt-3 w-64 bg-white border shadow-lg rounded-md overflow-hidden transform origin-top transition-all duration-300 ease-out z-50">
-                      {bookmarks.length === 0 ? (
-                        <p className="p-4 text-sm text-gray-500 text-center">
-                          No bookmarks yet.
-                        </p>
-                      ) : (
-                        bookmarks.map((b) => (
-                          <Link
-                            key={b._id}
-                            href={`/books/${b?.book?._id}`}
-                            className="flex items-center p-3 hover:bg-teal-50 transition-colors duration-200"
-                          >
-                            <img
-                              src={b?.book.bookImage}
-                              alt={b.book.bookName}
-                              className="w-10 h-10 rounded object-cover mr-3 shadow-sm"
-                            />
-                            <div className="text-sm">
-                              <p className="font-medium">{b?.book.bookName}</p>
-                              <p className="text-gray-500 text-xs">
-                                {b?.book.authorName}
-                              </p>
-                            </div>
-                          </Link>
-                        ))
-                      )}
-                    </div>
-                  )}
                 </div>
 
-                <button className="relative p-2 text-gray-700 hover:text-teal-500">
+                <button
+                  onClick={() => handleSlider("notification")}
+                  className="relative hover:text-teal-500"
+                >
                   <Bell size={22} />
-                  <span className="absolute top-0 right-0 inline-block w-2 h-2 bg-red-500 rounded-full"></span>
+                  {notifications.length > 0 && (
+                    <span className="absolute top-0 right-0 inline-block w-2 h-2 bg-red-500 rounded-full"></span>
+                  )}
                 </button>
               </div>
             </div>
@@ -297,7 +272,131 @@ export default function Navbar() {
             </button>
           </div>
         </div>
+
+        {/* Mobile Menu Panel */}
+        {isOpen && (
+          <div className="md:hidden bg-white shadow-md">
+            <div className="px-4 py-3 space-y-2">
+              {menuItems.map((menu) => (
+                <div key={menu.name}>
+                  <button
+                    className="w-full flex justify-between items-center text-gray-700 font-medium"
+                    onClick={() =>
+                      setMobileSubMenuOpen((prev) => ({
+                        ...prev,
+                        [menu.name]: !prev[menu.name],
+                      }))
+                    }
+                  >
+                    {menu.name}
+                    <ChevronDown
+                      className={`ml-1 transform transition-transform duration-300 ${
+                        mobileSubMenuOpen[menu.name] ? "rotate-180" : ""
+                      }`}
+                      size={16}
+                    />
+                  </button>
+                  {mobileSubMenuOpen[menu.name] && (
+                    <div className="pl-4 flex flex-col space-y-1 mt-1">
+                      {menu.links.map((link) => (
+                        <Link
+                          key={link.href}
+                          href={link.href}
+                          className="text-gray-600 hover:text-teal-500"
+                        >
+                          {link.label}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))}
+
+              {/* Mobile Bookmarks & Notifications */}
+              <div className="pt-2 border-t border-gray-200">
+                <button
+                  onClick={() => handleSlider("bookmark")}
+                  className="flex items-center w-full text-gray-700 font-medium mb-2"
+                >
+                  <Heart size={20} className="mr-2" />
+                  Bookmarks
+                  {bookmarks.length > 0 && (
+                    <span className="ml-auto inline-block w-5 h-5 bg-red-500 text-white text-xs rounded-full text-center">
+                      {bookmarks.length}
+                    </span>
+                  )}
+                </button>
+
+                <button
+                  onClick={() => handleSlider("notification")}
+                  className="flex items-center w-full text-gray-700 font-medium"
+                >
+                  <Bell size={20} className="mr-2" />
+                  Notifications
+                  {notifications.length > 0 && (
+                    <span className="ml-auto inline-block w-5 h-5 bg-red-500 text-white text-xs rounded-full text-center">
+                      {notifications.length}
+                    </span>
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </nav>
+
+      {/* Right Slider */}
+      <div
+        className={`fixed top-0 right-0 h-screen w-80 bg-white shadow-2xl transform transition-transform duration-300 z-50 ${
+          sliderOpen ? "translate-x-0" : "translate-x-full"
+        }`}
+      >
+        <div className="flex justify-between items-center p-4 border-b sticky top-0 bg-white z-50">
+          <h2 className="text-lg font-semibold">
+            {sliderType === "bookmark" ? "Bookmarks" : "Notifications"}
+          </h2>
+          <button onClick={() => setSliderOpen(false)}>
+            <X size={20} />
+          </button>
+        </div>
+        <div className="overflow-y-auto h-full p-4">
+          {sliderType === "bookmark" ? (
+            bookmarks.length === 0 ? (
+              <p className="text-gray-500 text-sm text-center">
+                No bookmarks yet.
+              </p>
+            ) : (
+              bookmarks.map((b) => (
+                <Link
+                  key={b._id}
+                  href={`/books/${b?.book?._id}`}
+                  className="flex items-center p-3 hover:bg-teal-50 transition-colors duration-200"
+                >
+                  <img
+                    src={b?.book.bookImage}
+                    alt={b.book.bookName}
+                    className="w-10 h-10 rounded object-cover mr-3 shadow-sm"
+                  />
+                  <div className="text-sm">
+                    <p className="font-medium">{b?.book.bookName}</p>
+                    <p className="text-gray-500 text-xs">
+                      {b?.book.authorName}
+                    </p>
+                  </div>
+                </Link>
+              ))
+            )
+          ) : notifications.length === 0 ? (
+            <p className="text-gray-500 text-sm text-center">No notifications.</p>
+          ) : (
+            notifications.map((n) => (
+              <div key={n.id} className="p-3 border-b last:border-b-0 text-sm">
+                {n.text}
+              </div>
+            ))
+          )}
+        </div>
+      </div>
     </header>
   );
 }

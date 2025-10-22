@@ -14,7 +14,7 @@ export default function DashboardLayout({ children }) {
 
   const placeholderImageUrl = "https://placehold.co/40x40/5c5c5c/ffffff?text=U";
   const userImage = user?.photoURL || placeholderImageUrl;
-  const userName = user?.displayName || "Guest";
+  const userName = user?.displayName || "Admin";
   const userEmail = user?.email || "No Email";
 
   return (
@@ -95,7 +95,7 @@ export default function DashboardLayout({ children }) {
       <div className="flex flex-1 pt-16 h-full overflow-hidden">
         
         {/* ======= DESKTOP SIDEBAR (FIXED) ======= */}
-        <aside className="hidden lg:block w-64 flex-shrink-0 border-r border-gray-200 bg-white shadow-xl/50 overflow-y-auto">
+        <aside className="hidden lg:block w-72 flex-shrink-0 border-r border-gray-200 bg-white shadow-xl/50 overflow-y-auto">
           {/* The sidebar content should handle its own height and padding if necessary */}
           <Sidebars />
         </aside>
@@ -110,7 +110,7 @@ export default function DashboardLayout({ children }) {
                 animate={{ x: 0 }}
                 exit={{ x: "-100%" }}
                 transition={{ duration: 0.3, ease: "easeInOut" }}
-                className="fixed lg:hidden top-0 left-0 z-50 w-64 h-screen bg-white shadow-2xl overflow-y-auto"
+                className="fixed lg:hidden top-0 left-0 z-50 w-72 h-screen bg-white shadow-2xl overflow-y-auto"
               >
                 <Sidebars onClose={() => setIsOpen(false)} /> {/* Add a close function prop if needed */}
               </motion.aside>
