@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Swal from "sweetalert2";
 import { useAuth } from "@/context/AuthContext";
-import { FaLock, FaPhoneAlt, FaGoogle } from "react-icons/fa";
+import { Lock, Mail, Phone, Loader2, ArrowRight } from "lucide-react";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -59,89 +59,128 @@ export default function LoginPage() {
     }
   };
 
+  // 🔹 Styled Input Component
+  const AuthInput = ({ type, placeholder, value, onChange, Icon }) => (
+    <div className="relative">
+      <Icon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-indigo-400" />
+      <input
+        type={type}
+        placeholder={placeholder}
+        value={value}
+        onChange={onChange}
+        className="w-full border border-gray-300 rounded-xl pl-12 pr-4 py-3.5 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none text-gray-800 transition duration-200 shadow-sm placeholder-gray-500 text-base"
+        required
+      />
+    </div>
+  );
+
   return (
-    <div className="min-h-screen mt-20 flex items-center justify-center bg-gradient-to-br from-indigo-100 via-white to-indigo-50 py-10">
-      <div className="bg-white shadow-lg rounded-2xl p-8 w-full max-w-md border border-gray-200">
-        <h2 className="text-3xl font-bold text-center mb-6 text-indigo-700">
-          Welcome Back 👋
-        </h2>
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8 font-['Inter']">
+      <div className="w-full max-w-md  p-10  transition-all duration-300 hover:shadow-3xl">
+        
+        {/* Header */}
+        <div className="text-center mb-10">
+          <h2 className="text-4xl font-extrabold text-gray-900 tracking-tight">
+            Welcome Back 👋
+          </h2>
+          <p className="mt-2 text-lg text-indigo-600 font-medium">
+            Securely sign in to your account
+          </p>
+        </div>
 
         {/* Email/Password Login Form */}
-        <form onSubmit={handleEmailLogin} className="space-y-4">
-          <input
+        <form onSubmit={handleEmailLogin} className="space-y-5">
+          <AuthInput
             type="email"
             placeholder="Email address"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-indigo-400 focus:outline-none"
-            required
+            Icon={Mail}
           />
-          <input
+          <AuthInput
             type="password"
             placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-indigo-400 focus:outline-none"
-            required
+            Icon={Lock}
           />
 
+          {/* Submit Button */}
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-indigo-600 text-white py-2.5 rounded-md font-medium hover:bg-indigo-700 transition disabled:opacity-50"
+            className={`w-full flex items-center justify-center space-x-2 py-3.5 rounded-xl font-bold text-lg transition duration-300 shadow-xl transform hover:scale-[1.01] ${
+              loading
+                ? "bg-indigo-400 text-white cursor-not-allowed opacity-80"
+                : "bg-indigo-600 text-white hover:bg-indigo-700 shadow-indigo-400/50"
+            }`}
           >
-            {loading ? "Logging in..." : "Login"}
+            {loading ? (
+              <>
+                <Loader2 className="w-5 h-5 animate-spin" />
+                <span>Authenticating...</span>
+              </>
+            ) : (
+              <>
+                <span>Login</span>
+                <ArrowRight className="w-5 h-5 ml-1" />
+              </>
+            )}
           </button>
         </form>
 
-        {/* Forgot Password & Phone Login Links */}
-        <div className="flex flex-col gap-3 mt-4 text-sm text-center">
-          <Link
-            href="/forgot-password"
-            className="flex justify-center items-center gap-2 text-indigo-600 hover:text-indigo-700 transition"
-          >
-            <FaLock className="text-indigo-500" />
-            Forgot Password?
-          </Link>
-
-          <Link
-            href="/phone-login"
-            className="flex justify-center items-center gap-2 text-indigo-600 hover:text-indigo-700 transition"
-          >
-            <FaPhoneAlt className="text-indigo-500" />
-            Login with Phone OTP
-          </Link>
-        </div>
-
-        {/* Divider */}
-        <div className="my-5 flex items-center">
-          <hr className="flex-1 border-gray-300" />
-          <span className="px-3 text-gray-400 text-sm">OR</span>
-          <hr className="flex-1 border-gray-300" />
+        {/* Separator */}
+        <div className="my-8 flex items-center">
+          <hr className="flex-1 border-gray-200" />
+          <span className="px-4 text-gray-400 text-sm font-medium uppercase tracking-wider">
+            Or
+          </span>
+          <hr className="flex-1 border-gray-200" />
         </div>
 
         {/* Google Login */}
         <button
           onClick={handleGoogleLogin}
           disabled={loading}
-          className="w-full border border-gray-300 py-2.5 rounded-md hover:bg-gray-50 flex justify-center items-center gap-2 transition disabled:opacity-50"
+          className={`w-full border border-gray-300 py-3 rounded-xl hover:bg-gray-50 flex justify-center items-center gap-3 transition duration-200 text-base font-semibold text-gray-700 shadow-sm ${
+            loading ? "opacity-60 cursor-not-allowed" : ""
+          }`}
         >
-           <img
+          <img
             src="https://www.svgrepo.com/show/475656/google-color.svg"
             alt="Google"
-            className="w-5 h-5"
+            className="w-6 h-6"
           />
-          Continue with Google
+          {loading ? "Authenticating..." : "Sign in with Google"}
         </button>
 
+        {/* Links */}
+        <div className="flex justify-between items-center mt-6 text-sm">
+          <Link
+            href="/forgot-password"
+            className="flex items-center gap-1 text-indigo-600 hover:text-indigo-700 transition font-medium"
+          >
+            <Lock className="w-4 h-4 text-indigo-500" />
+            Forgot Password?
+          </Link>
+
+          <Link
+            href="/phone-login"
+            className="flex items-center gap-1 text-indigo-600 hover:text-indigo-700 transition font-medium"
+          >
+            <Phone className="w-4 h-4 text-indigo-500" />
+            Login with Phone OTP
+          </Link>
+        </div>
+
         {/* Register Redirect */}
-        <p className="mt-6 text-center text-sm text-gray-600">
+        <p className="mt-8 text-center text-base text-gray-600 border-t pt-6 border-gray-100">
           Don’t have an account?{" "}
           <Link
             href="/register"
-            className="text-indigo-600 hover:underline font-medium"
+            className="text-indigo-600 hover:underline font-bold"
           >
-            Register here
+            Create a free account
           </Link>
         </p>
       </div>

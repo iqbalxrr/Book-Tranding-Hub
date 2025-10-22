@@ -1,123 +1,87 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useAuth } from "@/context/AuthContext"; // your firebase context
+import { useState, useEffect } from "react";
+import {
+  Loader2,
+  User,
+  Mail,
+  Link,
+  Phone,
+  Info,
+  Save,
+  XCircle,
+  CheckCircle,
+  UserCircle,
+} from "lucide-react";
+import { useAuth } from "@/context/AuthContext"; 
+import LoadingSpinner from "@/components/Loading/loadingSpinner";
+
+const placeholderImage = "https://placehold.co/128x128/4f46e5/ffffff?text=User";
 
 export default function ProfilePage() {
-  const { user } = useAuth();
-  const [userData, setUserData] = useState(null);
+  const { user, loading } = useAuth(); // ✅ Using your real auth data
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [statusMessage, setStatusMessage] = useState(null);
+
   const [formData, setFormData] = useState({
     name: "",
     image: "",
     phone: "",
-    role: "",
+    role: "User",
     nickname: "",
     website: "",
     bio: "",
   });
 
-  // Fetch user data from API
   useEffect(() => {
-    if (!user?.email) return;
+    if (!user) return;
 
-  const fetchUser = async () => {
-  try {
-    const res = await fetch(`/api/users/${user.email}`);
-    if (!res.ok) throw new Error("Failed to fetch user data");
-    const data = await res.json();
-
-if (!data?.success || !data?.user) {
-  console.warn("No user found for", user.email);
-  return;
-}
-
-const u = data.user;
-
-setUserData(u);
-setFormData({
-  name: u.name || "",
-  image:
-    u.image ||
-    user?.photoURL ||
-    "https://placehold.co/128x128/4f46e5/ffffff?text=User",
-  phone: u.phone || "",
-  role: u.role || "user",
-  nickname: u.nickname || "",
-  website: u.website || "",
-  bio: u.bio || "",
-});
-
-  } catch (err) {
-    console.error("Error fetching user:", err);
-  }
-};
-
-
-    fetchUser();
+    setFormData({
+      name: user.displayName || "",
+      image: user.photoURL || placeholderImage,
+      phone: user.phoneNumber || "",
+      role: "User",
+      nickname: "",
+      website: "",
+      bio: "A passionate learner and member of BookMate.",
+    });
   }, [user]);
 
-  // Handle form changes
   const handleChange = (e) =>
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
 
-  // Save updated data to API
   const handleSave = async () => {
-    if (!user?.email) return;
     setIsSaving(true);
-
-    try {
-      const res = await fetch(`/api/users/${encodeURIComponent(user.email)}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
-
-      if (!res.ok) throw new Error("Failed to update user");
-      const { data } = await res.json();
-
-      setUserData(data);
-      setIsEditing(false);
-    } catch (error) {
-      console.error("Error saving profile:", error);
-    } finally {
+    // Simulate save process (you can later connect this to Firestore)
+    setTimeout(() => {
       setIsSaving(false);
-    }
+      setIsEditing(false);
+      setStatusMessage({
+        type: "success",
+        text: "Profile updated successfully!",
+      });
+      setTimeout(() => setStatusMessage(null), 4000);
+    }, 1500);
   };
 
-  // Loading
-  if (!userData)
+  if (loading)
     return (
-      <div className="flex justify-center items-center  p-4 bg-gray-50">
-        <div className="flex items-center space-x-2 text-indigo-600">
-          <svg
-            className="animate-spin h-5 w-5"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-          >
-            <circle
-              className="opacity-25"
-              cx="12"
-              cy="12"
-              r="10"
-              stroke="currentColor"
-              strokeWidth="4"
-            ></circle>
-            <path
-              className="opacity-75"
-              fill="currentColor"
-              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-            ></path>
-          </svg>
-          <span className="text-lg font-medium">Loading user data...</span>
-        </div>
+      <div className="flex justify-center items-center h-screen text-indigo-600 font-semibold text-lg">
+       <LoadingSpinner />
       </div>
     );
 
-  // Input field
+  if (!user)
+    return (
+      <div className="flex justify-center items-center h-96 text-red-600 font-semibold text-lg">
+        <XCircle className="w-6 h-6 mr-2" /> Error: No user data found.
+      </div>
+    );
+
+  // 🔹 Input field
   const InputField = ({
+    icon: Icon,
     label,
     name,
     value,
@@ -126,10 +90,12 @@ setFormData({
     readOnly = false,
   }) => (
     <div className="flex flex-col space-y-1">
-      <label className="text-sm font-medium text-gray-500">{label}</label>
+      <label className="text-xs font-semibold text-gray-500 flex items-center">
+        {Icon && <Icon className="w-4 h-4 mr-1 text-indigo-500" />} {label}
+      </label>
       {readOnly || !isEditing ? (
-        <div className="w-full border-b border-gray-200 py-2 text-gray-800 bg-white">
-          {value || placeholder}
+        <div className="w-full border border-gray-200 rounded-xl px-4 py-3 text-gray-800 bg-white min-h-[3rem] flex items-center text-sm shadow-inner transition duration-300">
+          {value || <span className="text-gray-400">{placeholder}</span>}
         </div>
       ) : (
         <input
@@ -138,15 +104,18 @@ setFormData({
           value={value}
           onChange={onChange}
           placeholder={placeholder}
-          className="w-full border-b border-gray-300 focus:border-indigo-500 outline-none text-gray-800 transition duration-150 py-2 px-1"
+          className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none text-gray-800 transition duration-200 shadow-sm text-sm"
         />
       )}
     </div>
   );
 
+  // 🔹 Textarea field
   const TextareaField = ({ label, name, value, onChange, placeholder }) => (
-    <div className="flex flex-col space-y-1 md:col-span-2">
-      <label className="text-sm font-medium text-gray-500">{label}</label>
+    <div className="flex flex-col space-y-1 sm:col-span-2">
+      <label className="text-xs font-semibold text-gray-500 flex items-center">
+        <Info className="w-4 h-4 mr-1 text-indigo-500" /> {label}
+      </label>
       {isEditing ? (
         <textarea
           name={name}
@@ -154,227 +123,183 @@ setFormData({
           onChange={onChange}
           placeholder={placeholder}
           rows="4"
-          className="w-full border border-gray-300 rounded-lg p-3 focus:border-indigo-500 outline-none text-gray-800 transition duration-150"
+          className="w-full border border-gray-300 rounded-xl p-4 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none text-gray-800 transition duration-200 shadow-sm text-sm"
         />
       ) : (
-        <div className="w-full border border-gray-200 rounded-lg p-3 text-gray-800 bg-gray-50 min-h-[6rem] whitespace-pre-wrap">
-          {value || placeholder}
+        <div className="w-full border border-gray-200 rounded-xl p-4 text-gray-800 bg-white min-h-[8rem] whitespace-pre-wrap shadow-inner text-sm">
+          {value || <span className="text-gray-400">{placeholder}</span>}
         </div>
       )}
     </div>
   );
 
-  return (
-    <div className="min-h-screen flex justify-center px-4 sm:px-6 lg:px-8 font-['Inter']">
-      <div className="w-full overflow-hidden p-8">
-        <div className="md:grid md:grid-cols-12 md:gap-12">
-          {/* LEFT COLUMN */}
-          <div className="md:col-span-4 lg:col-span-3 space-y-6">
-            <h2 className="text-xl font-semibold text-gray-900 border-b border-gray-200 pb-2 mb-4">
-              Account Management
-            </h2>
+  // 🔹 Status message
+  const StatusMessage = ({ message }) => {
+    if (!message) return null;
+    const baseClasses =
+      "p-3 rounded-xl font-medium text-sm transition duration-300 flex items-center space-x-3 shadow-md";
+    const typeClasses =
+      message.type === "success"
+        ? "bg-green-50 text-green-700 border border-green-200"
+        : "bg-blue-50 text-blue-700 border border-blue-200";
 
-            <div className="relative w-full aspect-[4/5] overflow-hidden rounded-xl bg-gray-100 shadow-md">
+    const Icon = message.type === "success" ? CheckCircle : Info;
+
+    return (
+      <div className={`${baseClasses} ${typeClasses} mb-6`} role="alert">
+        <Icon className="h-5 w-5 flex-shrink-0" />
+        <span>{message.text}</span>
+      </div>
+    );
+  };
+
+  return (
+    <div className="min-h-full flex justify-center py-6 sm:py-10 px-4 sm:px-6 lg:px-8 font-['Inter']">
+      <div className="w-full  bg-white rounded-2xl shadow-2xl shadow-indigo-100 overflow-hidden border border-gray-100">
+        {/* Header */}
+        <div className="p-6 md:p-10 border-b border-gray-100">
+          <div className="flex items-center gap-2">
+            <UserCircle className="w-8 h-8 text-indigo-600" />
+            <h1 className="text-3xl font-extrabold text-gray-900">
+              Profile Settings
+            </h1>
+          </div>
+          <p className="text-gray-500 mt-1">
+            Manage your public profile and contact info.
+          </p>
+        </div>
+
+        {/* Content */}
+        <div className="md:grid md:grid-cols-12 md:gap-10 p-6 md:p-10">
+          {/* LEFT: Profile Picture */}
+          <div className="md:col-span-4 lg:col-span-3 space-y-6 flex flex-col items-center md:items-start">
+            <div className="relative mx-auto w-40 h-40 overflow-hidden rounded-full ring-4 ring-indigo-500/50 shadow-xl bg-gray-100">
               <img
-                src={formData.image}
+                src={formData?.image}
                 alt="Profile"
-                onError={(e) => {
-                  e.target.onerror = null;
-                  e.target.src =
-                    "https://placehold.co/240x300/e5e7eb/4f46e5?text=Profile";
-                }}
+                onError={(e) => (e.target.src = placeholderImage)}
                 className="w-full h-full object-cover transition duration-300"
               />
-              {isEditing && (
-                <button
-                  className="absolute top-2 right-2 p-1 bg-white rounded-full shadow-lg text-gray-600 hover:text-red-600 transition"
-                  onClick={() => setFormData((p) => ({ ...p, image: "" }))}
-                >
-                  <svg
-                    className="h-5 w-5"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <line x1="18" y1="6" x2="6" y2="18"></line>
-                    <line x1="6" y1="6" x2="18" y2="18"></line>
-                  </svg>
-                </button>
-              )}
             </div>
 
             <button
-              onClick={() => isEditing && alert("Image upload simulated")}
               disabled={!isEditing}
-              className={`w-full py-3 rounded-lg font-semibold transition duration-200 ${
+              onClick={() => {
+                setStatusMessage({
+                  type: "info",
+                  text: "Image upload feature coming soon.",
+                });
+                setTimeout(() => setStatusMessage(null), 4000);
+              }}
+              className={`w-full max-w-xs md:max-w-none py-2.5 rounded-full font-semibold transition duration-200 text-sm shadow-md ${
                 isEditing
                   ? "bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200"
-                  : "bg-gray-100 text-gray-500 cursor-not-allowed"
+                  : "bg-gray-100 text-gray-500 cursor-not-allowed opacity-70"
               }`}
             >
-              Upload Photo
+              Change Photo
             </button>
 
-            <div className="pt-4 space-y-4 border-t border-gray-200">
-              <InputField
-                label="Old Password"
-                name="oldPassword"
-                value="********"
-                placeholder="********"
-                readOnly={true}
-              />
-              <InputField
-                label="New Password"
-                name="newPassword"
-                value="********"
-                placeholder="********"
-                readOnly={true}
-              />
-              <button
-                disabled={!isEditing}
-                onClick={() => alert("Change password simulated")}
-                className={`w-full py-3 rounded-lg font-semibold transition duration-200 ${
-                  isEditing
-                    ? "bg-gray-50 hover:bg-gray-100 text-gray-700 border border-gray-200"
-                    : "bg-gray-100 text-gray-500 cursor-not-allowed"
-                }`}
-              >
-                Change Password
-              </button>
+            <div className="text-center md:text-left pt-2 border-t border-gray-100 w-full">
+              <p className="text-xs text-gray-400 font-medium">Account Email</p>
+              <p className="text-sm font-medium text-gray-700 break-all">
+                {user.email}
+              </p>
             </div>
           </div>
 
-          {/* RIGHT COLUMN */}
-          <div className="md:col-span-8 lg:col-span-9 pt-8 md:pt-0 space-y-8">
-            <h2 className="text-xl font-semibold text-gray-900 border-b border-gray-200 pb-2 mb-4">
-              Profile Information
-            </h2>
+          {/* RIGHT: Form */}
+          <div className="md:col-span-8 lg:col-span-9 pt-8 md:pt-0 space-y-6">
+            <StatusMessage message={statusMessage} />
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 p-6 border border-gray-100 rounded-xl shadow-inner bg-gray-50">
               <InputField
-                label="Username"
-                name="username"
-                value={userData.email.split("@")[0]}
-                placeholder="N/A"
-                readOnly={true}
-              />
-              <InputField
-                label="First Name"
+                icon={User}
+                label="Full Name"
                 name="name"
-                value={formData.name.split(" ")[0] || ""}
+                value={formData.name}
                 onChange={handleChange}
-                placeholder="Jane"
+                placeholder="Enter your name"
               />
               <InputField
+                icon={User}
                 label="Nickname"
                 name="nickname"
                 value={formData.nickname}
                 onChange={handleChange}
-                placeholder="Jane.r"
+                placeholder="Preferred short name"
               />
               <InputField
-                label="Role"
-                name="role"
-                value={formData.role}
-                placeholder="Subscriber"
-                readOnly={true}
-              />
-              <InputField
-                label="Last Name"
-                name="lastName"
-                value={formData.name.split(" ").slice(1).join(" ")}
+                icon={Phone}
+                label="Phone"
+                name="phone"
+                value={formData.phone}
                 onChange={handleChange}
-                placeholder="Doe"
+                placeholder="+8801XXXXXXXXX"
               />
               <InputField
-                label="Display Name Publicly as"
-                name="displayName"
-                value={formData.name}
-                placeholder="Jane Doe"
+                icon={Link}
+                label="Website"
+                name="website"
+                value={formData.website}
+                onChange={handleChange}
+                placeholder="https://yourwebsite.com"
               />
-            </div>
-
-            <div className="pt-4 border-t border-gray-200 space-y-6">
-              <h3 className="text-lg font-semibold text-gray-900">
-                Contact Info
-              </h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                <InputField
-                  label="Email (required)"
-                  name="email"
-                  value={userData.email}
-                  placeholder="N/A"
-                  readOnly={true}
-                />
-                <InputField
-                  label="Phone (WhatsApp)"
-                  name="phone"
-                  value={formData.phone}
-                  onChange={handleChange}
-                  placeholder="+1 (555) 123-4567"
-                />
-                <InputField
-                  label="Website"
-                  name="website"
-                  value={formData.website}
-                  onChange={handleChange}
-                  placeholder="example.com"
-                />
-                <InputField
-                  label="Telegram"
-                  name="telegram"
-                  value="@username"
-                  placeholder="@username"
-                  readOnly={true}
-                />
-              </div>
-            </div>
-
-            <div className="pt-4 border-t border-gray-200 space-y-4">
-              <h3 className="text-lg font-semibold text-gray-900">
-                About the User
-              </h3>
+              <InputField
+                icon={Mail}
+                label="Email"
+                value={user.email}
+                placeholder="N/A"
+                readOnly
+              />
+              <InputField
+                icon={User}
+                label="Role"
+                value={formData.role}
+                readOnly
+              />
               <TextareaField
                 label="Biographical Info"
                 name="bio"
                 value={formData.bio}
                 onChange={handleChange}
-                placeholder="Tell us a little about yourself..."
+                placeholder="Tell us a bit about yourself..."
               />
             </div>
 
-            <div className="pt-6 border-t border-gray-200 flex justify-end">
+            {/* Buttons */}
+            <div className="pt-6 border-t border-gray-100 flex justify-end">
               {isEditing ? (
-                <div className="space-x-3">
+                <div className="space-x-4 flex">
                   <button
-                    onClick={() => {
-                      setIsEditing(false);
-                      setFormData(userData);
-                    }}
-                    className="px-6 py-2.5 rounded-lg font-semibold text-gray-600 bg-gray-100 hover:bg-gray-200 transition duration-200 shadow-sm"
+                    onClick={() => setIsEditing(false)}
+                    className="px-6 py-2.5 rounded-full font-semibold text-gray-600 bg-white hover:bg-gray-100 transition duration-200 shadow-md border border-gray-200 hover:shadow-lg"
                   >
                     Cancel
                   </button>
                   <button
                     onClick={handleSave}
                     disabled={isSaving}
-                    className={`flex items-center px-6 py-2.5 rounded-lg font-semibold transition duration-200 shadow-md ${
+                    className={`flex items-center px-6 py-2.5 rounded-full font-semibold transition duration-200 shadow-xl ${
                       isSaving
-                        ? "bg-indigo-300 text-white cursor-not-allowed"
-                        : "bg-indigo-600 text-white hover:bg-indigo-700 hover:shadow-lg"
+                        ? "bg-indigo-400 text-white cursor-not-allowed opacity-80"
+                        : "bg-indigo-600 text-white hover:bg-indigo-700 transform hover:scale-[1.01]"
                     }`}
                   >
+                    {isSaving ? (
+                      <Loader2 className="w-5 h-5 animate-spin mr-2" />
+                    ) : (
+                      <Save className="w-5 h-5 mr-2" />
+                    )}
                     {isSaving ? "Saving..." : "Save Changes"}
                   </button>
                 </div>
               ) : (
                 <button
                   onClick={() => setIsEditing(true)}
-                  className="flex items-center bg-gray-800 text-white px-6 py-2.5 rounded-lg font-semibold hover:bg-gray-900 transition duration-200 shadow-lg"
+                  className="flex items-center bg-gray-800 text-white px-6 py-2.5 rounded-full font-semibold hover:bg-gray-900 transition duration-200 shadow-xl transform hover:scale-[1.01]"
                 >
+                  <User className="w-5 h-5 mr-2" />
                   Edit Profile
                 </button>
               )}

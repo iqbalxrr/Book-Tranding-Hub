@@ -136,7 +136,7 @@ export default function ContactPage() {
         <img
           src="/teem.jpg"
           alt="Our Team"
-          className="w-full h-[900] object-cover rounded-b-3xl shadow-lg"
+          className="w-full container mx-auto   h-[900] object-cover rounded-b-3xl shadow-lg"
         />
       </section>
 

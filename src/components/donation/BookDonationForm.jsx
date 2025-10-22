@@ -216,7 +216,7 @@ export default function BookDonationForm({onClose}) {
                             type="submit"
                             className="rounded-full font-bold py-2 px-8 text-white bg-indigo-600 hover:bg-indigo-100 hover:text-indigo-600 transition duration-500"
                         >
-                            Update
+                            Donate
                         </button>
                     </div>
                 </form>
