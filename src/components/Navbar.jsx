@@ -144,6 +144,8 @@ export default function Navbar() {
     });
   }
 
+  // isplay the navbar only when not in dashboard
+
   return (
     <header
       className={`w-full fixed top-0 left-0 z-50 transform transition-transform duration-500 ${

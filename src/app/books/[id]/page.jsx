@@ -139,3 +139,5 @@ const DetailesPage = async ({ params }) => {
 };
 
 export default DetailesPage;
+
+// ???
