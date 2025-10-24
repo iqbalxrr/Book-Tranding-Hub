@@ -4,7 +4,7 @@ import Link from "next/link";
 
 export default function SuccessPage() {
   return (
-    <div className="p-8 text-center pt-40">
+    <div className="p-8 text-center min-h-[90vh] pt-40">
       <h1 className="text-2xl font-bold text-green-600">
         SSLCommerz Payment
       </h1>
