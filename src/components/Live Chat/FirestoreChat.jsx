@@ -12,7 +12,7 @@ import {
 } from "firebase/firestore";
 import { DB } from "@/lib/firebase";
 import { useAuth } from "@/context/AuthContext";
-import { Send, Clock } from "lucide-react";
+import { Send, Clock, Receipt } from "lucide-react";
 import ChatNavbar from "./ChatNavbar"; // Assuming this handles the recipient info
 import { format } from "date-fns";
 
@@ -27,6 +27,7 @@ const formatMessageTime = (timestamp) => {
 
 
 export default function ChatWindow({ recipientEmail }) {
+
     const { user } = useAuth();
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState("");
@@ -54,6 +55,7 @@ export default function ChatWindow({ recipientEmail }) {
         return () => unsubscribe();
     }, [conversationId]);
 
+    console.log(recipient);
     // Fetch the recipient data for header
     useEffect(() => {
         const fetchRecipient = async () => {

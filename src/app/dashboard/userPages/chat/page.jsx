@@ -7,6 +7,7 @@ import { collection, onSnapshot, orderBy, query, limit } from "firebase/firestor
 import { DB } from '@/lib/firebase';
 import { MessageSquare, User, Clock, Loader2, Send } from 'lucide-react';
 import { formatDistanceToNow, isToday, isYesterday, format } from 'date-fns';
+import LoadingSpinner from "@/components/Loading/loadingSpinner";
 
 // Helper function for date formatting
 const formatTimestamp = (date) => {
@@ -26,6 +27,7 @@ export default function ChatListPage() {
 
   useEffect(() => {
     const fetchUsers = async () => {
+
       try {
         const res = await fetch("/api/users");
         const data = await res.json();
@@ -87,8 +89,7 @@ export default function ChatListPage() {
 
         {loading ? (
           <div className="flex justify-center items-center h-full text-gray-500">
-            <Loader2 className="w-5 h-5 animate-spin mr-2" />
-            Loading contacts...
+            <LoadingSpinner />
           </div>
         ) : users.length === 0 ? (
           <div className="p-5 text-center text-gray-500">
@@ -96,7 +97,7 @@ export default function ChatListPage() {
           </div>
         ) : (
           <div className="overflow-y-auto flex-grow p-2">
-            {users.map((U) => {
+            {users?.map((U) => {
               const lastMsg = lastMessages[U?.email];
               const truncatedText =
                 lastMsg?.text?.length > 30
