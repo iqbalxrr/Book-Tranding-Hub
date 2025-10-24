@@ -51,7 +51,6 @@ export default function PaymentForm({ onClose, setAmount, name, email, phone}) {
                 });
 
                 //  save donation to backend
-
                 const donarData = {
                     name,
                     email,

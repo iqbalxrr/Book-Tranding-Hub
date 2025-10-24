@@ -1,4 +1,5 @@
 // app/api/ssl/success/route.js
+<<<<<<< HEAD
 // import { NextResponse } from "next/server";
 
 // export const POST = async (req) => {
@@ -6,6 +7,15 @@
 //   return NextResponse.redirect(
 //         `http://localhost:3000/ssl/success`
 //        );
+=======
+import { NextResponse } from "next/server";
+
+export const POST = async (req) => {
+
+  return NextResponse.redirect(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/ssl/success`
+       );
+>>>>>>> 48999ef (ssl commerz payment getway)
 
   // try {
   //   const formData = await req.formData();
