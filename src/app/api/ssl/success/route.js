@@ -56,11 +56,11 @@ export const POST = async (req) => {
     const status = "success"; // For now, assume success
 
     // Redirect with query params
-    const redirectUrl = `http://localhost:3000/ssl/success?status=${status}&tran_id=${tran_id}`;
+    const redirectUrl = `https://book-tranding-hub.vercel.app/ssl/success?status=${status}&tran_id=${tran_id}`;
     return NextResponse.redirect(redirectUrl, 303); // 303 ensures GET request on reload
   } catch (err) {
     console.error("SSL Success Error:", err);
-    return NextResponse.redirect("http://localhost:3000/ssl/success?status=failed", 303);
+    return NextResponse.redirect("https://book-tranding-hub.vercel.app/ssl/success?status=failed", 303);
   }
 };
 
