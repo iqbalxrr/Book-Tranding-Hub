@@ -7,6 +7,7 @@ import { useParams } from "next/navigation";
 
 export default function ChatPage() {
   const {email} = useParams();
+
  
   return (
      <div className="p-4">

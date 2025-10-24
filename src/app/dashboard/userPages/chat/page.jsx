@@ -26,6 +26,7 @@ export default function ChatListPage() {
 
   useEffect(() => {
     const fetchUsers = async () => {
+
       try {
         const res = await fetch("/api/users");
         const data = await res.json();
@@ -96,7 +97,7 @@ export default function ChatListPage() {
           </div>
         ) : (
           <div className="overflow-y-auto flex-grow p-2">
-            {users.map((U) => {
+            {users?.map((U) => {
               const lastMsg = lastMessages[U?.email];
               const truncatedText =
                 lastMsg?.text?.length > 30
