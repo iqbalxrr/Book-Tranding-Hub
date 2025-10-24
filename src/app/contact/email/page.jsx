@@ -8,8 +8,6 @@ import {
   Phone,
   MapPin,
   Clock,
-  Send,
-  MessageCircle,
   Users,
   Award,
   BookOpen,
@@ -26,15 +24,12 @@ export default function ContactPage() {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleChange = (e) => {
+  const handleChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
 
-  // ✅ Save to MongoDB via /api/contact route
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-
     try {
       const res = await fetch("/api/contact", {
         method: "POST",
@@ -131,53 +126,133 @@ export default function ContactPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-rose-50 via-white to-orange-50">
-      {/* ✅ Group Photo Added */}
-      <section className="relative overflow-hidden">
+      {/* Team Image */}
+      <section className="relative mt-20 overflow-hidden py-12">
         <img
           src="/teem.jpg"
           alt="Our Team"
-          className="w-full container mx-auto   h-[900] object-cover rounded-b-3xl shadow-lg"
+          className="mx-auto w-11/12 md:w-4/5 lg:w-3/5 h-96 object-cover rounded-3xl shadow-lg"
         />
       </section>
 
       {/* Hero Section */}
-      <section className="relative py-20 overflow-hidden">
-        <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute top-20 left-10 w-72 h-72 bg-[#FF7B6B]/20 rounded-full mix-blend-multiply filter blur-2xl animate-pulse"></div>
-          <div
-            className="absolute top-40 right-10 w-96 h-96 bg-rose-300/20 rounded-full mix-blend-multiply filter blur-2xl animate-pulse"
-            style={{ animationDelay: "2s" }}
-          ></div>
-          <div
-            className="absolute bottom-20 left-1/3 w-80 h-80 bg-orange-300/20 rounded-full mix-blend-multiply filter blur-2xl animate-pulse"
-            style={{ animationDelay: "4s" }}
-          ></div>
-        </div>
-
-        <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-8 text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, ease: "easeOut" }}
-          >
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#FF7B6B]/10 text-[#FF7B6B] text-sm font-semibold mb-4">
-              <BookOpen className="w-4 h-4" /> Book Trading Hub Support
-            </div>
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-4">
-              Get in{" "}
-              <span className="bg-gradient-to-r from-[#FF7B6B] via-rose-500 to-orange-500 bg-clip-text text-transparent">
-                Touch
-              </span>
-            </h1>
-            <p className="text-[#FF7B6B] font-medium">
-              Sharing stories. Swapping favorites. Supporting readers.
-            </p>
-          </motion.div>
-        </div>
+      <section className="relative py-16 text-center">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          className="max-w-3xl mx-auto"
+        >
+          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+            Get in{" "}
+            <span className="bg-gradient-to-r from-[#FF7B6B] via-rose-500 to-orange-500 bg-clip-text text-transparent">
+              Touch
+            </span>
+          </h1>
+          <p className="text-[#FF7B6B] font-medium">
+            Sharing stories. Swapping favorites. Supporting readers.
+          </p>
+        </motion.div>
       </section>
 
-      {/* Existing content below unchanged (form + features + FAQ) */}
-      {/* ... keep your previous JSX content from here ... */}
+      {/* Contact Info Cards */}
+      <section className="max-w-6xl mx-auto px-6 lg:px-8 py-12 grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {contactInfo.map((info, idx) => (
+          <motion.div
+            key={idx}
+            className={`bg-white rounded-2xl p-6 shadow-md border border-gray-100 flex flex-col items-center text-center`}
+            whileHover={{ scale: 1.05 }}
+          >
+            <div
+              className={`p-4 mb-3 rounded-full bg-gradient-to-br ${info.color} text-white`}
+            >
+              <info.icon className="w-6 h-6" />
+            </div>
+            <h3 className="text-lg font-semibold">{info.title}</h3>
+            <p className="text-gray-600">{info.details}</p>
+            <span className="text-sm text-gray-400">{info.description}</span>
+          </motion.div>
+        ))}
+      </section>
+
+      {/* Contact Form */}
+      <section className="max-w-4xl mx-auto px-6 lg:px-8 py-12">
+        <motion.form
+          onSubmit={handleSubmit}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="bg-white rounded-3xl p-8 shadow-lg flex flex-col gap-6 border border-gray-100"
+        >
+          <h2 className="text-2xl font-bold text-gray-900 text-center">
+            Send Us a Message
+          </h2>
+          <div className="grid md:grid-cols-2 gap-4">
+            <input
+              type="text"
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+              placeholder="Your Name"
+              className="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-rose-300"
+              required
+            />
+            <input
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              placeholder="Your Email"
+              className="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-rose-300"
+              required
+            />
+          </div>
+          <input
+            type="text"
+            name="subject"
+            value={formData.subject}
+            onChange={handleChange}
+            placeholder="Subject"
+            className="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-rose-300"
+            required
+          />
+          <textarea
+            name="message"
+            value={formData.message}
+            onChange={handleChange}
+            placeholder="Your Message"
+            rows={5}
+            className="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-rose-300"
+            required
+          ></textarea>
+          <button
+            type="submit"
+            className="bg-gradient-to-r from-[#FF7B6B] via-rose-500 to-orange-500 text-white font-semibold px-6 py-3 rounded-2xl shadow-lg hover:brightness-95 transition"
+          >
+            {isSubmitting ? "Sending..." : "Send Message"}
+          </button>
+        </motion.form>
+      </section>
+
+      {/* Features Section */}
+      <section className="max-w-6xl mx-auto px-6 lg:px-8 py-12">
+        <h2 className="text-3xl font-bold text-center mb-8">Why Choose Us?</h2>
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {features.map((feature, idx) => (
+            <motion.div
+              key={idx}
+              className="bg-white rounded-2xl p-6 shadow-md border border-gray-100 text-center flex flex-col items-center"
+              whileHover={{ scale: 1.05 }}
+            >
+              <div className="p-4 mb-3 rounded-full bg-rose-100 text-[#FF7B6B]">
+                <feature.icon className="w-6 h-6" />
+              </div>
+              <h3 className="text-lg font-semibold mb-2">{feature.title}</h3>
+              <p className="text-gray-600 text-sm">{feature.description}</p>
+            </motion.div>
+          ))}
+        </div>
+      </section>
     </div>
   );
 }
