@@ -7,19 +7,16 @@ import {
     useElements,
 } from '@stripe/react-stripe-js'
 import Swal from 'sweetalert2'
-import { useAuth } from '@/context/AuthContext'
 
-export default function PaymentForm({ onClose, setAmount }) {
-    const { user } = useAuth()
+export default function PaymentForm({ onClose, setAmount, name, email, phone}) {
+   
 
     const stripe = useStripe()
     const elements = useElements()
     const [loading, setLoading] = useState(false)
 
     // Donor info state
-    const [name, setName] = useState(user?.displayName || "")
-    const [email, setEmail] = useState(user?.email || "")
-    const [phone, setPhone] = useState("")
+    
 
 
     const handleSubmit = async (e) => {
@@ -46,24 +43,59 @@ export default function PaymentForm({ onClose, setAmount }) {
                 Swal.fire(`Payment failed: ${error?.message}`)
             } else if (paymentIntent && paymentIntent.status === "succeeded") {
                 // console.log("✅ Payment successful:", paymentIntent)
-                Swal.fire("🎉 Thank you! Your donation was successful!")
+                Swal.fire({
+                    title: "Processing...",
+                    text: "Please wait while we finalize your donation.",
+                    allowOutsideClick: false,
+                    didOpen: () => Swal.showLoading(),
+                });
 
                 //  save donation to backend
                 const donarData = {
                     name,
                     email,
                     phone,
-                    amount: paymentIntent.amount / 100,
-                    transactionId: paymentIntent.id,
+                    amount: paymentIntent?.amount / 100,
+                    transactionId: paymentIntent?.id,
+                    method: 'stripe',
                     date: new Date().toLocaleDateString(),
-                }
+                };
 
-                // console.log(donarData);
-                await fetch("/api/moneyDonation", {
+                const res = await fetch("/api/moneyDonation", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(donarData),
-                })
+                });
+
+                const savedDonation = await res.json();
+
+                if (savedDonation?.insertedId) {
+                    // generate receipt
+                    const receiptRes = await fetch("/api/generateReceipt", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(donarData),
+                    });
+
+                    if (receiptRes?.ok) {
+                        const blob = await receiptRes.blob();
+                        const url = URL.createObjectURL(blob);
+
+                        const link = document.createElement("a");
+                        link.href = url;
+                        link.download = `receipt-${donarData.transactionId}.pdf`;
+                        link.click();
+                    } else {
+                        console.error("Failed to generate receipt");
+                    }
+                }
+
+                Swal.fire({
+                    icon: "success",
+                    title: "🎉 Thank you!",
+                    text: "Your donation was successful and the receipt has been downloaded.",
+                    confirmButtonText: "Close",
+                });
 
                 // Reset state and close modal
                 setAmount("")
@@ -83,41 +115,15 @@ export default function PaymentForm({ onClose, setAmount }) {
         }
     }
 
-    
+
 
     return (
         <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Donor Info Fields */}
-            <div className="space-y-3">
-                <input
-                    type="text"
-                    placeholder="Full Name"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    className="input input-bordered w-full rounded-xl"
-                    required
-                />
-                <input
-                    type="email"
-                    placeholder="Email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="input input-bordered w-full rounded-xl"
-                    required
-                />
-                <input
-                    type="text"
-                    placeholder="Phone (optional)"
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    className="input input-bordered w-full rounded-xl"
-                />
-            </div>
 
             <PaymentElement />
             <button
                 type="submit"
-                disabled={!stripe || loading}
+                disabled={!stripe || loading || !elements}
                 className="btn btn-primary w-full mt-4 rounded-xl"
             >
                 {loading ? "Processing..." : "Confirm"}

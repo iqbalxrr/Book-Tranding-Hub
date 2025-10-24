@@ -4,7 +4,7 @@
 import { useRouter } from "next/navigation";
 
 export default function LiveChatButton({  bookData }) {
-  console.log(bookData);
+  // console.log(bookData);
 
   const {bookOwner, _id, bookImage, bookName} = bookData || {}
 
