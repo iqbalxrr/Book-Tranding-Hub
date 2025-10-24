@@ -1,11 +1,11 @@
 // app/api/ssl/success/route.js
-import { NextResponse } from "next/server";
+// import { NextResponse } from "next/server";
 
-export const POST = async (req) => {
+// export const POST = async (req) => {
 
-  return NextResponse.redirect(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/ssl/success`
-       );
+//   return NextResponse.redirect(
+//         `http://localhost:3000/ssl/success`
+//        );
 
   // try {
   //   const formData = await req.formData();
@@ -34,4 +34,35 @@ export const POST = async (req) => {
   //   console.error("SSL SUCCESS ERROR:", err);
   //   return NextResponse.json({ error: "Server error" }, { status: 500 });
   // }
+// };
+
+
+// app/api/ssl/success/route.js
+// app/api/ssl/success/route.js
+import { NextResponse } from "next/server";
+
+export const POST = async (req) => {
+  try {
+    // Get the incoming form data from SSLCommerz
+    const formData = await req.formData();
+    const tran_id = formData.get("tran_id");
+    const val_id  = formData.get("val_id");
+
+    // Optional: verify the transaction using val_id with SSLCommerz validation API
+    // const verifyRes = await fetch(...);
+    // const verifyData = await verifyRes.json();
+    // const status = (verifyData.status === "VALID" || verifyData.status === "VALIDATED") ? "success" : "failed";
+
+    const status = "success"; // For now, assume success
+
+    // Redirect with query params
+    const redirectUrl = `http://localhost:3000/ssl/success?status=${status}&tran_id=${tran_id}`;
+    return NextResponse.redirect(redirectUrl, 303); // 303 ensures GET request on reload
+  } catch (err) {
+    console.error("SSL Success Error:", err);
+    return NextResponse.redirect("http://localhost:3000/ssl/success?status=failed", 303);
+  }
 };
+
+
+
