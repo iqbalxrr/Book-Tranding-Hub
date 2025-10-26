@@ -144,7 +144,6 @@ export default function Navbar() {
     });
   }
 
-  // isplay the navbar only when not in dashboard
 
   return (
     <header
