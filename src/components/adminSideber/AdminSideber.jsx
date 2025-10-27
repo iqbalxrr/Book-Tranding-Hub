@@ -8,20 +8,27 @@ import Swal from "sweetalert2";
 import { useAuth } from "@/context/AuthContext";
 
 const menuItems = [
-  { title: "Overview", url: "/dashboard/adminPages/overview", icon: <AiOutlineUser /> },
-  { title: "Books", icon: <AiFillBook />, children: [
-      { title: "All Books", url: "/dashboard/adminPages/allBooks" },
-      { title: "Add Book", url: "/dashboard/adminPages/addBook" },
-    ]
+  {
+    title: "Overview",
+    url: "/dashboard/adminPages/overview",
+    icon: <AiOutlineUser />,
   },
-  { title: "Users", icon: <AiOutlineUser />, children: [
-      { title: "All Users", url: "/dashboard/adminPages/allUsers" },
-      { title: "Add User", url: "/dashboard/adminPages/addUser" },
-    ]
+  {
+    title: "Books",
+    url: "/dashboard/adminPages/allBooks",
+    icon: <AiFillBook />,
   },
-  { title: "Settings", url: "/dashboard/adminPages/settings", icon: <AiFillSetting /> },
+  {
+    title: "Users",
+    url: "/dashboard/adminPages/allUsers",
+    icon: <AiOutlineUser />,
+  },
+  {
+    title: "Settings",
+    url: "/dashboard/adminPages/settings",
+    icon: <AiFillSetting />,
+  },
 ];
-
 export default function AdminSidebar() {
   const pathname = usePathname();
   const router = useRouter();
@@ -61,7 +68,7 @@ export default function AdminSidebar() {
       </div>
 
       {/* ===== Sidebar Menu ===== */}
-      <div className="flex-1 px-5 py-8 overflow-y-auto">
+      <div className="flex-1 px-5 py-14 overflow-y-auto">
         <ul className="space-y-1">
           {menuItems.map((item) => {
             const hasChildren = item.children && item.children.length > 0;

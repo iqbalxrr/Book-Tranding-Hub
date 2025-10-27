@@ -12,7 +12,7 @@ import React from "react";
 import { TbArrowsCross } from "react-icons/tb";
 
 const DetailesPage = async ({ params }) => {
-  const { id } = params;
+  const { id } = await params;
 
   // Fetch book data directly using fetch
   const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/books/${id}`);
