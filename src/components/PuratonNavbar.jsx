@@ -1,3 +1,5 @@
+"puraton"
+
 "use client";
 
 import Link from "next/link";
@@ -5,6 +7,7 @@ import {
   Menu,
   X,
   ChevronDown,
+  Bell,
   Heart,
   Facebook,
   Twitter,
@@ -17,22 +20,25 @@ import toast from "react-hot-toast";
 import Swal from "sweetalert2";
 import { useAuth } from "@/context/AuthContext";
 import NotificationButton from "./notifications/NotificationBell";
-import NotificationSlider from "./notifications/NotificationSlider";
-
 
 export default function Navbar() {
+
   const [isOpen, setIsOpen] = useState(false);
   const [showNav, setShowNav] = useState(true);
   const [bookmarks, setBookmarks] = useState([]);
+
+  const [notifications, setNotifications] = useState([
+    { id: 1, text: "New book added!" },
+    { id: 2, text: "Your bookmark was liked!" },
+  ]);
+
   const [sliderOpen, setSliderOpen] = useState(false);
   const [sliderType, setSliderType] = useState(""); // "bookmark" or "notification"
-  const [mobileSubMenuOpen, setMobileSubMenuOpen] = useState({});
+  const [mobileSubMenuOpen, setMobileSubMenuOpen] = useState({}); // track open submenus
   const dropdownRef = useRef(null);
 
   const { user, logout } = useAuth();
-
   const pathName = usePathname();
-  
   const isDashboard = pathName.includes("/dashboard");
 
   // SweetAlert welcome
@@ -54,14 +60,16 @@ export default function Navbar() {
   const fetchBookmarks = async () => {
     if (!user?.email) return;
     try {
-      const res = await fetch(`/api/bookmarks?email=${user.email}`);
+      const res = await fetch(`/api/bookmarks?email=${user?.email}`);
       const data = await res.json();
-      if (data.success) setBookmarks(data.data);
+      if (data.success) setBookmarks(data?.data);
     } catch (err) {
       console.error(err);
       toast.error("Failed to fetch bookmarks");
     }
   };
+
+  console.log(bookmarks, user);
 
   useEffect(() => {
     fetchBookmarks();
@@ -143,6 +151,7 @@ export default function Navbar() {
       ],
     });
   }
+
 
   return (
     <header
@@ -251,8 +260,18 @@ export default function Navbar() {
                   </button>
                 </div>
 
-                {/* Notification Button */}
-                <NotificationButton handleSlider={handleSlider} />
+                {/* <button
+                  onClick={() => handleSlider("notification")}
+                  className="relative hover:text-teal-500"
+                >
+                  <Bell size={22} />
+                  {notifications.length > 0 && (
+                    <span className="absolute top-0 right-0 inline-block w-2 h-2 bg-red-500 rounded-full"></span>
+                  )}
+                </button> */}
+                <NotificationButton
+                handleSlider={handleSlider}
+                />
               </div>
             </div>
 
@@ -326,6 +345,11 @@ export default function Navbar() {
                 >
                   <Bell size={20} className="mr-2" />
                   Notifications
+                  {notifications.length > 0 && (
+                    <span className="ml-auto inline-block w-5 h-5 bg-red-500 text-white text-xs rounded-full text-center">
+                      {notifications.length}
+                    </span>
+                  )}
                 </button>
               </div>
             </div>
@@ -333,45 +357,54 @@ export default function Navbar() {
         )}
       </nav>
 
-      {/* Slider Panels */}
-      {sliderType === "notification" && (
-        <NotificationSlider
-          sliderOpen={sliderOpen}
-          closeSlider={() => setSliderOpen(false)}
-        />
-      )}
-      {/* Bookmark Slider (existing) */}
+      {/* Right Slider */}
       <div
         className={`fixed top-0 right-0 h-screen w-80 bg-white shadow-2xl transform transition-transform duration-300 z-50 ${
-          sliderOpen && sliderType === "bookmark"
-            ? "translate-x-0"
-            : "translate-x-full"
+          sliderOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >
         <div className="flex justify-between items-center p-4 border-b sticky top-0 bg-white z-50">
-          <h2 className="text-lg font-semibold">Bookmarks</h2>
-          <button onClick={() => setSliderOpen(false)}>X</button>
+          <h2 className="text-lg font-semibold">
+            {sliderType === "bookmark" ? "Bookmarks" : "Notifications"}
+          </h2>
+          <button onClick={() => setSliderOpen(false)}>
+            <X size={20} />
+          </button>
         </div>
         <div className="overflow-y-auto h-full p-4">
-          {bookmarks.length === 0 ? (
-            <p className="text-gray-500 text-sm text-center">No bookmarks yet.</p>
+          {sliderType === "bookmark" ? (
+            bookmarks.length === 0 ? (
+              <p className="text-gray-500 text-sm text-center">
+                No bookmarks yet.
+              </p>
+            ) : (
+              bookmarks.map((b) => (
+                <Link
+                  key={b._id}
+                  href={`/books/${b?.book?._id}`}
+                  className="flex items-center p-3 hover:bg-teal-50 transition-colors duration-200"
+                >
+                  <img
+                    src={b?.book.bookImage}
+                    alt={b.book.bookName}
+                    className="w-10 h-10 rounded object-cover mr-3 shadow-sm"
+                  />
+                  <div className="text-sm">
+                    <p className="font-medium">{b?.book.bookName}</p>
+                    <p className="text-gray-500 text-xs">
+                      {b?.book.authorName}
+                    </p>
+                  </div>
+                </Link>
+              ))
+            )
+          ) : notifications.length === 0 ? (
+            <p className="text-gray-500 text-sm text-center">No notifications.</p>
           ) : (
-            bookmarks.map((b) => (
-              <Link
-                key={b._id}
-                href={`/books/${b?.book?._id}`}
-                className="flex items-center p-3 hover:bg-teal-50 transition-colors duration-200"
-              >
-                <img
-                  src={b?.book.bookImage}
-                  alt={b.book.bookName}
-                  className="w-10 h-10 rounded object-cover mr-3 shadow-sm"
-                />
-                <div className="text-sm">
-                  <p className="font-medium">{b?.book.bookName}</p>
-                  <p className="text-gray-500 text-xs">{b?.book.authorName}</p>
-                </div>
-              </Link>
+            notifications.map((n) => (
+              <div key={n.id} className="p-3 border-b last:border-b-0 text-sm">
+                {n.text}
+              </div>
             ))
           )}
         </div>
