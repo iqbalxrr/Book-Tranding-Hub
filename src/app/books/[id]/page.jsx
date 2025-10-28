@@ -8,7 +8,6 @@ import Tabs from "@/components/details/Tabs";
 import LiveChatButton from "@/components/Live Chat/LiveChatButton";
 import LiveLocation from "@/components/LiveLocation/LiveLocation";
 import ReadMore from "@/components/modal/ReadMore";
-import SendNo from "@/components/notifications/SendNo";
 import React from "react";
 import { TbArrowsCross } from "react-icons/tb";
 
@@ -81,7 +80,6 @@ const DetailesPage = async ({ params }) => {
               <ReadMore book={data?.book} />
               <ExchangedButton bookId={data?.book?._id} status={data?.book?.status} bookOwner={bookOwner}/>
               <LiveChatButton bookData={data?.book} />
-              <SendNo bookOwner={bookOwner} />
             </div>
           </div>
 

@@ -5,7 +5,7 @@ import { addNotification } from "@/lib/addNotification";
 import React, { useState } from "react";
 import Swal from "sweetalert2";
 
-const ExchangedButton = ({ bookId, status: initialStatus, bookOwner}) => {
+const ExchangedButton = ({ bookId, status: initialStatus, bookOwner }) => {
   const { user } = useAuth();
   const requestedUser = user?.email;
   const requestedUserName = user?.displayName;
@@ -23,6 +23,7 @@ const ExchangedButton = ({ bookId, status: initialStatus, bookOwner}) => {
       });
       return;
     }
+
 
     setLoading(true);
 
@@ -49,9 +50,8 @@ const ExchangedButton = ({ bookId, status: initialStatus, bookOwner}) => {
         await addNotification(bookOwner, {
           type: "trade_request",
           text: `${requestedUserName || requestedUser} wants to exchange a book with you.`,
-          url: `/trades/${tradeId}`,
+          url: `/dashboard/userPages/exchangeRequest`,
         });
-
 
       } else {
         Swal.fire({

@@ -9,6 +9,7 @@ export async function POST(req) {
     const body = await req.json();
     const { email, book } = body;
 
+
     if (!email || !book) {
       return NextResponse.json({ message: "Email and book required" }, { status: 400 });
     }
@@ -17,7 +18,7 @@ export async function POST(req) {
     const collection =await db.collection("bookmarks");
 
     // Duplicate check
-    const exist = await collection.findOne({ "book._id": book._id });
+    const exist = await collection.findOne({ "book._id": book._id, email });
     if (exist) {
       return NextResponse.json({ message: "Already bookmarked" }, { status: 400 });
     }
