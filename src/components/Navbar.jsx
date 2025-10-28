@@ -5,6 +5,7 @@ import {
   Menu,
   X,
   ChevronDown,
+  Bell,
   Heart,
   Facebook,
   Twitter,
@@ -16,23 +17,24 @@ import { usePathname } from "next/navigation";
 import toast from "react-hot-toast";
 import Swal from "sweetalert2";
 import { useAuth } from "@/context/AuthContext";
-import NotificationButton from "./notifications/NotificationBell";
 import NotificationSlider from "./notifications/NotificationSlider";
+import NotificationBell from "./notifications/NotificationBell";
 
 
 export default function Navbar() {
+
   const [isOpen, setIsOpen] = useState(false);
   const [showNav, setShowNav] = useState(true);
   const [bookmarks, setBookmarks] = useState([]);
   const [sliderOpen, setSliderOpen] = useState(false);
   const [sliderType, setSliderType] = useState(""); // "bookmark" or "notification"
-  const [mobileSubMenuOpen, setMobileSubMenuOpen] = useState({});
-  const dropdownRef = useRef(null);
+  const [mobileSubMenuOpen, setMobileSubMenuOpen] = useState({}); // track open submenus
+  const dropdownRef = useRef(null)
+  const notificationRef = useRef(null)
+
 
   const { user, logout } = useAuth();
-
   const pathName = usePathname();
-  
   const isDashboard = pathName.includes("/dashboard");
 
   // SweetAlert welcome
@@ -54,7 +56,7 @@ export default function Navbar() {
   const fetchBookmarks = async () => {
     if (!user?.email) return;
     try {
-      const res = await fetch(`/api/bookmarks?email=${user.email}`);
+      const res = await fetch(`/api/bookmarks?email=${user?.email}`);
       const data = await res.json();
       if (data.success) setBookmarks(data.data);
     } catch (err) {
@@ -69,6 +71,7 @@ export default function Navbar() {
     return () => clearInterval(interval);
   }, [user?.email]);
 
+
   useEffect(() => {
     const handleBookmarkChange = () => fetchBookmarks();
     window.addEventListener("bookmark-updated", handleBookmarkChange);
@@ -76,15 +79,21 @@ export default function Navbar() {
       window.removeEventListener("bookmark-updated", handleBookmarkChange);
   }, [user?.email]);
 
-  useEffect(() => {
+useEffect(() => {
     const handleClickOutside = (e) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
-        setSliderOpen(false);
-      }
+        // 1. Check if the click is inside the main icon/dropdown area
+        const clickedInsideDropdown = dropdownRef.current && dropdownRef.current.contains(e.target);
+        // 2. Check if the click is inside the Notification Slider
+        const clickedInsideNotification = notificationRef.current && notificationRef.current.contains(e.target);
+        // ONLY close the slider if the click is NOT inside EITHER element
+        if (!clickedInsideDropdown && !clickedInsideNotification) {
+            setSliderOpen(false);
+        }
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+// Add sliderOpen and sliderType to dependencies for proper re-check when state changes
+}, [sliderOpen, sliderType]);
 
   if (isDashboard) return null;
 
@@ -251,8 +260,8 @@ export default function Navbar() {
                   </button>
                 </div>
 
-                {/* Notification Button */}
-                <NotificationButton handleSlider={handleSlider} />
+                {/* Notification Bell */}
+                <NotificationBell handleSlider={handleSlider} />
               </div>
             </div>
 
@@ -338,44 +347,10 @@ export default function Navbar() {
         <NotificationSlider
           sliderOpen={sliderOpen}
           closeSlider={() => setSliderOpen(false)}
+          sidebarRef={notificationRef}
         />
       )}
-      {/* Bookmark Slider (existing) */}
-      <div
-        className={`fixed top-0 right-0 h-screen w-80 bg-white shadow-2xl transform transition-transform duration-300 z-50 ${
-          sliderOpen && sliderType === "bookmark"
-            ? "translate-x-0"
-            : "translate-x-full"
-        }`}
-      >
-        <div className="flex justify-between items-center p-4 border-b sticky top-0 bg-white z-50">
-          <h2 className="text-lg font-semibold">Bookmarks</h2>
-          <button onClick={() => setSliderOpen(false)}>X</button>
-        </div>
-        <div className="overflow-y-auto h-full p-4">
-          {bookmarks.length === 0 ? (
-            <p className="text-gray-500 text-sm text-center">No bookmarks yet.</p>
-          ) : (
-            bookmarks.map((b) => (
-              <Link
-                key={b._id}
-                href={`/books/${b?.book?._id}`}
-                className="flex items-center p-3 hover:bg-teal-50 transition-colors duration-200"
-              >
-                <img
-                  src={b?.book.bookImage}
-                  alt={b.book.bookName}
-                  className="w-10 h-10 rounded object-cover mr-3 shadow-sm"
-                />
-                <div className="text-sm">
-                  <p className="font-medium">{b?.book.bookName}</p>
-                  <p className="text-gray-500 text-xs">{b?.book.authorName}</p>
-                </div>
-              </Link>
-            ))
-          )}
-        </div>
-      </div>
+
     </header>
   );
 }

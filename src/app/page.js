@@ -6,9 +6,7 @@ import LatestNews from "@/components/LatestNews";
 import FeaturedAuthors from "@/components/FeaturedAuthors";
 import Testmonial from "@/components/Testmonial";
 import CtaSection from "@/components/CtaSection";
-import DonateSection from "@/components/donation/Donation";
 import Donation from "@/components/donation/Donation";
-import SendNo from "@/components/notifications/SendNo";
 
 
 
@@ -17,7 +15,6 @@ export default function Home() {
   return (
     <div>
        <Hero />
-       <SendNo />
        <FeaturedBooks/>
        <TopCategories />
       <TopRated/>

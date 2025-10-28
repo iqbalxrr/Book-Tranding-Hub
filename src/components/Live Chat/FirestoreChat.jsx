@@ -32,6 +32,7 @@ export default function ChatWindow({ recipientEmail }) {
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState("");
     const [recipient, setRecipient] = useState({});
+    
     const messagesEndRef = useRef(null);
 
     // Generate conversation ID
