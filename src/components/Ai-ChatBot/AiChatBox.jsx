@@ -47,7 +47,7 @@ export default function AiChatWidget() {
         )}
         {showTooltip && (
           <div className="mb-2 px-3 py-1 rounded-2xl bg-[#f59191] text-white text-sm shadow-lg">
-            Find book recommendations!
+           book recommendations!
           </div>
         )}
         {showTooltip && (
