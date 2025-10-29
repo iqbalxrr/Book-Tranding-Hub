@@ -6,7 +6,7 @@ import { DB } from "@/lib/firebase";
 import { useNotifications } from "@/lib/useNotifications";
 import { doc, updateDoc, deleteDoc } from "firebase/firestore";
 import Link from "next/link";
-import { Trash2 } from 'lucide-react';
+import { X, Trash2 } from 'lucide-react';
 // 💡 REQUIRED IMPORTS: useRef and useEffect
 import { useRef, useEffect } from "react";
 
@@ -20,24 +20,24 @@ export default function NotificationSlider({ sliderOpen, closeSlider, sidebarRef
     await updateDoc(ref, { read: true });
   };
 
-  
-// 💡 NEW LOGIC: Mark all as read when the sidebar is opened
-    useEffect(() => {
-        // Only run if the slider is open (component is rendered) and we have unread notifications
-        if (sliderOpen && notifications.some(n => !n.read)) {
-            // Define the marking logic inside useEffect for immediate execution
-            const markAllOnOpen = async () => {
-                for (const n of notifications) {
-                    if (!n.read) {
-                        const ref = doc(DB, "notifications", n.id);
-                        // Using set with merge: true is often better here, but updateDoc works
-                        await updateDoc(ref, { read: true }); 
-                    }
-                }
-            };
-            markAllOnOpen();
+
+  // 💡 NEW LOGIC: Mark all as read when the sidebar is opened
+  useEffect(() => {
+    // Only run if the slider is open (component is rendered) and we have unread notifications
+    if (sliderOpen && notifications.some(n => !n.read)) {
+      // Define the marking logic inside useEffect for immediate execution
+      const markAllOnOpen = async () => {
+        for (const n of notifications) {
+          if (!n.read) {
+            const ref = doc(DB, "notifications", n.id);
+            // Using set with merge: true is often better here, but updateDoc works
+            await updateDoc(ref, { read: true });
+          }
         }
-    }, [sliderOpen, notifications, user]); // Re-run when sidebar opens or notifications change
+      };
+      markAllOnOpen();
+    }
+  }, [sliderOpen, notifications, user]); // Re-run when sidebar opens or notifications change
 
 
   // Delete a notification
@@ -59,7 +59,6 @@ export default function NotificationSlider({ sliderOpen, closeSlider, sidebarRef
   if (!sliderOpen) return null; // don't render if closed
 
   return (
-    // Full-screen overlay. It no longer needs the closeSlider function directly.
     <div
       className="fixed top-0 left-0 w-screen h-screen bg-black/30 z-50"
     >
@@ -69,10 +68,17 @@ export default function NotificationSlider({ sliderOpen, closeSlider, sidebarRef
         ref={sidebarRef}
         className="absolute top-0 right-0 h-full w-80 bg-white shadow-2xl flex flex-col"
       >
+
         {/* Header */}
-        <div className="flex justify-between items-center p-4 border-b border-gray-300 sticky top-0 bg-white z-50">
-          <h2 className="text-lg font-semibold">Notifications</h2>
-          <button onClick={closeSlider}>X</button>
+        <div className="flex justify-between items-center p-4 border-b border-gray-400 sticky top-0 bg-white z-50">
+          <h2 className="text-lg font-semibold flex items-center gap-2">Notifications</h2>
+          <button
+            onClick={closeSlider}
+            className="p-2 text-gray-500 hover:text-gray-900 transition"
+            aria-label="Close Bookmarks"
+          >
+            <X size={20} />
+          </button>
         </div>
 
         {/* Notification list */}
@@ -83,12 +89,10 @@ export default function NotificationSlider({ sliderOpen, closeSlider, sidebarRef
             notifications.map((n) => (
               <div
                 key={n.id}
-                // 👇 Simple divider for the list item
-                className="p-3 border border-gray-200 text-sm mt-3 rounded-xl"
+                className="p-3 border border-gray-200 text-sm mb-2 rounded-xl"
               >
                 {/* TOP ROW: Notification Text and Time Ago */}
                 <div className="flex justify-between items-start mb-1">
-                  {/* Notification Text (Clickable to mark read) */}
                   <div
                     onClick={() => markAsRead(n.id)}
                     className="flex-1 min-w-0 pr-4"
@@ -131,10 +135,11 @@ export default function NotificationSlider({ sliderOpen, closeSlider, sidebarRef
 
                   {/* Delete Button */}
                   <button
-                    onClick={() => deleteNotification(n.id)}
-                    className="text-red-500 text-xs hover:underline transition duration-150"
+                  onClick={() => deleteNotification(n.id)}
+                    className="text-red-500 text-xs hover:text-red-700 transition duration-150 flex items-center gap-1"
+                    aria-label="Delete notification"
                   >
-                    Delete
+                    <Trash2 size={14} /> Delete
                   </button>
                 </div>
               </div>
