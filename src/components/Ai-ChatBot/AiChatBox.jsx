@@ -6,6 +6,7 @@ export default function AiChatWidget() {
   const [open, setOpen] = useState(false);
   const [input, setInput] = useState("");
   const [chat, setChat] = useState([]);
+  const [showTooltip, setShowTooltip] = useState(true); // Tooltip visible initially
 
   const sendMessage = async () => {
     if (!input.trim()) return;
@@ -29,15 +30,39 @@ export default function AiChatWidget() {
     }
   };
 
+  const handleButtonClick = () => {
+    setOpen(!open);
+    setShowTooltip(false); // Hide tooltip when button clicked
+  };
+
   return (
     <>
-      {/* Floating Button */}
-      <button
-        onClick={() => setOpen(!open)}
-        className="fixed bottom-6 right-6 z-50 bg-[#eb6565] hover:bg-[#d64b4b] text-white w-16 h-16 rounded-full flex items-center justify-center shadow-lg transition-transform duration-200 hover:scale-105"
-      >
-        <FaRobot className="w-7 h-7" />
-      </button>
+      {/* Floating Button with Tooltip */}
+      <div className="fixed bottom-6 right-6 z-50 flex flex-col items-center">
+        {/* Tooltip */}
+        {showTooltip && (
+          <div className="mb-2 px-3 py-1 rounded-2xl bg-[#f59191] text-white text-sm shadow-lg">
+            Help with AI
+          </div>
+        )}
+        {showTooltip && (
+          <div className="mb-2 px-3 py-1 rounded-2xl bg-[#f59191] text-white text-sm shadow-lg">
+            Find book recommendations!
+          </div>
+        )}
+        {showTooltip && (
+          <div className="mb-2 px-3 py-1 rounded-2xl bg-[#f59191] text-white text-sm shadow-lg">
+            Ask me anything!
+          </div>
+        )}
+
+        <button
+          onClick={handleButtonClick}
+          className="bg-[#eb6565] hover:bg-[#d64b4b] text-white w-16 h-16 rounded-full flex items-center justify-center shadow-lg transition-transform duration-200 hover:scale-105"
+        >
+          <FaRobot className="w-7 h-7" />
+        </button>
+      </div>
 
       {/* Chat Popup */}
       {open && (
@@ -53,7 +78,11 @@ export default function AiChatWidget() {
             {chat.map((msg, i) => (
               <p
                 key={i}
-                className={`my-1 p-2 rounded ${msg.role === "user" ? "self-end bg-gray-100 text-blue-600" : "self-start bg-[#f7f7f7] text-green-700"}`}
+                className={`my-1 p-2 rounded ${
+                  msg.role === "user"
+                    ? "self-end bg-gray-100 text-blue-600"
+                    : "self-start bg-[#f7f7f7] text-green-700"
+                }`}
               >
                 {msg.content}
               </p>

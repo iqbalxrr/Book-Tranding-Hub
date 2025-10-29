@@ -90,6 +90,7 @@ export default function PaymentForm({ onClose, setAmount, name, email, phone}) {
                     }
                 }
 
+                 onClose()
                 Swal.fire({
                     icon: "success",
                     title: "🎉 Thank you!",
@@ -102,7 +103,7 @@ export default function PaymentForm({ onClose, setAmount, name, email, phone}) {
                 setName("")
                 setEmail("")
                 setPhone("")
-                onClose()
+               
 
             } else {
                 console.log("Payment status:", paymentIntent?.status)

@@ -21,8 +21,11 @@
     "@radix-ui/react-switch": "^1.2.6",
     "@radix-ui/react-tabs": "^1.1.13",
     "@radix-ui/react-tooltip": "^1.2.8",
+    "autoprefixer": "^10.4.21",
+
     "@stripe/react-stripe-js": "^5.2.0",
     "@stripe/stripe-js": "^8.1.0",
+
     "@tanstack/react-query": "^5.90.3",
     "ai": "^5.0.80",
     "axios": "^1.12.2",
@@ -41,6 +44,7 @@
     "nodemailer": "^6.10.1",
     "openai": "^6.7.0",
     "puppeteer": "^24.25.0",
+
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "react-hook-form": "^7.63.0",

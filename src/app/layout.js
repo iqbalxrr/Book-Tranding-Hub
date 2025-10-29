@@ -14,9 +14,12 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <AuthProvider>
+          {/* ✅ Only one Toaster */}
           <Toaster position="top-right" reverseOrder={false} />
+          
+          {/* ✅ Navbar (fixed version will handle its hooks safely) */}
           <Navbar />
-          <Toaster position="top-right" reverseOrder={false} />
+          
           {children}
           <Footer />
           <AiChatWidget />

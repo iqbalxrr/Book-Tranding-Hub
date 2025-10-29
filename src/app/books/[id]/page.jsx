@@ -31,7 +31,10 @@ const DetailesPage = async ({ params }) => {
     status,
     tags,
     totalPages,
+    bookOwner
   } = data?.book || {};
+
+  console.log(bookOwner);
 
   return (
     <div className="mt-20 space-y-24">
@@ -75,7 +78,7 @@ const DetailesPage = async ({ params }) => {
             <p className="text-gray-600 mb-6 leading-relaxed">{description}</p>
             <div className="flex flex-wrap gap-4 mb-6">
               <ReadMore book={data?.book} />
-              <ExchangedButton bookId={data?.book?._id} status={data?.book?.status} />
+              <ExchangedButton bookId={data?.book?._id} status={data?.book?.status} bookOwner={bookOwner}/>
               <LiveChatButton bookData={data?.book} />
             </div>
           </div>
