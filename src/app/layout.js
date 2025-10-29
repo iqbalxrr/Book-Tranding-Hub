@@ -4,6 +4,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { AuthProvider } from "@/context/AuthContext";
 import { Toaster } from "react-hot-toast";
+import AiChatWidget from "@/components/Ai-ChatBot/AiChatBox";
 
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
@@ -18,6 +19,7 @@ export default function RootLayout({ children }) {
           <Toaster position="top-right" reverseOrder={false} />
           {children}
           <Footer />
+          <AiChatWidget />
         </AuthProvider>
       </body>
     </html>

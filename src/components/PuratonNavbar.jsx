@@ -1,3 +1,5 @@
+"puraton"
+
 "use client";
 
 import Link from "next/link";
@@ -17,23 +19,23 @@ import { usePathname } from "next/navigation";
 import toast from "react-hot-toast";
 import Swal from "sweetalert2";
 import { useAuth } from "@/context/AuthContext";
-import NotificationSlider from "./notifications/NotificationSlider";
-import NotificationBell from "./notifications/NotificationBell";
-import BookmarkHeart from "./bookMarks/BookmarkHeart";
-import BookmarkSlider from "./bookMarks/BookmarkSlider";
-
+import NotificationButton from "./notifications/NotificationBell";
 
 export default function Navbar() {
 
   const [isOpen, setIsOpen] = useState(false);
   const [showNav, setShowNav] = useState(true);
   const [bookmarks, setBookmarks] = useState([]);
-  // const [sliderOpen, setSliderOpen] = useState(false);
-  const [sliderType, setSliderType] = useState(null); // "bookmark" or "notification"
-  const [mobileSubMenuOpen, setMobileSubMenuOpen] = useState({}); // track open submenus
 
-  const dropdownRef = useRef(null)
-  // const notificationRef = useRef(null)
+  const [notifications, setNotifications] = useState([
+    { id: 1, text: "New book added!" },
+    { id: 2, text: "Your bookmark was liked!" },
+  ]);
+
+  const [sliderOpen, setSliderOpen] = useState(false);
+  const [sliderType, setSliderType] = useState(""); // "bookmark" or "notification"
+  const [mobileSubMenuOpen, setMobileSubMenuOpen] = useState({}); // track open submenus
+  const dropdownRef = useRef(null);
 
   const { user, logout } = useAuth();
   const pathName = usePathname();
@@ -60,18 +62,20 @@ export default function Navbar() {
     try {
       const res = await fetch(`/api/bookmarks?email=${user?.email}`);
       const data = await res.json();
-      if (data.success) setBookmarks(data.data);
+      if (data.success) setBookmarks(data?.data);
     } catch (err) {
+      console.error(err);
       toast.error("Failed to fetch bookmarks");
     }
   };
+
+  console.log(bookmarks, user);
 
   useEffect(() => {
     fetchBookmarks();
     const interval = setInterval(() => fetchBookmarks(), 10000);
     return () => clearInterval(interval);
   }, [user?.email]);
-
 
   useEffect(() => {
     const handleBookmarkChange = () => fetchBookmarks();
@@ -80,59 +84,26 @@ export default function Navbar() {
       window.removeEventListener("bookmark-updated", handleBookmarkChange);
   }, [user?.email]);
 
-
   useEffect(() => {
     const handleClickOutside = (e) => {
-      if (!sliderType) return;
-      const clickedInsideSlider = dropdownRef.current && dropdownRef.current.contains(e.target);
-      if (!clickedInsideSlider) {
-        setSliderType(null);
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setSliderOpen(false);
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [sliderType]);
+  }, []);
 
   if (isDashboard) return null;
 
-
-  // 💡 New function to update the 'seen' status in the database
-  const markBookmarksAsSeen = async () => {
-    const hasUnseen = bookmarks.some(b => b.seen === false);
-    if (!hasUnseen) return;
-
-    try {
-      const res = await fetch(`/api/bookmarks/mark-as-seen`, {
-        method: 'PATCH', 
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email: user?.email }), // Identify the user
-      });
-
-      if (res?.ok) {
-        setBookmarks(prev =>
-          prev.map(b => ({ ...b, seen: true }))
-        );
-      } else {
-        toast.error("Failed to mark bookmarks as seen.");
-      }
-    } catch (err) {
-      toast.error("API error for mark-as-seen:", err);
-    }
-  };
-
-  // Replace your old handleSlider function with this:
   const handleSlider = (type) => {
     if (sliderType === type) {
-      setSliderType(null)
+      setSliderOpen(!sliderOpen);
     } else {
-      setSliderType(type)
-      if (type === 'bookmark') {
-        markBookmarksAsSeen();
-      }
+      setSliderType(type);
+      setSliderOpen(true);
     }
-  }
+  };
 
   const menuItems = [
     {
@@ -181,10 +152,12 @@ export default function Navbar() {
     });
   }
 
+
   return (
     <header
-      className={`w-full fixed top-0 left-0 z-50 transform transition-transform duration-500 ${showNav ? "translate-y-0" : "-translate-y-full"
-        }`}
+      className={`w-full fixed top-0 left-0 z-50 transform transition-transform duration-500 ${
+        showNav ? "translate-y-0" : "-translate-y-full"
+      }`}
     >
       {/* Top Navbar */}
       <div className="bg-teal-500 text-white text-sm">
@@ -273,11 +246,32 @@ export default function Navbar() {
 
               {/* Icons */}
               <div className="ml-2 flex items-center space-x-4">
+                <div className="relative" ref={dropdownRef}>
+                  <button
+                    onClick={() => handleSlider("bookmark")}
+                    className="hover:text-teal-500 relative"
+                  >
+                    <Heart size={20} />
+                    {bookmarks.length > 0 && (
+                      <span className="absolute -top-3 -right-3 inline-block w-4 h-4 bg-red-500 text-white text-xs rounded-full text-center">
+                        {bookmarks.length}
+                      </span>
+                    )}
+                  </button>
+                </div>
 
-                <BookmarkHeart bookmarks={bookmarks} handleSlider={handleSlider} />
-
-                {/* Notification Bell */}
-                <NotificationBell handleSlider={handleSlider} />
+                {/* <button
+                  onClick={() => handleSlider("notification")}
+                  className="relative hover:text-teal-500"
+                >
+                  <Bell size={22} />
+                  {notifications.length > 0 && (
+                    <span className="absolute top-0 right-0 inline-block w-2 h-2 bg-red-500 rounded-full"></span>
+                  )}
+                </button> */}
+                <NotificationButton
+                handleSlider={handleSlider}
+                />
               </div>
             </div>
 
@@ -308,8 +302,9 @@ export default function Navbar() {
                   >
                     {menu.name}
                     <ChevronDown
-                      className={`ml-1 transform transition-transform duration-300 ${mobileSubMenuOpen[menu.name] ? "rotate-180" : ""
-                        }`}
+                      className={`ml-1 transform transition-transform duration-300 ${
+                        mobileSubMenuOpen[menu.name] ? "rotate-180" : ""
+                      }`}
                       size={16}
                     />
                   </button>
@@ -350,6 +345,11 @@ export default function Navbar() {
                 >
                   <Bell size={20} className="mr-2" />
                   Notifications
+                  {notifications.length > 0 && (
+                    <span className="ml-auto inline-block w-5 h-5 bg-red-500 text-white text-xs rounded-full text-center">
+                      {notifications.length}
+                    </span>
+                  )}
                 </button>
               </div>
             </div>
@@ -357,26 +357,58 @@ export default function Navbar() {
         )}
       </nav>
 
-      {/* Slider Panels */}
-      {sliderType === "notification" && (
-        <NotificationSlider
-          // We only need to check if sliderType is NOT null, so we use a boolean derived from it
-          sliderOpen={sliderType === "notification"}
-          closeSlider={() => setSliderType(null)} // Set state back to null to close
-          sidebarRef={dropdownRef} // Renamed for clarity in the ref
-        />
-      )}
-
-      {sliderType === 'bookmark' && (
-        <BookmarkSlider
-          bookmarks={bookmarks}
-          sliderOpen={sliderType === "bookmark"} // Derived boolean
-          closeSlider={() => setSliderType(null)} // Set state back to null to close
-          sidebarRef={dropdownRef}
-          setBookmarks={setBookmarks}
-        />
-      )}
-
+      {/* Right Slider */}
+      <div
+        className={`fixed top-0 right-0 h-screen w-80 bg-white shadow-2xl transform transition-transform duration-300 z-50 ${
+          sliderOpen ? "translate-x-0" : "translate-x-full"
+        }`}
+      >
+        <div className="flex justify-between items-center p-4 border-b sticky top-0 bg-white z-50">
+          <h2 className="text-lg font-semibold">
+            {sliderType === "bookmark" ? "Bookmarks" : "Notifications"}
+          </h2>
+          <button onClick={() => setSliderOpen(false)}>
+            <X size={20} />
+          </button>
+        </div>
+        <div className="overflow-y-auto h-full p-4">
+          {sliderType === "bookmark" ? (
+            bookmarks.length === 0 ? (
+              <p className="text-gray-500 text-sm text-center">
+                No bookmarks yet.
+              </p>
+            ) : (
+              bookmarks.map((b) => (
+                <Link
+                  key={b._id}
+                  href={`/books/${b?.book?._id}`}
+                  className="flex items-center p-3 hover:bg-teal-50 transition-colors duration-200"
+                >
+                  <img
+                    src={b?.book.bookImage}
+                    alt={b.book.bookName}
+                    className="w-10 h-10 rounded object-cover mr-3 shadow-sm"
+                  />
+                  <div className="text-sm">
+                    <p className="font-medium">{b?.book.bookName}</p>
+                    <p className="text-gray-500 text-xs">
+                      {b?.book.authorName}
+                    </p>
+                  </div>
+                </Link>
+              ))
+            )
+          ) : notifications.length === 0 ? (
+            <p className="text-gray-500 text-sm text-center">No notifications.</p>
+          ) : (
+            notifications.map((n) => (
+              <div key={n.id} className="p-3 border-b last:border-b-0 text-sm">
+                {n.text}
+              </div>
+            ))
+          )}
+        </div>
+      </div>
     </header>
   );
 }

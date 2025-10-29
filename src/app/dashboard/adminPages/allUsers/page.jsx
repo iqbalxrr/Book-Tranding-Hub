@@ -1,5 +1,6 @@
 "use client";
 
+import LoadingSpinner from "@/components/Loading/loadingSpinner";
 import { useState, useEffect } from "react";
 import Swal from "sweetalert2";
 
@@ -51,7 +52,7 @@ export default function AllUsersPage() {
     }
   };
 
-  if (loading) return <p className="p-6">Loading users...</p>;
+  if (loading) return  <LoadingSpinner />;
 
   return (
     <div className="p-6">
