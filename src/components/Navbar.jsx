@@ -97,30 +97,52 @@ export default function Navbar() {
 
 
   // 💡 New function to update the 'seen' status in the database
-  const markBookmarksAsSeen = async () => {
-    const hasUnseen = bookmarks.some(b => b.seen === false);
-    if (!hasUnseen) return;
+const markBookmarksAsSeen = async () => {
+  const hasUnseen = bookmarks.some(b => b.seen === false);
+  if (!hasUnseen) return;
 
-    try {
-      const res = await fetch(`/api/bookmarks/mark-as-seen`, {
-        method: 'PATCH', 
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email: user?.email }), // Identify the user
+  try {
+    const res = await fetch(`/api/bookmarks/mark-as-seen`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email: user?.email }),
+    });
+
+    if (res?.ok) {
+      setBookmarks(prev =>
+        prev.map(b => ({ ...b, seen: true }))
+      );
+
+      // ✅ Sweet success alert
+      Swal.fire({
+        title: "Marked as Seen!",
+        text: "All your bookmarks have been marked as seen successfully.",
+        icon: "success",
+        confirmButtonText: "OK",
+        timer: 2000,
+        timerProgressBar: true,
       });
-
-      if (res?.ok) {
-        setBookmarks(prev =>
-          prev.map(b => ({ ...b, seen: true }))
-        );
-      } else {
-        toast.error("Failed to mark bookmarks as seen.");
-      }
-    } catch (err) {
-      toast.error("API error for mark-as-seen:", err);
+    } else {
+      // ⚠️ Sweet error alert
+      Swal.fire({
+        title: "Failed!",
+        text: "Could not mark bookmarks as seen.",
+        icon: "error",
+        confirmButtonText: "Try Again",
+      });
     }
-  };
+  } catch (err) {
+    // ❌ API Error alert
+    Swal.fire({
+      title: "Error!",
+      text: `API error while marking as seen: ${err.message}`,
+      icon: "error",
+      confirmButtonText: "OK",
+    });
+  }
+};
 
   // Replace your old handleSlider function with this:
   const handleSlider = (type) => {
