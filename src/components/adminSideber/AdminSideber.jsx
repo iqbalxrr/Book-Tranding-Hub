@@ -7,7 +7,13 @@ import { useState } from "react";
 import Swal from "sweetalert2";
 import { useAuth } from "@/context/AuthContext";
 
-const menuItems = [
+const menuItems = [   
+
+  {
+    title: "Home",
+    url: "/dashboard/adminPages/home",
+    icon: <AiFillHome />,
+  },
   {
     title: "Overview",
     url: "/dashboard/adminPages/overview",
@@ -23,11 +29,17 @@ const menuItems = [
     url: "/dashboard/adminPages/allUsers",
     icon: <AiOutlineUser />,
   },
+   {
+    title: "Messages",
+    url: "/dashboard/adminPages/messages",
+    icon: <AiOutlineUser />,
+  },
   {
     title: "Settings",
     url: "/dashboard/adminPages/settings",
     icon: <AiFillSetting />,
   },
+  
 ];
 export default function AdminSidebar() {
   const pathname = usePathname();

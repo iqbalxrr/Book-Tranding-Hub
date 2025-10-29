@@ -174,12 +174,12 @@ export default function ProfilePage() {
           {/* LEFT: Profile Picture */}
           <div className="md:col-span-4 lg:col-span-3 space-y-6 flex flex-col items-center md:items-start">
             <div className="relative mx-auto w-40 h-40 overflow-hidden rounded-full ring-4 ring-indigo-500/50 shadow-xl bg-gray-100">
-              <img
-                src={formData?.image}
-                alt="Profile"
-                onError={(e) => (e.target.src = placeholderImage)}
-                className="w-full h-full object-cover transition duration-300"
-              />
+            <img
+  src={formData?.image || placeholderImage}
+  alt="Profile"
+  onError={(e) => (e.target.src = placeholderImage)}
+  className="object-cover w-full h-full"
+/>
             </div>
 
             <button

@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState } from "react";
-import { auth, signOutUser } from "@/lib/firebase";
+import { auth, googleProvider, signOutUser } from "@/lib/firebase";
 import {
   onAuthStateChanged,
   signInWithEmailAndPassword,
@@ -10,106 +10,130 @@ import {
   createUserWithEmailAndPassword,
   RecaptchaVerifier,
   signInWithPhoneNumber,
+  sendPasswordResetEmail,
 } from "firebase/auth";
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [authLoading, setAuthLoading] = useState(false); // UI action loader
   const [confirmationResult, setConfirmationResult] = useState(null);
 
-  // 🔹 Track user state change
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+    const unsub = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
-      setLoading(false);
     });
-    return () => unsubscribe();
+    return () => unsub();
   }, []);
 
-  // 🔹 Email/Password login
+  // Email / Password login
   const login = async (email, password) => {
-    const res = await signInWithEmailAndPassword(auth, email, password);
-    setUser(res.user);
-    return res.user;
+    setAuthLoading(true);
+    try {
+      const res = await signInWithEmailAndPassword(auth, email, password);
+      setUser(res.user);
+      return res.user;
+    } finally {
+      setAuthLoading(false);
+    }
   };
 
-  // 🔹 Google login (also save to MongoDB)
-  const loginWithGoogle = async () => {
-    const provider = new GoogleAuthProvider();
-    const res = await signInWithPopup(auth, provider);
-    const user = res.user;
-
-    // ✅ Save user to MongoDB via API
+  // Register with email / password
+  const register = async (email, password) => {
+    setAuthLoading(true);
     try {
-      await fetch("/api/saveUser", {
+      const res = await createUserWithEmailAndPassword(auth, email, password);
+      setUser(res.user);
+      return res.user;
+    } finally {
+      setAuthLoading(false);
+    }
+  };
+
+  // Google Sign-in (non-blocking save to your DB)
+  const loginWithGoogle = async () => {
+    setAuthLoading(true);
+    try {
+      const provider = googleProvider || new GoogleAuthProvider();
+      const res = await signInWithPopup(auth, provider);
+      const gUser = res.user;
+
+      // non-blocking save to your backend (if you have /api/saveUser)
+      fetch("/api/saveUser", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          name: user.displayName,
-          email: user.email,
-          image: user.photoURL, // Navbar use this
+          name: gUser.displayName,
+          email: gUser.email,
+          image: gUser.photoURL,
           provider: "google",
         }),
-      });
-    } catch (err) {
-      console.error("❌ Failed to save Google user:", err);
+      }).catch((err) => console.warn("saveUser failed:", err));
+
+      setUser(gUser);
+      return gUser;
+    } finally {
+      setAuthLoading(false);
     }
-
-    setUser(user);
-    return user;
   };
 
-  // 🔹 Email/Password register
-  const register = async (email, password) => {
-    const res = await createUserWithEmailAndPassword(auth, email, password);
-    setUser(res.user);
-    return res.user;
+  // Send password reset email
+  const resetPassword = async (email) => {
+    setAuthLoading(true);
+    try {
+      await sendPasswordResetEmail(auth, email);
+      return true;
+    } finally {
+      setAuthLoading(false);
+    }
   };
 
-  // 🔹 Logout
+  // Logout
   const logout = async () => {
-    await signOutUser();
-    setUser(null);
-  };
-
-  // 🔹 Setup reCAPTCHA for phone verification
-  const setupRecaptcha = () => {
-    if (!window.recaptchaVerifier) {
-      window.recaptchaVerifier = new RecaptchaVerifier(auth, "recaptcha-container", {
-        size: "invisible",
-        callback: (response) => {
-          console.log("reCAPTCHA verified");
-        },
-      });
+    setAuthLoading(true);
+    try {
+      await signOutUser();
+      setUser(null);
+    } finally {
+      setAuthLoading(false);
     }
   };
 
-  // 🔹 Send OTP to phone
+  // Phone recaptcha + OTP
+  const setupRecaptcha = () => {
+    if (typeof window === "undefined") return;
+    if (!window.recaptchaVerifier) {
+      window.recaptchaVerifier = new RecaptchaVerifier(
+        "recaptcha-container",
+        { size: "invisible" },
+        auth
+      );
+    }
+  };
+
   const sendOtp = async (phoneNumber) => {
     setupRecaptcha();
-    const appVerifier = window.recaptchaVerifier;
+    setAuthLoading(true);
     try {
+      const appVerifier = window.recaptchaVerifier;
       const confirmation = await signInWithPhoneNumber(auth, phoneNumber, appVerifier);
       setConfirmationResult(confirmation);
       return confirmation;
-    } catch (error) {
-      console.error("❌ Error sending OTP:", error);
-      throw error;
+    } finally {
+      setAuthLoading(false);
     }
   };
 
-  // 🔹 Verify OTP
   const verifyOtp = async (otp) => {
-    if (!confirmationResult) throw new Error("No OTP request found");
+    setAuthLoading(true);
     try {
+      if (!confirmationResult) throw new Error("No OTP request found");
       const res = await confirmationResult.confirm(otp);
       setUser(res.user);
       return res.user;
-    } catch (error) {
-      console.error("❌ Invalid OTP:", error);
-      throw error;
+    } finally {
+      setAuthLoading(false);
     }
   };
 
@@ -117,14 +141,15 @@ export const AuthProvider = ({ children }) => {
     <AuthContext.Provider
       value={{
         user,
-        setUser,
+        authLoading,
         login,
-        loginWithGoogle,
         register,
+        loginWithGoogle,
         logout,
         sendOtp,
         verifyOtp,
-        loading,
+        resetPassword,
+        setUser,
       }}
     >
       {children}
