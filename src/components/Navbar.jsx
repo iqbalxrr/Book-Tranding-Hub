@@ -19,6 +19,8 @@ import Swal from "sweetalert2";
 import { useAuth } from "@/context/AuthContext";
 import NotificationSlider from "./notifications/NotificationSlider";
 import NotificationBell from "./notifications/NotificationBell";
+import BookmarkHeart from "./bookMarks/BookmarkHeart";
+import BookmarkSlider from "./bookMarks/BookmarkSlider";
 
 
 export default function Navbar() {
@@ -26,12 +28,12 @@ export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [showNav, setShowNav] = useState(true);
   const [bookmarks, setBookmarks] = useState([]);
-  const [sliderOpen, setSliderOpen] = useState(false);
-  const [sliderType, setSliderType] = useState(""); // "bookmark" or "notification"
+  // const [sliderOpen, setSliderOpen] = useState(false);
+  const [sliderType, setSliderType] = useState(null); // "bookmark" or "notification"
   const [mobileSubMenuOpen, setMobileSubMenuOpen] = useState({}); // track open submenus
-  const dropdownRef = useRef(null)
-  const notificationRef = useRef(null)
 
+  const dropdownRef = useRef(null)
+  // const notificationRef = useRef(null)
 
   const { user, logout } = useAuth();
   const pathName = usePathname();
@@ -60,7 +62,6 @@ export default function Navbar() {
       const data = await res.json();
       if (data.success) setBookmarks(data.data);
     } catch (err) {
-      console.error(err);
       toast.error("Failed to fetch bookmarks");
     }
   };
@@ -79,32 +80,59 @@ export default function Navbar() {
       window.removeEventListener("bookmark-updated", handleBookmarkChange);
   }, [user?.email]);
 
-useEffect(() => {
+
+  useEffect(() => {
     const handleClickOutside = (e) => {
-        // 1. Check if the click is inside the main icon/dropdown area
-        const clickedInsideDropdown = dropdownRef.current && dropdownRef.current.contains(e.target);
-        // 2. Check if the click is inside the Notification Slider
-        const clickedInsideNotification = notificationRef.current && notificationRef.current.contains(e.target);
-        // ONLY close the slider if the click is NOT inside EITHER element
-        if (!clickedInsideDropdown && !clickedInsideNotification) {
-            setSliderOpen(false);
-        }
+      if (!sliderType) return;
+      const clickedInsideSlider = dropdownRef.current && dropdownRef.current.contains(e.target);
+      if (!clickedInsideSlider) {
+        setSliderType(null);
+      }
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-// Add sliderOpen and sliderType to dependencies for proper re-check when state changes
-}, [sliderOpen, sliderType]);
+  }, [sliderType]);
 
   if (isDashboard) return null;
 
-  const handleSlider = (type) => {
-    if (sliderType === type) {
-      setSliderOpen(!sliderOpen);
-    } else {
-      setSliderType(type);
-      setSliderOpen(true);
+
+  // 💡 New function to update the 'seen' status in the database
+  const markBookmarksAsSeen = async () => {
+    const hasUnseen = bookmarks.some(b => b.seen === false);
+    if (!hasUnseen) return;
+
+    try {
+      const res = await fetch(`/api/bookmarks/mark-as-seen`, {
+        method: 'PATCH', 
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email: user?.email }), // Identify the user
+      });
+
+      if (res?.ok) {
+        setBookmarks(prev =>
+          prev.map(b => ({ ...b, seen: true }))
+        );
+      } else {
+        toast.error("Failed to mark bookmarks as seen.");
+      }
+    } catch (err) {
+      toast.error("API error for mark-as-seen:", err);
     }
   };
+
+  // Replace your old handleSlider function with this:
+  const handleSlider = (type) => {
+    if (sliderType === type) {
+      setSliderType(null)
+    } else {
+      setSliderType(type)
+      if (type === 'bookmark') {
+        markBookmarksAsSeen();
+      }
+    }
+  }
 
   const menuItems = [
     {
@@ -155,9 +183,8 @@ useEffect(() => {
 
   return (
     <header
-      className={`w-full fixed top-0 left-0 z-50 transform transition-transform duration-500 ${
-        showNav ? "translate-y-0" : "-translate-y-full"
-      }`}
+      className={`w-full fixed top-0 left-0 z-50 transform transition-transform duration-500 ${showNav ? "translate-y-0" : "-translate-y-full"
+        }`}
     >
       {/* Top Navbar */}
       <div className="bg-teal-500 text-white text-sm">
@@ -246,19 +273,8 @@ useEffect(() => {
 
               {/* Icons */}
               <div className="ml-2 flex items-center space-x-4">
-                <div className="relative" ref={dropdownRef}>
-                  <button
-                    onClick={() => handleSlider("bookmark")}
-                    className="hover:text-teal-500 relative"
-                  >
-                    <Heart size={20} />
-                    {bookmarks.length > 0 && (
-                      <span className="absolute -top-3 -right-3 inline-block w-4 h-4 bg-red-500 text-white text-xs rounded-full text-center">
-                        {bookmarks.length}
-                      </span>
-                    )}
-                  </button>
-                </div>
+
+                <BookmarkHeart bookmarks={bookmarks} handleSlider={handleSlider} />
 
                 {/* Notification Bell */}
                 <NotificationBell handleSlider={handleSlider} />
@@ -292,9 +308,8 @@ useEffect(() => {
                   >
                     {menu.name}
                     <ChevronDown
-                      className={`ml-1 transform transition-transform duration-300 ${
-                        mobileSubMenuOpen[menu.name] ? "rotate-180" : ""
-                      }`}
+                      className={`ml-1 transform transition-transform duration-300 ${mobileSubMenuOpen[menu.name] ? "rotate-180" : ""
+                        }`}
                       size={16}
                     />
                   </button>
@@ -345,9 +360,20 @@ useEffect(() => {
       {/* Slider Panels */}
       {sliderType === "notification" && (
         <NotificationSlider
-          sliderOpen={sliderOpen}
-          closeSlider={() => setSliderOpen(false)}
-          sidebarRef={notificationRef}
+          // We only need to check if sliderType is NOT null, so we use a boolean derived from it
+          sliderOpen={sliderType === "notification"}
+          closeSlider={() => setSliderType(null)} // Set state back to null to close
+          sidebarRef={dropdownRef} // Renamed for clarity in the ref
+        />
+      )}
+
+      {sliderType === 'bookmark' && (
+        <BookmarkSlider
+          bookmarks={bookmarks}
+          sliderOpen={sliderType === "bookmark"} // Derived boolean
+          closeSlider={() => setSliderType(null)} // Set state back to null to close
+          sidebarRef={dropdownRef}
+          setBookmarks={setBookmarks}
         />
       )}
 

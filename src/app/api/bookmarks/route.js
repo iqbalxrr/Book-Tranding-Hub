@@ -23,7 +23,7 @@ export async function POST(req) {
       return NextResponse.json({ message: "Already bookmarked" }, { status: 400 });
     }
 
-    const result = await collection.insertOne({ email, book, createdAt: new Date() });
+    const result = await collection.insertOne({ email, book, createdAt: new Date(), seen: false});
 
     return NextResponse.json({ success: true, data: result });
   } catch (error) {
@@ -45,7 +45,7 @@ export async function GET(req) {
     const db = await getDb();
     const collection = db.collection("bookmarks");
 
-    const bookmarks = await collection.find({ email }).toArray();
+    const bookmarks = await collection.find({ email }).sort({createdAt: -1}).toArray();
 
     return NextResponse.json({ success: true, data: bookmarks });
   } catch (error) {
