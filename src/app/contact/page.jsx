@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -25,56 +26,63 @@ export default function ContactLocationPage() {
     message: "",
   });
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
+const handleChange = (e) => {
+  const { name, value } = e.target;
+  setFormData((prev) => ({ ...prev, [name]: value }));
+};
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setIsSubmitting(true);
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setIsSubmitting(true);
 
+  try {
+    const res = await fetch("/api/contact", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(formData),
+    });
+
+    let data;
     try {
-      const res = await fetch("/api/contact", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
-
-      let data;
-try {
-  data = await res.json();
-} catch {
-  data = null;
-}
-
-if (!res.ok) {
-  alert("❌ Something went wrong. Server returned: " + res.status);
-  return;
-}
-
-if (data?.success) {
-  alert("✅ Message sent successfully!");
-  setFormData({ name: "", email: "", message: "" });
-} else {
-  alert("⚠️ Failed to send: " + (data?.message || "Unknown error"));
-}
-
-
-      if (data.success) {
-        alert("✅ Message sent successfully!");
-        setFormData({ name: "", email: "", message: "" });
-      } else {
-        alert("❌ " + data.message);
-      }
-    } catch (err) {
-      console.error(err);
-      alert("⚠️ Something went wrong.");
-    } finally {
-      setIsSubmitting(false);
+      data = await res.json();
+    } catch {
+      data = null;
     }
-  };
 
+    if (!res.ok) {
+      Swal.fire({
+        icon: "error",
+        title: "Server Error",
+        text: `Something went wrong. Server returned: ${res.status}`,
+      });
+      return;
+    }
+
+    if (data?.success) {
+      Swal.fire({
+        icon: "success",
+        title: "Message Sent",
+        text: "✅ Your message was sent successfully!",
+      });
+      setFormData({ name: "", email: "", message: "" });
+    } else {
+      Swal.fire({
+        icon: "warning",
+        title: "Failed to Send",
+        text: data?.message || "Unknown error",
+      });
+    }
+  } catch (err) {
+    console.error(err);
+    Swal.fire({
+      icon: "error",
+      title: "Something went wrong",
+      text: "⚠️ Please try again later.",
+    });
+  } finally {
+    setIsSubmitting(false);
+  }
+};
   // contact info + sections remain same
   const contactInfo = [
     { icon: MapPin, title: "Address", value: "123 Library Street, Dhanmondi, Dhaka" },
@@ -120,45 +128,28 @@ if (data?.success) {
 
   return (
     <motion.div
-      className="min-h-screen bg-gradient-to-br from-rose-50 via-white to-orange-50"
+      className="min-h-screen py-26 bg-gradient-to-br from-rose-50 via-white to-orange-50"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 1 }}
     >
-      {/* Hero */}
-      <section className="relative mt-28 h-[450px] w-full overflow-hidden rounded-b-3xl shadow-lg">
-        <motion.img
-          src="/teem.jpg"
-          alt="Our Team"
-          className="w-full h-full object-cover brightness-90"
-          initial={{ scale: 1.1 }}
-          animate={{ scale: 1 }}
-          transition={{ duration: 1.2 }}
-        />
-        <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center text-center">
-          <motion.h1
-            className="text-5xl font-extrabold text-white mb-4 drop-shadow-lg"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1 }}
-          >
-            Get in Touch with{" "}
-            <span className="text-rose-400">Book Trading Hub</span>
-          </motion.h1>
-          <motion.p
-            className="text-gray-100 text-lg max-w-2xl"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.5 }}
-          >
-            Whether you’re looking for book trades, partnerships, or support —
-            our friendly team is always ready to help.
-          </motion.p>
+        {/* Banner */}
+      <section className="bg-[url('/ratting-bg.jpg')]  py-22 relative">
+        <div className="container mx-auto px-6 text-center">
+          <h1 className="text-3xl md:text-4xl font-bold text-gray-900">
+            Contact Us
+          </h1>
+          <div className="mt-2 text-gray-600">
+            <a href="/">Home</a> /{" "}
+            <span className="text-red-500">
+              <a href="/books">contact us</a>
+            </span>
+          </div>
         </div>
       </section>
 
       {/* Main */}
-      <div className="max-w-7xl mx-auto px-6 py-20">
+      <div className="container mx-auto px-6 py-20">
         {/* Contact Info & Form */}
         <div className="grid lg:grid-cols-5 gap-10">
           {/* Info */}
@@ -253,7 +244,7 @@ if (data?.success) {
         </div>
 
         {/* FAQ */}
-        <section className="min-h-[80vh] w-full bg-gradient-to-b from-indigo-50 to-white py-20 mt-20 rounded-2xl">
+        <section className="min-h-[80vh] w-full bg-gradient-to-b  py-20 mt-20 rounded-2xl">
           <motion.div
             initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}

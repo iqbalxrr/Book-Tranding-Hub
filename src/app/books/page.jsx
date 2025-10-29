@@ -52,7 +52,7 @@ export default function AllBooksPage() {
   }, []);
 
   return (
-    <div className="min-h-screen py-30">
+    <div className="min-h-screen py-26">
       {/* Banner */}
       <section className="bg-[url('/ratting-bg.jpg')] py-22 relative">
         <div className="container mx-auto px-6 text-center">

@@ -8,12 +8,6 @@ import Swal from "sweetalert2";
 import { useAuth } from "@/context/AuthContext";
 
 const menuItems = [   
-
-  {
-    title: "Home",
-    url: "/dashboard/adminPages/home",
-    icon: <AiFillHome />,
-  },
   {
     title: "Overview",
     url: "/dashboard/adminPages/overview",

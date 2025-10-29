@@ -26,17 +26,26 @@ export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [showNav, setShowNav] = useState(true);
   const [bookmarks, setBookmarks] = useState([]);
-  const [showDropdown, setShowDropdown] = useState(false);
-  const [sliderType, setSliderType] = useState(null); // "bookmark" or "notification"
-  const [mobileSubMenuOpen, setMobileSubMenuOpen] = useState({}); // track open submenus
+  const [sliderType, setSliderType] = useState(null);
+  const [mobileSubMenuOpen, setMobileSubMenuOpen] = useState({});
+  const dropdownRef = useRef(null);
 
   const { user, logout } = useAuth();
   const pathName = usePathname();
-  const isDashboard = pathName?.includes("/dashboard");
 
-  const dropdownRef = useRef(null);
+  // ✅ Navbar hide on scroll
+  useEffect(() => {
+    let lastScrollY = 0;
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      setShowNav(currentScrollY < lastScrollY || currentScrollY < 10);
+      lastScrollY = currentScrollY;
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
-  // SweetAlert on first login
+  // ✅ SweetAlert Welcome popup (once per session)
   useEffect(() => {
     if (user && !sessionStorage.getItem("welcome_shown")) {
       Swal.fire({
@@ -51,103 +60,58 @@ export default function Navbar() {
     }
   }, [user]);
 
-  // Get user photo
-  const getUserPhoto = () => {
-    if (!user) return "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQkAJEkJQ1WumU0hXNpXdgBt9NUKc0QDVIiaw&s";
-    if (user.photoURL && user.photoURL !== "") return user.photoURL;
-    if (user.image && user.image !== "") return user.image;
-    return "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQkAJEkJQ1WumU0hXNpXdgBt9NUKc0QDVIiaw&s";
-  };
-
-  // Fetch bookmarks
+  // ✅ Fetch Bookmarks (auto refresh every 5s)
   const fetchBookmarks = async () => {
     if (!user?.email) return;
     try {
-      const res = await fetch(`/api/bookmarks?email=${user?.email}`);
-      if (!res.ok) throw new Error("Network response was not ok");
+      const res = await fetch(`/api/bookmarks?email=${user.email}`);
       const data = await res.json();
       if (data.success) setBookmarks(data.data);
     } catch (err) {
-      console.error(err);
+      console.error("Error fetching bookmarks:", err);
       toast.error("Failed to fetch bookmarks");
     }
   };
 
   useEffect(() => {
-    fetchBookmarks();
-    const interval = setInterval(fetchBookmarks, 10000);
-    return () => clearInterval(interval);
+    if (!user?.email) return;
+
+    fetchBookmarks(); // first load
+    const interval = setInterval(fetchBookmarks, 5000); // every 5 sec
+
+    return () => clearInterval(interval); // cleanup
   }, [user?.email]);
 
-  useEffect(() => {
-    const handleBookmarkChange = () => fetchBookmarks();
-    window.addEventListener("bookmark-updated", handleBookmarkChange);
-    return () => window.removeEventListener("bookmark-updated", handleBookmarkChange);
-  }, [user?.email]);
-
-  // Close dropdown if clicked outside
-  useEffect(() => {
-    const handleClickOutside = (e) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
-        setShowDropdown(false);
-        if (sliderType) setSliderType(null);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [sliderType]);
-
-  if (isDashboard) return null;
-
-
-  // 💡 New function to update the 'seen' status in the database
-const markBookmarksAsSeen = async () => {
-  const hasUnseen = bookmarks.some(b => b.seen === false);
-  if (!hasUnseen) return;
-
-  try {
-    const res = await fetch(`/api/bookmarks/mark-as-seen`, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ email: user?.email }),
-    });
-
-    if (res?.ok) {
-      setBookmarks(prev =>
-        prev.map(b => ({ ...b, seen: true }))
-      );
-
-      // ✅ Sweet success alert
-      Swal.fire({
-        title: "Marked as Seen!",
-        text: "All your bookmarks have been marked as seen successfully.",
-        icon: "success",
-        confirmButtonText: "OK",
-        timer: 2000,
-        timerProgressBar: true,
+  // ✅ Mark all bookmarks as seen
+  const markBookmarksAsSeen = async () => {
+    const hasUnseen = bookmarks.some((b) => b.seen === false);
+    if (!hasUnseen) return;
+    try {
+      const res = await fetch(`/api/bookmarks/mark-as-seen`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: user?.email }),
       });
-    } else {
-      // ⚠️ Sweet error alert
+      if (res.ok) {
+        setBookmarks((prev) => prev.map((b) => ({ ...b, seen: true })));
+        Swal.fire({
+          title: "Marked as Seen!",
+          text: "All your bookmarks have been marked as seen.",
+          icon: "success",
+          timer: 2000,
+          showConfirmButton: false,
+        });
+      }
+    } catch (err) {
       Swal.fire({
-        title: "Failed!",
-        text: "Could not mark bookmarks as seen.",
+        title: "Error!",
+        text: `API error while marking as seen: ${err.message}`,
         icon: "error",
-        confirmButtonText: "Try Again",
       });
     }
-  } catch (err) {
-    // ❌ API Error alert
-    Swal.fire({
-      title: "Error!",
-      text: `API error while marking as seen: ${err.message}`,
-      icon: "error",
-      confirmButtonText: "OK",
-    });
-  }
-};
+  };
 
+  // ✅ Handle Bookmark or Notification Slider
   const handleSlider = (type) => {
     if (sliderType === type) setSliderType(null);
     else {
@@ -156,51 +120,23 @@ const markBookmarksAsSeen = async () => {
     }
   };
 
-  // Menu items
+  // ✅ Active route style
+  const isActive = (href) =>
+    pathName === href
+      ? "text-teal-500 font-semibold border-b-2 border-teal-500 pb-1"
+      : "hover:text-teal-500";
+
+  // ✅ Menu items
   const menuItems = [
-    { name: "Home", links: [{ href: "/", label: "Home" }] },
-    {
-      name: "Books",
-      links: [
-        { href: "/books/latest", label: "Latest" },
-        { href: "/books", label: "Books" },
-      ],
-    },
-    {
-      name: "Trending",
-      links: [
-        { href: "/trending/today", label: "Today" },
-        { href: "/trending/week", label: "This Week" },
-      ],
-    },
-    {
-      name: "About",
-      links: [
-        { href: "/about", label: "About" },
-        { href: "/about/mission", label: "Mission" },
-      ],
-    },
-    {
-      name: "Contact",
-      links: [{ href: "/contact/location", label: "Location" }],
-    },
+    { name: "Home", href: "/" },
+    { name: "Books", href: "/books" },
+    { name: "About", href: "/about" },
+    { name: "Contact", href: "/contact" },
   ];
 
-  if (user) {
-    menuItems.push({
-      name: "Profile",
-      links: [
-        { href: "/addNewBook", label: "Add New Book" },
-        {
-          href:
-            user.email === "admin@gmail.com"
-              ? "/dashboard/adminPages/home"
-              : "/dashboard/userPages/home",
-          label: "Dashboard",
-        },
-      ],
-    });
-  }
+  // ✅ Hide navbar on dashboard routes
+  const isDashboard = pathName?.includes("/dashboard");
+  if (isDashboard) return null;
 
   return (
     <header
@@ -208,32 +144,20 @@ const markBookmarksAsSeen = async () => {
         showNav ? "translate-y-0" : "-translate-y-full"
       }`}
     >
-      {/* Top Navbar */}
+      {/* ✅ Top Navbar */}
       <div className="bg-teal-500 text-white text-sm">
         <div className="container mx-auto flex justify-between items-center px-4 py-2">
           <div className="flex space-x-3">
-            <Link href="#" className="hover:text-gray-200">
-              <Facebook size={16} />
-            </Link>
-            <Link href="#" className="hover:text-gray-200">
-              <Twitter size={16} />
-            </Link>
-            <Link href="#" className="hover:text-gray-200">
-              <Instagram size={16} />
-            </Link>
-            <Link href="#" className="hover:text-gray-200">
-              <Linkedin size={16} />
-            </Link>
+            {[Facebook, Twitter, Instagram, Linkedin].map((Icon, idx) => (
+              <Link key={idx} href="#" className="hover:text-gray-200">
+                <Icon size={16} />
+              </Link>
+            ))}
           </div>
 
           <div className="space-x-4 flex items-center">
             {user ? (
               <div className="flex items-center gap-3">
-                <img
-                  src={getUserPhoto()}
-                  alt="User Avatar"
-                  className="w-8 h-8 rounded-full border border-gray-300 object-cover"
-                />
                 <span className="text-sm">
                   Welcome, {user?.displayName || user?.name}
                 </span>
@@ -242,7 +166,7 @@ const markBookmarksAsSeen = async () => {
                     logout();
                     sessionStorage.removeItem("welcome_shown");
                   }}
-                  className="hover:underline text-sm text-red-600"
+                  className="hover:underline text-sm"
                 >
                   Logout
                 </button>
@@ -261,90 +185,67 @@ const markBookmarksAsSeen = async () => {
         </div>
       </div>
 
-      {/* Main Navbar */}
+      {/* ✅ Main Navbar */}
       <nav className="bg-white shadow-md">
         <div className="container mx-auto px-4 py-3 flex justify-between items-center h-16">
           <Link href="/" className="text-2xl font-bold text-teal-500">
-            📚 BookMate
+            BookMate
           </Link>
 
-          {/* Desktop Menu */}
+          {/* ✅ Desktop Menu */}
           <div className="hidden md:flex items-center space-x-6 relative">
             {menuItems.map((menu) => (
-              <div key={menu.name} className="relative group">
+              <Link
+                key={menu.name}
+                href={menu.href}
+                className={`${isActive(menu.href)} transition-colors`}
+              >
+                {menu.name}
+              </Link>
+            ))}
+
+            {/* ✅ Profile Dropdown */}
+            {user && (
+              <div className="relative group">
                 <button className="flex items-center hover:text-teal-500">
-                  {menu.name}
+                  Profile
                   <ChevronDown
                     className="ml-1 transform transition-transform duration-300 group-hover:rotate-180"
                     size={16}
                   />
                 </button>
-                <div className="absolute left-0 mt-2 w-40 bg-white shadow-lg rounded-md overflow-hidden max-h-0 group-hover:max-h-40 transition-all duration-300 z-50">
-                  {menu.links.map((link) => (
-                    <Link
-                      key={link.href}
-                      href={link.href}
-                      className="block px-4 py-2 hover:bg-teal-100"
-                    >
-                      {link.label}
-                    </Link>
-                  ))}
+                <div className="absolute left-0 mt-2 w-44 bg-white shadow-lg rounded-md overflow-hidden opacity-0 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 z-50">
+                  <Link
+                    href="/addNewBook"
+                    className="block px-4 py-2 hover:bg-teal-100"
+                  >
+                    Add New Book
+                  </Link>
+                  <Link
+                    href={
+                      user.email === "admin@gmail.com"
+                        ? "/dashboard/adminPages/overview"
+                        : "/dashboard/userPages/home"
+                    }
+                    className="block px-4 py-2 hover:bg-teal-100"
+                  >
+                    Dashboard
+                  </Link>
                 </div>
               </div>
-            ))}
+            )}
 
-            {/* Icons */}
-            <div className="ml-2 flex items-center space-x-4">
-              <div className="relative" ref={dropdownRef}>
-                <button
-                  onClick={() => setShowDropdown(!showDropdown)}
-                  className="hover:text-teal-500 relative"
-                >
-                  <Heart size={20} />
-                  {bookmarks.length > 0 && (
-                    <span className="absolute -top-3 -right-3 w-4 h-4 bg-red-500 text-white text-xs rounded-full text-center">
-                      {bookmarks.length}
-                    </span>
-                  )}
-                </button>
-
-                {showDropdown && (
-                  <div className="absolute right-0 mt-3 w-64 bg-white border shadow-lg rounded-md overflow-hidden z-50">
-                    {bookmarks.length === 0 ? (
-                      <p className="p-4 text-sm text-gray-500 text-center">
-                        No bookmarks yet.
-                      </p>
-                    ) : (
-                      bookmarks.map((b) => (
-                        <Link
-                          key={b._id}
-                          href={`/books/${b?.book?._id}`}
-                          className="flex items-center p-3 hover:bg-teal-50 transition-colors duration-200"
-                        >
-                          <img
-                            src={b?.book.bookImage}
-                            alt={b.book.bookName}
-                            className="w-10 h-10 rounded object-cover mr-3 shadow-sm"
-                          />
-                          <div className="text-sm">
-                            <p className="font-medium">{b?.book.bookName}</p>
-                            <p className="text-gray-500 text-xs">
-                              {b?.book.authorName}
-                            </p>
-                          </div>
-                        </Link>
-                      ))
-                    )}
-                  </div>
-                )}
-              </div>
-
-              <BookmarkHeart bookmarks={bookmarks} handleSlider={handleSlider} />
+            {/* ✅ Icons */}
+            <div className="ml-2 flex items-center space-x-4" ref={dropdownRef}>
+              <BookmarkHeart
+                bookmarks={bookmarks}
+                handleSlider={handleSlider}
+              />
               <NotificationBell handleSlider={handleSlider} />
             </div>
           </div>
 
-          {/* Mobile Menu Button */}
+          {/* ✅ Mobile Menu Button */}
           <button
             className="md:hidden p-2 text-gray-700"
             onClick={() => setIsOpen(!isOpen)}
@@ -353,44 +254,66 @@ const markBookmarksAsSeen = async () => {
           </button>
         </div>
 
-        {/* Mobile Menu Panel */}
+        {/* ✅ Mobile Menu */}
         {isOpen && (
           <div className="md:hidden bg-white shadow-md px-4 py-3 space-y-2">
             {menuItems.map((menu) => (
-              <div key={menu.name}>
+              <Link
+                key={menu.name}
+                href={menu.href}
+                className={`${isActive(menu.href)} block`}
+                onClick={() => setIsOpen(false)}
+              >
+                {menu.name}
+              </Link>
+            ))}
+
+            {/* ✅ Profile Section (Mobile) */}
+            {user && (
+              <div>
                 <button
                   className="w-full flex justify-between items-center text-gray-700 font-medium"
                   onClick={() =>
                     setMobileSubMenuOpen((prev) => ({
                       ...prev,
-                      [menu.name]: !prev[menu.name],
+                      Profile: !prev.Profile,
                     }))
                   }
                 >
-                  {menu.name}
+                  Profile
                   <ChevronDown
                     className={`ml-1 transform transition-transform duration-300 ${
-                      mobileSubMenuOpen[menu.name] ? "rotate-180" : ""
+                      mobileSubMenuOpen.Profile ? "rotate-180" : ""
                     }`}
                     size={16}
                   />
                 </button>
-                {mobileSubMenuOpen[menu.name] && (
+                {mobileSubMenuOpen.Profile && (
                   <div className="pl-4 flex flex-col space-y-1 mt-1">
-                    {menu.links.map((link) => (
-                      <Link
-                        key={link.href}
-                        href={link.href}
-                        className="text-gray-600 hover:text-teal-500"
-                      >
-                        {link.label}
-                      </Link>
-                    ))}
+                    <Link
+                      href="/addNewBook"
+                      className="text-gray-600 hover:text-teal-500"
+                      onClick={() => setIsOpen(false)}
+                    >
+                      Add New Book
+                    </Link>
+                    <Link
+                      href={
+                        user.email === "admin@gmail.com"
+                          ? "/dashboard/adminPages/overview"
+                          : "/dashboard/userPages/home"
+                      }
+                      className="text-gray-600 hover:text-teal-500"
+                      onClick={() => setIsOpen(false)}
+                    >
+                      Dashboard
+                    </Link>
                   </div>
                 )}
               </div>
-            ))}
+            )}
 
+            {/* ✅ Bookmark & Notification */}
             <div className="pt-2 border-t border-gray-200">
               <button
                 onClick={() => handleSlider("bookmark")}
@@ -414,7 +337,7 @@ const markBookmarksAsSeen = async () => {
         )}
       </nav>
 
-      {/* Slider Panels */}
+      {/* ✅ Slider Panels */}
       {sliderType === "notification" && (
         <NotificationSlider
           sliderOpen={true}
