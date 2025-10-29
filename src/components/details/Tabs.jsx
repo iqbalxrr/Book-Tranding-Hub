@@ -16,7 +16,7 @@ export default function Tabs({ book }) {
     {
   label: "Reviews",
   content: (
-    <ReviewForm bookId={book._id || book.id} />
+    <ReviewForm bookId={book?._id} />
   ),
 },
   ];

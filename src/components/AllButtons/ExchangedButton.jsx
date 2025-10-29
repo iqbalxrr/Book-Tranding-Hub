@@ -1,10 +1,11 @@
 "use client";
 
 import { useAuth } from "@/context/AuthContext";
+import { addNotification } from "@/lib/addNotification";
 import React, { useState } from "react";
 import Swal from "sweetalert2";
 
-const ExchangedButton = ({ bookId, status: initialStatus }) => {
+const ExchangedButton = ({ bookId, status: initialStatus, bookOwner }) => {
   const { user } = useAuth();
   const requestedUser = user?.email;
   const requestedUserName = user?.displayName;
@@ -23,6 +24,7 @@ const ExchangedButton = ({ bookId, status: initialStatus }) => {
       return;
     }
 
+
     setLoading(true);
 
     try {
@@ -34,7 +36,7 @@ const ExchangedButton = ({ bookId, status: initialStatus }) => {
 
       const data = await res.json();
 
-      if (data.success) {
+      if (data?.success) {
         setStatus("pending");
         Swal.fire({
           icon: "success",
@@ -43,6 +45,14 @@ const ExchangedButton = ({ bookId, status: initialStatus }) => {
           timer: 2000,
           showConfirmButton: false,
         });
+
+        // notification function
+        await addNotification(bookOwner, {
+          type: "trade_request",
+          text: `${requestedUserName || requestedUser} wants to exchange a book with you.`,
+          url: `/dashboard/userPages/exchangeRequest`,
+        });
+
       } else {
         Swal.fire({
           icon: "error",
@@ -51,6 +61,7 @@ const ExchangedButton = ({ bookId, status: initialStatus }) => {
           confirmButtonColor: "#FF7B6B",
         });
       }
+
     } catch (error) {
       console.error(error);
       Swal.fire({
@@ -69,10 +80,9 @@ const ExchangedButton = ({ bookId, status: initialStatus }) => {
       onClick={handleExchange}
       disabled={status === "pending" || status === "exchanged"}
       className={`relative overflow-hidden rounded-full font-bold py-3 px-8 text-white transition duration-500 ease-in-out group
-        ${
-          status === "pending"
-            ? "bg-gray-400 cursor-not-allowed"
-            : status === "exchanged"
+        ${status === "pending"
+          ? "bg-gray-400 cursor-not-allowed"
+          : status === "exchanged"
             ? "bg-green-500 cursor-not-allowed"
             : "bg-[#FF7B6B] hover:bg-[#ff5a4a]"
         }
@@ -82,10 +92,10 @@ const ExchangedButton = ({ bookId, status: initialStatus }) => {
         {loading
           ? "Processing..."
           : status === "pending"
-          ? "Pending"
-          : status === "exchanged"
-          ? "Exchanged"
-          : "Exchange"}
+            ? "Pending"
+            : status === "exchanged"
+              ? "Exchanged"
+              : "Exchange"}
       </span>
 
       {status === "available" && (

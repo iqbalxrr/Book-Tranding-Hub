@@ -3,12 +3,14 @@
 import React, { useState } from "react";
 import { RiPokerHeartsLine } from "react-icons/ri";
 import toast from "react-hot-toast";
+import { useAuth } from "@/context/AuthContext";
 
 const BookMarkButton = ({ book }) => {
 
     const [added, setAdded] = useState(false);
+    const {user} = useAuth()
 
-    const email = "iamekbal75@gmail.com"
+    const email = user?.email
 
   const handleBookmark = async () => {
     try {

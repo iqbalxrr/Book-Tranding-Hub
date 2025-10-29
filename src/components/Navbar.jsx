@@ -17,27 +17,30 @@ import { usePathname } from "next/navigation";
 import toast from "react-hot-toast";
 import Swal from "sweetalert2";
 import { useAuth } from "@/context/AuthContext";
+import NotificationSlider from "./notifications/NotificationSlider";
+import NotificationBell from "./notifications/NotificationBell";
+import BookmarkHeart from "./bookMarks/BookmarkHeart";
+import BookmarkSlider from "./bookMarks/BookmarkSlider";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [showNav, setShowNav] = useState(true);
   const [bookmarks, setBookmarks] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
-  const dropdownRef = useRef(null);
+  const [sliderType, setSliderType] = useState(null); // "bookmark" or "notification"
+  const [mobileSubMenuOpen, setMobileSubMenuOpen] = useState({}); // track open submenus
 
   const { user, logout } = useAuth();
   const pathName = usePathname();
-  const isDashboard = pathName.includes("/dashboard");
+  const isDashboard = pathName?.includes("/dashboard");
 
-  // ✅ SweetAlert show only once (first login/register)
+  const dropdownRef = useRef(null);
+
+  // SweetAlert on first login
   useEffect(() => {
     if (user && !sessionStorage.getItem("welcome_shown")) {
       Swal.fire({
-
-        title: `Welcome ${user.displayName }!`,
-
         title: `Welcome ${user?.displayName || user?.name || "User"}!`,
-
         text: "You have successfully logged in.",
         icon: "success",
         timer: 2000,
@@ -48,7 +51,7 @@ export default function Navbar() {
     }
   }, [user]);
 
-  // ✅ Helper: Get user photo
+  // Get user photo
   const getUserPhoto = () => {
     if (!user) return "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQkAJEkJQ1WumU0hXNpXdgBt9NUKc0QDVIiaw&s";
     if (user.photoURL && user.photoURL !== "") return user.photoURL;
@@ -56,11 +59,12 @@ export default function Navbar() {
     return "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQkAJEkJQ1WumU0hXNpXdgBt9NUKc0QDVIiaw&s";
   };
 
-  // ✅ Fetch bookmarks
+  // Fetch bookmarks
   const fetchBookmarks = async () => {
     if (!user?.email) return;
     try {
-      const res = await fetch(`/api/bookmarks?email=${user.email}`);
+      const res = await fetch(`/api/bookmarks?email=${user?.email}`);
+      if (!res.ok) throw new Error("Network response was not ok");
       const data = await res.json();
       if (data.success) setBookmarks(data.data);
     } catch (err) {
@@ -70,33 +74,65 @@ export default function Navbar() {
   };
 
   useEffect(() => {
-    fetchBookmarks(); // initial load
-    const interval = setInterval(() => {
-      fetchBookmarks(); // refresh every 1s
-    }, 10000);
+    fetchBookmarks();
+    const interval = setInterval(fetchBookmarks, 10000);
     return () => clearInterval(interval);
   }, [user?.email]);
 
   useEffect(() => {
     const handleBookmarkChange = () => fetchBookmarks();
     window.addEventListener("bookmark-updated", handleBookmarkChange);
-    return () =>
-      window.removeEventListener("bookmark-updated", handleBookmarkChange);
+    return () => window.removeEventListener("bookmark-updated", handleBookmarkChange);
   }, [user?.email]);
 
+  // Close dropdown if clicked outside
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
         setShowDropdown(false);
+        if (sliderType) setSliderType(null);
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+  }, [sliderType]);
 
   if (isDashboard) return null;
 
+  // Mark bookmarks as seen
+  const markBookmarksAsSeen = async () => {
+    const hasUnseen = bookmarks.some((b) => b.seen === false);
+    if (!hasUnseen) return;
+
+    try {
+      const res = await fetch(`/api/bookmarks/mark-as-seen`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: user?.email }),
+      });
+
+      if (res.ok) {
+        setBookmarks((prev) => prev.map((b) => ({ ...b, seen: true })));
+      } else {
+        toast.error("Failed to mark bookmarks as seen.");
+      }
+    } catch (err) {
+      toast.error("API error for mark-as-seen");
+      console.error(err);
+    }
+  };
+
+  const handleSlider = (type) => {
+    if (sliderType === type) setSliderType(null);
+    else {
+      setSliderType(type);
+      if (type === "bookmark") markBookmarksAsSeen();
+    }
+  };
+
+  // Menu items
   const menuItems = [
+    { name: "Home", links: [{ href: "/", label: "Home" }] },
     {
       name: "Books",
       links: [
@@ -117,14 +153,11 @@ export default function Navbar() {
         { href: "/about", label: "About" },
         { href: "/about/mission", label: "Mission" },
       ],
-    },{
-      name: "Contact",
-      links: [
-        
-        { href: "/contact/location", label: "Location" },
-      ],
     },
-    
+    {
+      name: "Contact",
+      links: [{ href: "/contact/location", label: "Location" }],
+    },
   ];
 
   if (user) {
@@ -133,14 +166,10 @@ export default function Navbar() {
       links: [
         { href: "/addNewBook", label: "Add New Book" },
         {
-
           href:
             user.email === "admin@gmail.com"
               ? "/dashboard/adminPages/home"
-              : "/dashboard/userPages/myBooks",
-
-          href: user.email === "admin@gmail.com" ? "/dashboard/adminPages/home" : "/dashboard/userPages/home",
-
+              : "/dashboard/userPages/home",
           label: "Dashboard",
         },
       ],
@@ -156,7 +185,6 @@ export default function Navbar() {
       {/* Top Navbar */}
       <div className="bg-teal-500 text-white text-sm">
         <div className="container mx-auto flex justify-between items-center px-4 py-2">
-          {/* Social Links */}
           <div className="flex space-x-3">
             <Link href="#" className="hover:text-gray-200">
               <Facebook size={16} />
@@ -172,7 +200,6 @@ export default function Navbar() {
             </Link>
           </div>
 
-          {/* Auth Links */}
           <div className="space-x-4 flex items-center">
             {user ? (
               <div className="flex items-center gap-3">
@@ -210,106 +237,174 @@ export default function Navbar() {
 
       {/* Main Navbar */}
       <nav className="bg-white shadow-md">
-        <div className="container mx-auto px-4 py-3">
-          <div className="flex justify-between items-center h-16">
-            {/* Logo */}
-            <Link href="/" className="text-2xl font-bold text-teal-500">
-              📚 BookMate
-            </Link>
+        <div className="container mx-auto px-4 py-3 flex justify-between items-center h-16">
+          <Link href="/" className="text-2xl font-bold text-teal-500">
+            📚 BookMate
+          </Link>
 
-            {/* Desktop Menu */}
-            <div className="hidden md:flex items-center space-x-6 relative">
-              <div className="flex space-x-6 items-center">
-                <Link href="/" className="hover:text-teal-500">
-                  Home
-                </Link>
-                {menuItems.map((menu) => (
-                  <div key={menu.name} className="relative group">
-                    <button className="flex items-center hover:text-teal-500">
-                      {menu.name}
-                      <ChevronDown
-                        className="ml-1 transform transition-transform duration-300 group-hover:rotate-180"
-                        size={16}
-                      />
-                    </button>
-                    <div className="absolute left-0 mt-2 w-40 bg-white shadow-lg rounded-md overflow-hidden max-h-0 group-hover:max-h-40 transition-all duration-300 z-50">
-                      {menu.links.map((link) => (
-                        <Link
-                          key={link.href}
-                          href={link.href}
-                          className="block px-4 py-2 hover:bg-teal-100"
-                        >
-                          {link.label}
-                        </Link>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              {/* Icons */}
-              <div className="ml-2 flex items-center space-x-4">
-                <div className="relative" ref={dropdownRef}>
-                  <button
-                    onClick={() => setShowDropdown(!showDropdown)}
-                    className="hover:text-teal-500 relative"
-                  >
-                    <Heart size={20} />
-                    {bookmarks.length > 0 && (
-                      <span className="absolute -top-3 -right-3 inline-block w-4 h-4 bg-red-500 text-white text-xs rounded-full text-center">
-                        {bookmarks.length}
-                      </span>
-                    )}
-                  </button>
-
-                  {showDropdown && (
-                    <div className="absolute right-0 mt-3 w-64 bg-white border shadow-lg rounded-md overflow-hidden transform origin-top transition-all duration-300 ease-out z-50">
-                      {bookmarks.length === 0 ? (
-                        <p className="p-4 text-sm text-gray-500 text-center">
-                          No bookmarks yet.
-                        </p>
-                      ) : (
-                        bookmarks.map((b) => (
-                          <Link
-                            key={b._id}
-                            href={`/books/${b?.book?._id}`}
-                            className="flex items-center p-3 hover:bg-teal-50 transition-colors duration-200"
-                          >
-                            <img
-                              src={b?.book.bookImage}
-                              alt={b.book.bookName}
-                              className="w-10 h-10 rounded object-cover mr-3 shadow-sm"
-                            />
-                            <div className="text-sm">
-                              <p className="font-medium">{b?.book.bookName}</p>
-                              <p className="text-gray-500 text-xs">
-                                {b?.book.authorName}
-                              </p>
-                            </div>
-                          </Link>
-                        ))
-                      )}
-                    </div>
-                  )}
-                </div>
-
-                <button className="relative p-2 text-gray-700 hover:text-teal-500">
-                  <Bell size={22} />
-                  <span className="absolute top-0 right-0 inline-block w-2 h-2 bg-red-500 rounded-full"></span>
+          {/* Desktop Menu */}
+          <div className="hidden md:flex items-center space-x-6 relative">
+            {menuItems.map((menu) => (
+              <div key={menu.name} className="relative group">
+                <button className="flex items-center hover:text-teal-500">
+                  {menu.name}
+                  <ChevronDown
+                    className="ml-1 transform transition-transform duration-300 group-hover:rotate-180"
+                    size={16}
+                  />
                 </button>
+                <div className="absolute left-0 mt-2 w-40 bg-white shadow-lg rounded-md overflow-hidden max-h-0 group-hover:max-h-40 transition-all duration-300 z-50">
+                  {menu.links.map((link) => (
+                    <Link
+                      key={link.href}
+                      href={link.href}
+                      className="block px-4 py-2 hover:bg-teal-100"
+                    >
+                      {link.label}
+                    </Link>
+                  ))}
+                </div>
               </div>
-            </div>
+            ))}
 
-            {/* Mobile Menu Button */}
-            <button
-              className="md:hidden p-2 text-gray-700"
-              onClick={() => setIsOpen(!isOpen)}
-            >
-              {isOpen ? <X size={24} /> : <Menu size={24} />}
-            </button>
+            {/* Icons */}
+            <div className="ml-2 flex items-center space-x-4">
+              <div className="relative" ref={dropdownRef}>
+                <button
+                  onClick={() => setShowDropdown(!showDropdown)}
+                  className="hover:text-teal-500 relative"
+                >
+                  <Heart size={20} />
+                  {bookmarks.length > 0 && (
+                    <span className="absolute -top-3 -right-3 w-4 h-4 bg-red-500 text-white text-xs rounded-full text-center">
+                      {bookmarks.length}
+                    </span>
+                  )}
+                </button>
+
+                {showDropdown && (
+                  <div className="absolute right-0 mt-3 w-64 bg-white border shadow-lg rounded-md overflow-hidden z-50">
+                    {bookmarks.length === 0 ? (
+                      <p className="p-4 text-sm text-gray-500 text-center">
+                        No bookmarks yet.
+                      </p>
+                    ) : (
+                      bookmarks.map((b) => (
+                        <Link
+                          key={b._id}
+                          href={`/books/${b?.book?._id}`}
+                          className="flex items-center p-3 hover:bg-teal-50 transition-colors duration-200"
+                        >
+                          <img
+                            src={b?.book.bookImage}
+                            alt={b.book.bookName}
+                            className="w-10 h-10 rounded object-cover mr-3 shadow-sm"
+                          />
+                          <div className="text-sm">
+                            <p className="font-medium">{b?.book.bookName}</p>
+                            <p className="text-gray-500 text-xs">
+                              {b?.book.authorName}
+                            </p>
+                          </div>
+                        </Link>
+                      ))
+                    )}
+                  </div>
+                )}
+              </div>
+
+              <BookmarkHeart bookmarks={bookmarks} handleSlider={handleSlider} />
+              <NotificationBell handleSlider={handleSlider} />
+            </div>
           </div>
+
+          {/* Mobile Menu Button */}
+          <button
+            className="md:hidden p-2 text-gray-700"
+            onClick={() => setIsOpen(!isOpen)}
+          >
+            {isOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
         </div>
+
+        {/* Mobile Menu Panel */}
+        {isOpen && (
+          <div className="md:hidden bg-white shadow-md px-4 py-3 space-y-2">
+            {menuItems.map((menu) => (
+              <div key={menu.name}>
+                <button
+                  className="w-full flex justify-between items-center text-gray-700 font-medium"
+                  onClick={() =>
+                    setMobileSubMenuOpen((prev) => ({
+                      ...prev,
+                      [menu.name]: !prev[menu.name],
+                    }))
+                  }
+                >
+                  {menu.name}
+                  <ChevronDown
+                    className={`ml-1 transform transition-transform duration-300 ${
+                      mobileSubMenuOpen[menu.name] ? "rotate-180" : ""
+                    }`}
+                    size={16}
+                  />
+                </button>
+                {mobileSubMenuOpen[menu.name] && (
+                  <div className="pl-4 flex flex-col space-y-1 mt-1">
+                    {menu.links.map((link) => (
+                      <Link
+                        key={link.href}
+                        href={link.href}
+                        className="text-gray-600 hover:text-teal-500"
+                      >
+                        {link.label}
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ))}
+
+            <div className="pt-2 border-t border-gray-200">
+              <button
+                onClick={() => handleSlider("bookmark")}
+                className="flex items-center w-full text-gray-700 font-medium mb-2"
+              >
+                <Heart size={20} className="mr-2" /> Bookmarks
+                {bookmarks.length > 0 && (
+                  <span className="ml-auto w-5 h-5 bg-red-500 text-white text-xs rounded-full text-center">
+                    {bookmarks.length}
+                  </span>
+                )}
+              </button>
+              <button
+                onClick={() => handleSlider("notification")}
+                className="flex items-center w-full text-gray-700 font-medium"
+              >
+                <Bell size={20} className="mr-2" /> Notifications
+              </button>
+            </div>
+          </div>
+        )}
       </nav>
+
+      {/* Slider Panels */}
+      {sliderType === "notification" && (
+        <NotificationSlider
+          sliderOpen={true}
+          closeSlider={() => setSliderType(null)}
+          sidebarRef={dropdownRef}
+        />
+      )}
+      {sliderType === "bookmark" && (
+        <BookmarkSlider
+          bookmarks={bookmarks}
+          sliderOpen={true}
+          closeSlider={() => setSliderType(null)}
+          sidebarRef={dropdownRef}
+          setBookmarks={setBookmarks}
+        />
+      )}
     </header>
   );
 }
